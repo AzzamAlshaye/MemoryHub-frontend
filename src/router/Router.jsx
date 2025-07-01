@@ -100,6 +100,7 @@ import {
   RouterProvider,Outlet
 } from "react-router";
 import CreatePost from '../pages/CreatePost'
+import GroupView from '../pages/GroupView';
 function Layout(){
   return(
     <>
@@ -115,6 +116,10 @@ const router = createBrowserRouter([
       {
         path:"/create-post",
         element:<CreatePost></CreatePost>
+      },
+      {
+        path:'/view-group',
+element:<GroupView></GroupView>
       }
     ]
   },
