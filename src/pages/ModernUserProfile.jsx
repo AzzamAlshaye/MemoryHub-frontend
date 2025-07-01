@@ -1,0 +1,155 @@
+import React from 'react';
+import { FaMapMarkedAlt, FaHome, FaUsers, FaTicketAlt, FaBell, FaEnvelope, FaCamera, FaEdit, FaTrash } from 'react-icons/fa';
+import Footer from '../components/Footer';
+
+const memories = [
+  {
+    title: 'Sunset Beach Walk',
+    location: 'Malibu, California',
+    description: 'Beautiful sunset walk along the beach. The colors were absolutely breathtaking!',
+    date: 'June 15, 2023',
+    visibility: 'Public',
+    image: '/Sunset.png'
+  },
+  {
+    title: 'City Lights',
+    location: 'New York City, NY',
+    description: 'The city that never sleeps. Amazing view from the rooftop bar!',
+    date: 'May 28, 2023',
+    visibility: 'Private',
+    image: '/City.png'
+  },
+  {
+    title: 'Mountain Trail',
+    location: 'Rocky Mountains, CO',
+    description: 'Hiking with friends in the Rockies. Such an amazing experience!',
+    date: 'April 10, 2023',
+    visibility: 'Group',
+    image: '/Mountain.png'
+  }
+];
+
+function ModernUserProfile() {
+  return (
+    <div className="min-h-screen flex bg-gray-50">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r p-6 hidden md:flex flex-col justify-between">
+        <div>
+          <div className="flex items-center gap-2 text-blue-600 font-bold text-lg mb-10">
+            <FaMapMarkedAlt className="text-xl" /> Map Memory
+          </div>
+          <ul className="space-y-4">
+            <li><a href="/" className="flex items-center gap-2 text-gray-700 hover:text-blue-600"><FaHome /> Home</a></li>
+            <li><a href="/map" className="flex items-center gap-2 text-gray-700 hover:text-blue-600"><FaMapMarkedAlt /> Map</a></li>
+            <li><a href="/communities" className="flex items-center gap-2 text-gray-700 hover:text-blue-600"><FaUsers /> Communities</a></li>
+            <li><a href="/tickets" className="flex items-center gap-2 text-gray-700 hover:text-blue-600"><FaTicketAlt /> My Tickets</a></li>
+          </ul>
+        </div>
+        <div className="mt-10 flex items-center gap-3">
+          <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Sarah Johnson" className="w-10 h-10 rounded-full object-cover" />
+          <div>
+            <p className="text-sm font-semibold">Sarah Johnson</p>
+            <a href="#" className="text-xs text-blue-500">View Profile</a>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 p-8 flex flex-col">
+        {/* Profile Section */}
+        <section className="bg-white rounded-xl shadow-lg p-8 mb-10">
+          <div className="flex items-center gap-6 mb-6">
+            <div className="relative">
+              <img
+                src="https://randomuser.me/api/portraits/women/45.jpg"
+                alt="Sarah Johnson"
+                className="w-20 h-20 rounded-full border-4 border-blue-500 object-cover"
+              />
+              <button className="absolute bottom-0 right-0 bg-blue-500 p-1 rounded-full border-2 border-white shadow-lg">
+                <FaCamera className="text-white" />
+              </button>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800">Sarah Johnson</h2>
+              <p className="text-sm text-gray-500">sarah.johnson@example.com</p>
+            </div>
+            <button className="ml-auto bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg shadow transition">
+              Edit Profile
+            </button>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              { label: 'Full Name', placeholder: 'Enter Full Name' },
+              { label: 'Nick Name', placeholder: 'Enter Nick Name' },
+              { label: 'Gender', placeholder: 'Select Gender' },
+              { label: 'Country', placeholder: 'Select Country' },
+              { label: 'Language', placeholder: 'Select Language' },
+              { label: 'Time Zone', placeholder: 'Select Time Zone' }
+            ].map((field, idx) => (
+              <div key={idx} className="flex flex-col">
+                <label className="text-xs text-gray-500 mb-1 uppercase tracking-wide">{field.label}</label>
+                <input
+                  type="text"
+                  placeholder={field.placeholder}
+                  className="border border-gray-200 bg-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Email Address</h3>
+            <div className="flex items-center gap-4 bg-gray-100 p-4 rounded-lg">
+              <FaEnvelope className="text-blue-500" size={18} />
+              <div>
+                <p className="text-gray-800">sarah.johnson@example.com</p>
+                <span className="text-xs text-gray-400">1 month ago</span>
+              </div>
+              <button className="ml-auto text-sm text-blue-500 hover:underline"> Edit Email</button>
+            </div>
+          </div>
+        </section>
+
+        {/* Memories Section */}
+        <section className="flex-1 mb-10">
+          <h3 className="text-xl font-semibold text-gray-800 mb-6">My Memories</h3>
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {memories.map((memory, idx) => (
+              <div key={idx} className="group bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:scale-105 transition duration-300">
+                <div className="relative">
+                  <img
+                    src={memory.image}
+                    alt={memory.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition"><FaEdit className="text-gray-600" /></button>
+                    <button className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition"><FaTrash className="text-red-500" /></button>
+                  </div>
+                  <span className="absolute bottom-4 left-4 bg-black/70 text-white text-xs px-2 py-1 rounded-md">
+                    {memory.visibility}
+                  </span>
+                </div>
+                <div className="p-6">
+                  <h4 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-blue-500 transition-colors cursor-pointer">
+                    {memory.title}
+                  </h4>
+                  <p className="text-gray-500 text-xs mb-1 uppercase tracking-wide">{memory.location}</p>
+                  <p className="text-gray-700 text-sm mb-4 line-clamp-3">{memory.description}</p>
+                  <p className="text-gray-400 text-xs">{memory.date}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Footer (unchanged) */}
+        <Footer />
+      </main>
+    </div>
+  );
+}
+
+export default ModernUserProfile;
