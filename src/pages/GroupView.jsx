@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { FaUserPlus } from "react-icons/fa6";
 import { IoIosSearch } from "react-icons/io";
 import { FaSort } from "react-icons/fa";
-
+import { IoMdSettings } from "react-icons/io";
+import { useNavigate } from 'react-router';
 function GroupView() {
+  const navigate=useNavigate()
   const initialCommunities = [
     {
       title: 'Travel Enthusiasts',
@@ -77,7 +79,9 @@ function GroupView() {
 // sort community
     setCommunities(prev => sortPosts(prev, sortBy));
   }, [sortBy]);
-
+function switchtoSettingsGroup(){
+navigate()
+}
   return (
     <>
       <div className="min-h-screen bg-gray-50 px-6 py-4">
@@ -95,6 +99,7 @@ function GroupView() {
           >
             <FaUserPlus /> Invite Members
           </button>
+          <button onClick={switchtoSettingsGroup}><IoMdSettings /></button>
           </div>
         </div>
         {/* group */}
@@ -133,7 +138,7 @@ function GroupView() {
         </div>
 
         {/* memories Cards */}
-        <div className="grid md:grid-cols-2 grid-cols-3 gap-3">
+        <div onClick={switchtoPostDetails} className="grid md:grid-cols-2 grid-cols-3 gap-3">
           {handelSort().map((item, index) => (
             <div key={index} className="bg-white shadow rounded overflow-hidden">
               <img src={item.img} alt={item.title} className="w-full h-40 object-cover" />
