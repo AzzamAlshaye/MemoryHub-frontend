@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
-import {
-  MapContainer,
-  TileLayer,
-  Pane,
-  Marker,
-  Popup,
-  useMapEvents,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import CreatePost from "./CreatePost";
 import "leaflet/dist/leaflet.css";
 
@@ -50,55 +43,40 @@ export default function PinsMap({ filter }) {
   };
 
   return (
-    <div className="w-full h-full relative">
+    <>
       <MapContainer
         center={[24.7136, 46.6753]}
         zoom={13}
         className="h-full w-full"
       >
-        <Pane name="customPopupPane" style={{ zIndex: 650 }} />
-
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
         {pins.map((pin) => (
-          <Marker key={pin._id} position={[pin.location.lat, pin.location.lng]}>
-            <Popup
-              pane="customPopupPane"
-              minWidth={200}
-              maxWidth={400}
-              keepInView={true}
-            >
-              <div className="space-y-2">
-                <h3 className="font-bold text-lg">{pin.title}</h3>
-                <p className="text-sm text-gray-600">{pin.description}</p>
-                <span className="text-xs bg-blue-100 text-blue-500 px-2 py-1 rounded">
-                  {pin.privacy}
-                </span>
-              </div>
-            </Popup>
-          </Marker>
+          <Marker
+            key={pin._id}
+            position={[pin.location.lat, pin.location.lng]}
+          />
         ))}
 
         <ClickHandler onMapClick={handleMapClick} />
-
-        {newPinPos && (
-          <Marker position={[newPinPos.lat, newPinPos.lng]}>
-            <Popup
-              pane="customPopupPane"
-              minWidth={240}
-              maxWidth={600}
-              keepInView={true}
-            >
-              <div className="overflow-visible">
-                <CreatePost onSubmit={handleCreate} />
-              </div>
-            </Popup>
-          </Marker>
-        )}
       </MapContainer>
-    </div>
+
+      {newPinPos && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/50">
+          <div className="bg-white w-full max-w-3xl h-full max-h-[90vh] rounded-lg shadow-lg overflow-auto relative">
+            <button
+              onClick={() => setNewPinPos(null)}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+            >
+              ✕
+            </button>
+            <CreatePost onSubmit={handleCreate} />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
