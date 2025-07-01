@@ -15,6 +15,8 @@ import CommunitiesList1 from "../pages/CommunitiesList1.jsx";
 import ModernUserProfile from "../pages/ModernUserProfile.jsx"
 import Create from "../pages/Create.jsx";
 import Join from "../pages/Join.jsx";
+import CreatePost from '../pages/CreatePost'
+import GroupView from '../pages/GroupView';
 
 // Layout with Navbar and Footer
 const LayoutWithNav = () => (
@@ -42,6 +44,7 @@ const router = createBrowserRouter([
       },
     ],
   },
+                                   
   {
     path: "/MapPage",
     element: <LayoutWithoutNav />,
@@ -61,8 +64,13 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <CommunitiesList1 />,
+
       },
-    ],
+      {
+        path:'/view-group',
+element:<GroupView></GroupView>
+      }
+    ]
   },
 
   
@@ -123,8 +131,8 @@ const router = createBrowserRouter([
 
 ]);
 
-
-
 export default function AppRouter() {
   return <RouterProvider router={router} />;
 }
+
+export default Router
