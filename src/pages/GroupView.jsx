@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { FaUserPlus } from "react-icons/fa6";
 import { IoIosSearch } from "react-icons/io";
 import { FaSort } from "react-icons/fa";
-
+import { IoMdSettings } from "react-icons/io";
+import { useNavigate } from 'react-router';
 function GroupView() {
+  const navigate=useNavigate()
   const initialCommunities = [
     {
       title: 'Travel Enthusiasts',
@@ -35,6 +37,7 @@ function GroupView() {
   ];
 // handel with sort 
   const [communities, setCommunities] = useState(initialCommunities);
+  const [showModal, setShowModal] = useState(false);
   const [sortBy, setSortBy] = useState('recent');
   const [searchTerm, setSearchTerm] = useState('');
   const sortPosts = (data, criterion) => {
@@ -76,7 +79,9 @@ function GroupView() {
 // sort community
     setCommunities(prev => sortPosts(prev, sortBy));
   }, [sortBy]);
-
+function switchtoSettingsGroup(){
+navigate()
+}
   return (
     <>
       <div className="min-h-screen bg-gray-50 px-6 py-4">
@@ -88,9 +93,13 @@ function GroupView() {
           </div>
           <div className="flex flex-row gap-2 mt-4 md:mt-0">
             <button className="bg-blue-200 hover:bg-blue-300 text-white text-sm p-2 lg:px-4 lg:py-2 rounded">+ New Group</button>
-            <button className="bg-white text-black shadow-2xl text-sm p-0 lg:px-4 lg:py-2 rounded flex items-center gap-0 lg:gap-2">
-              <FaUserPlus /> Invite Members
-            </button>
+  <button
+            onClick={() => setShowModal(true)}
+            className="bg-white text-black shadow-md text-sm px-4 py-2 rounded flex items-center gap-2"
+          >
+            <FaUserPlus /> Invite Members
+          </button>
+          <button onClick={switchtoSettingsGroup}><IoMdSettings /></button>
           </div>
         </div>
         {/* group */}
@@ -129,7 +138,7 @@ function GroupView() {
         </div>
 
         {/* memories Cards */}
-        <div className="grid md:grid-cols-2 grid-cols-3 gap-3">
+        <div onClick={switchtoPostDetails} className="grid md:grid-cols-2 grid-cols-3 gap-3">
           {handelSort().map((item, index) => (
             <div key={index} className="bg-white shadow rounded overflow-hidden">
               <img src={item.img} alt={item.title} className="w-full h-40 object-cover" />
@@ -148,12 +157,54 @@ function GroupView() {
             </div>
           ))}
         </div>
+        
         {/* load more memories */}
         <div className="mt-6 flex justify-center">
           <button className="px-4 py-2 border rounded text-sm text-gray-600 hover:text-blue-500">
             Load More memories
           </button>
         </div>
+{/* show invite model */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-md relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-lg font-bold">
+              &times;
+            </button>
+
+            <h2 className="text-lg font-semibold text-blue-900 mb-4">Invite a Member</h2>
+
+            <form className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <input
+                  type="text"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="example@example.com"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="text-sm px-4 py-2 border rounded text-gray-600 hover:text-red-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="text-sm px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  Send Invite
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       </div>
     </>
   );
