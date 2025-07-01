@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import Footer from '../components/Footer';
-import Create from './Create';
-import Join from './Join';
+import React, { useState } from "react";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+import CreateGroup from "./CreateGroup";
+import JoinGroup from "./JoinGroup";
 import {
   FaHome,
   FaUsers,
@@ -13,26 +13,79 @@ import {
   FaPlus,
   FaSignInAlt,
   FaBars,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 
 const MySwal = withReactContent(Swal);
 
 function CommunitiesList1() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const data = [
-    { title: 'Travel Enthusiasts', 
-      description: 'Share travel memories and tips.',
-       activity: '2h ago',
-        members: '42', img: '/Travel.png', unread: 3 },
-    { title: 'City Explorers', description: 'Discover hidden city gems.', activity: '5h ago', members: '88', img: '/City.png', unread: 0 },
-    { title: 'Photography Club', description: 'Join photo walks and share shots.', activity: '1d ago', members: '125', img: '/Photography.png', unread: 5 },
-    { title: 'Hiking Buddies', description: 'Plan group hikes and trail tips.', activity: '3d ago', members: '64', img: '/Hiking.png', unread: 0 },
-    { title: 'Foodie Adventures', description: 'Culinary experiences and tours.', activity: '12h ago', members: '102', img: '/Foodie.png', unread: 2 },
-    { title: 'Historical Sites', description: 'Landmarks and history shared.', activity: '2d ago', members: '57', img: '/History.png', unread: 0 },
-    { title: 'Beach Lovers', description: 'Sun, surf, and seafood spots.', activity: '7h ago', members: '77', img: '/Beach.png', unread: 1 },
-    { title: 'Cultural Exchange', description: 'International traditions and languages.', activity: '1h ago', members: '93', img: '/Culture.png', unread: 0 },
+    {
+      title: "Travel Enthusiasts",
+      description: "Share travel memories and tips.",
+      activity: "2h ago",
+      members: "42",
+      img: "/Travel.png",
+      unread: 3,
+    },
+    {
+      title: "City Explorers",
+      description: "Discover hidden city gems.",
+      activity: "5h ago",
+      members: "88",
+      img: "/City.png",
+      unread: 0,
+    },
+    {
+      title: "Photography Club",
+      description: "Join photo walks and share shots.",
+      activity: "1d ago",
+      members: "125",
+      img: "/Photography.png",
+      unread: 5,
+    },
+    {
+      title: "Hiking Buddies",
+      description: "Plan group hikes and trail tips.",
+      activity: "3d ago",
+      members: "64",
+      img: "/Hiking.png",
+      unread: 0,
+    },
+    {
+      title: "Foodie Adventures",
+      description: "Culinary experiences and tours.",
+      activity: "12h ago",
+      members: "102",
+      img: "/Foodie.png",
+      unread: 2,
+    },
+    {
+      title: "Historical Sites",
+      description: "Landmarks and history shared.",
+      activity: "2d ago",
+      members: "57",
+      img: "/History.png",
+      unread: 0,
+    },
+    {
+      title: "Beach Lovers",
+      description: "Sun, surf, and seafood spots.",
+      activity: "7h ago",
+      members: "77",
+      img: "/Beach.png",
+      unread: 1,
+    },
+    {
+      title: "Cultural Exchange",
+      description: "International traditions and languages.",
+      activity: "1h ago",
+      members: "93",
+      img: "/Culture.png",
+      unread: 0,
+    },
   ];
 
   const filtered = data.filter(
@@ -43,19 +96,19 @@ function CommunitiesList1() {
 
   const openCreateModal = () => {
     MySwal.fire({
-      html: <Create />,
+      html: <CreateGroup />,
       showConfirmButton: false,
-      background: '#fff',
-      customClass: { popup: 'shadow-xl rounded-lg' },
+      background: "#fff",
+      customClass: { popup: "shadow-xl rounded-lg" },
     });
   };
 
   const openJoinModal = () => {
     MySwal.fire({
-      html: <Join />,
+      html: <JoinGroup />,
       showConfirmButton: false,
-      background: '#fff',
-      customClass: { popup: 'shadow-xl rounded-lg' },
+      background: "#fff",
+      customClass: { popup: "shadow-xl rounded-lg" },
     });
   };
 
@@ -68,8 +121,12 @@ function CommunitiesList1() {
         </button>
       </div>
       {/* Sidebar */}
-      <aside className={`${sidebarOpen ? 'block' : 'hidden'} md:block w-full md:w-64 flex-shrink-0 bg-white border-r shadow-lg md:overflow-auto`}
-        onClick={() => setSidebarOpen(false)}>
+      <aside
+        className={`${
+          sidebarOpen ? "block" : "hidden"
+        } md:block w-full md:w-64 flex-shrink-0 bg-white border-r shadow-lg md:overflow-auto`}
+        onClick={() => setSidebarOpen(false)}
+      >
         <div className="p-6">
           <div className="flex items-center gap-2 text-blue-600 font-bold text-xl mb-8">
             <FaMapMarkedAlt className="text-2xl" />
@@ -77,16 +134,23 @@ function CommunitiesList1() {
           </div>
           <nav className="space-y-4">
             {[
-              { href: '/', icon: FaHome, label: 'Home' },
-              { href: '/map', icon: FaMapMarkedAlt, label: 'Map' },
-              { href: '/communities', icon: FaUsers, label: 'Communities', active: true },
-              { href: '/tickets', icon: FaTicketAlt, label: 'My Tickets' },
+              { href: "/", icon: FaHome, label: "Home" },
+              { href: "/map", icon: FaMapMarkedAlt, label: "Map" },
+              {
+                href: "/communities",
+                icon: FaUsers,
+                label: "Communities",
+                active: true,
+              },
+              { href: "/tickets", icon: FaTicketAlt, label: "My Tickets" },
             ].map((item, idx) => (
               <a
                 key={idx}
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-2 rounded-lg transition ${
-                  item.active ? 'bg-blue-100 text-blue-600 font-semibold' : 'hover:bg-gray-100 text-gray-700'
+                  item.active
+                    ? "bg-blue-100 text-blue-600 font-semibold"
+                    : "hover:bg-gray-100 text-gray-700"
                 }`}
               >
                 <item.icon className="text-gray-600" />
@@ -159,8 +223,12 @@ function CommunitiesList1() {
                   className="w-12 h-12 rounded-full object-cover"
                 />
                 <div className="min-w-0">
-                  <h3 className="text-lg font-medium text-gray-900 truncate">{c.title}</h3>
-                  <p className="text-sm text-gray-600 truncate">{c.description}</p>
+                  <h3 className="text-lg font-medium text-gray-900 truncate">
+                    {c.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 truncate">
+                    {c.description}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center sm:flex-col gap-4 sm:gap-1 text-sm text-gray-500">
@@ -179,8 +247,6 @@ function CommunitiesList1() {
             Load More
           </button>
         </div>
-
-        <Footer />
       </main>
     </div>
   );

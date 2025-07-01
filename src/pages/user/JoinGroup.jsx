@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-function Join() {
+function JoinGroup() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-50">
       <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
@@ -25,4 +25,4 @@ function Join() {
   );
 }
 
-export default Join;
+export default JoinGroup;
