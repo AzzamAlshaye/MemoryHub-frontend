@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { FaHome, FaMapMarkedAlt, FaUsers, FaTicketAlt } from "react-icons/fa";
+
 import Footer from "../components/Footer";
 import PinsMap from "../components/PinsMap";
+import Sidebar from "../components/Sidebar";
 
 export default function MapPage() {
   const [filter, setFilter] = useState("public");
@@ -9,63 +10,7 @@ export default function MapPage() {
   return (
     <>
       <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-        {/* Sidebar */}
-        <aside className="w-full md:w-64 bg-white border-r p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 text-blue-600 font-bold text-lg mb-10">
-              <FaMapMarkedAlt className="text-xl" /> Map Memory
-            </div>
-            <ul className="space-y-4">
-              <li>
-                <a
-                  href="/"
-                  className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-                >
-                  <FaHome /> Home
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/map"
-                  className="flex items-center gap-2 text-gray-700 font-semibold"
-                >
-                  <FaMapMarkedAlt /> Map
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-                >
-                  <FaUsers /> Communities
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-                >
-                  <FaTicketAlt /> My Tickets
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="mt-10 flex items-center gap-3">
-            <img
-              src="https://randomuser.me/api/portraits/men/32.jpg"
-              className="w-10 h-10 rounded-full object-cover"
-              alt="User avatar"
-            />
-            <div>
-              <p className="text-sm font-semibold">John Doe</p>
-              <a href="#" className="text-xs text-blue-500">
-                View Profile
-              </a>
-            </div>
-          </div>
-        </aside>
-
+        <Sidebar />
         <main className="flex-1 p-6">
           <div className="bg-white p-6 rounded shadow mb-6">
             <h1 className="text-xl font-semibold mb-1">Welcome back, John!</h1>

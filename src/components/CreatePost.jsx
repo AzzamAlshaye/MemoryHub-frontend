@@ -104,7 +104,7 @@ export default function CreatePost({ onSubmit }) {
             Privacy
           </label>
           <div className="flex flex-wrap gap-4">
-            {["Private", "Public", "Community"].map((opt) => (
+            {["Private", "Public", "Group"].map((opt) => (
               <label key={opt} className="flex items-center space-x-2">
                 <input
                   type="radio"

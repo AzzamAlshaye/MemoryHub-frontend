@@ -8,15 +8,17 @@ export default function PinsMap({ filter }) {
   const [pins, setPins] = useState([]);
   const [newPinPos, setNewPinPos] = useState(null);
 
+  // Fetch pins when filter changes
   useEffect(() => {
-    (async () => {
+    async function fetchPins() {
       try {
         const res = await api.get("/pins", { params: { privacy: filter } });
         setPins(res.data);
       } catch (err) {
         console.error("Error fetching pins:", err);
       }
-    })();
+    }
+    fetchPins();
   }, [filter]);
 
   function ClickHandler({ onMapClick }) {
@@ -26,12 +28,14 @@ export default function PinsMap({ filter }) {
 
   const handleMapClick = (latlng) => setNewPinPos(latlng);
 
-  const handleCreate = async (formData) => {
+  // Create a new pin and then re-fetch
+  const handleCreate = async ({ title, description, selectedPrivacy }) => {
+    if (!newPinPos) return;
     try {
       await api.post("/pins", {
-        title: formData.title,
-        description: formData.description,
-        privacy: formData.selectedPrivacy.toLowerCase(),
+        title,
+        description,
+        privacy: selectedPrivacy.toLowerCase(),
         location: { lat: newPinPos.lat, lng: newPinPos.lng },
       });
       setNewPinPos(null);
