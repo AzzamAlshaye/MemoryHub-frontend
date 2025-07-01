@@ -3,12 +3,14 @@ import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
-} from "react-router";
+} from "react-router"; 
 
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
 import HomePage from "../pages/HomePage.jsx";
 import MapPage from "../pages/MapPage.jsx";
+import ProfilePage from "../pages/ProfilePage.jsx";
+import CommunitiesList from "../pages/CommunitiesList.jsx";
 
 // Layout with Navbar and Footer
 const LayoutWithNav = () => (
@@ -19,7 +21,6 @@ const LayoutWithNav = () => (
   </>
 );
 
-// Layout without Navbar and Footer
 const LayoutWithoutNav = () => (
   <>
     <Outlet />
@@ -32,8 +33,7 @@ const router = createBrowserRouter([
     element: <LayoutWithNav />,
     children: [
       {
-        index: true,  
-        path:"/HomePage",
+        index: true,
         element: <HomePage />,
       },
     ],
@@ -45,6 +45,27 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <MapPage />,
+      },
+    ],
+  },
+
+  {
+    path: "/CommunitiesList",
+    element: <LayoutWithoutNav />,
+    children: [
+      {
+        index: true,
+        element: <CommunitiesList />,
+      },
+    ],
+  },
+  {
+    path: "/ProfilePage",
+    element: <LayoutWithoutNav />,
+    children: [
+      {
+        index: true,
+        element: <ProfilePage />,
       },
     ],
   },
