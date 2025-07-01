@@ -3,36 +3,20 @@ import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
-  Navigate,
-} from "react-router";
-import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
+} from "react-router"; 
 
-// Auth Pages
-import SignInPage from "./pages/SignInPage.jsx";
-import SignupPage from "./pages/SignupPage.jsx";
+import Navbar from "../components/Navbar.jsx";
+import Footer from "../components/Footer.jsx";
+import HomePage from "../pages/HomePage.jsx";
+import MapPage from "../pages/MapPage.jsx";
+import ProfilePage from "../pages/ProfilePage.jsx";
+import CommunitiesList from "../pages/CommunitiesList.jsx";
+import CommunitiesList1 from "../pages/CommunitiesList1.jsx";
+import ModernUserProfile from "../pages/ModernUserProfile.jsx"
+import Create from "../pages/Create.jsx";
+import Join from "../pages/Join.jsx";
 
-// Public Pages with Nav/Footer
-import HomePage from "./pages/HomePage.jsx";
-import AboutUs from "./pages/AboutUs.jsx";
-import ContactUs from "./pages/ContactUs.jsx";
-import MapPage from "./pages/MapPage.jsx";
-import GroupPage from "./pages/GroupPage.jsx";
-import SubmitTicket from "./pages/SubmitTicket.jsx";
-import ProfilePage from "./pages/ProfilePage.jsx";
-
-// Admin Pages
-import AdminDashboard from "./pages/AdminDashboard.jsx";
-import AdminCrud from "./pages/AdminCrud.jsx";
-import AdminTickets from "./pages/AdminTickets.jsx";
-
-// Utility
-import UnauthorizedPage from "./pages/Unauthorized/UnauthorizedPage.jsx";
-import PageNotFound from "./pages/Unauthorized/PageNotFound.jsx";
-import Navbar from "./components/Navbar.jsx";
-import Footer from "./components/Footer.jsx";
-
-// Layout including Navbar + Footer
+// Layout with Navbar and Footer
 const LayoutWithNav = () => (
   <>
     <Navbar />
@@ -41,52 +25,105 @@ const LayoutWithNav = () => (
   </>
 );
 
-// Define routes via Data API
+const LayoutWithoutNav = () => (
+  <>
+    <Outlet />
+  </>
+);
+
 const router = createBrowserRouter([
   {
-    element: (
-      <AuthProvider>
-        <Outlet />
-      </AuthProvider>
-    ),
+    path: "/",
+    element: <LayoutWithNav />,
     children: [
-      // Auth routes (no Nav/Footer)
-      { path: "/signin", element: <SignInPage /> },
-      { path: "/signup", element: <SignupPage /> },
       {
-        element: <LayoutWithNav />, // wrap remaining routes
-        children: [
-          // Public main pages
-          { index: true, element: <HomePage /> },
-          { path: "/about", element: <AboutUs /> },
-          { path: "/contact", element: <ContactUs /> },
-          { path: "/map", element: <MapPage /> },
-          { path: "/group", element: <GroupPage /> },
-          { path: "/submit-ticket", element: <SubmitTicket /> },
-          { path: "/profile", element: <ProfilePage /> },
-          // User-protected pages
-          {
-            element: <ProtectedRoute />,
-            children: [{ path: "/dashboard", element: <ProfilePage /> }],
-          },
-          // Admin-only pages
-          {
-            element: <ProtectedRoute requiredRole="admin" />,
-            children: [
-              { path: "/admin/dashboard", element: <AdminDashboard /> },
-              { path: "/admin/crud", element: <AdminCrud /> },
-              { path: "/admin/tickets", element: <AdminTickets /> },
-            ],
-          },
-          // Unauthorized
-          { path: "/unauthorized", element: <UnauthorizedPage /> },
-          // Fallback
-          { path: "*", element: <PageNotFound /> },
-        ],
+        index: true,
+        element: <HomePage />,
       },
     ],
   },
+  {
+    path: "/MapPage",
+    element: <LayoutWithoutNav />,
+    children: [
+      {
+        index: true,
+        element: <MapPage />,
+      },
+    ],
+  },
+
+
+  {
+    path: "/CommunitiesList1",
+    element: <LayoutWithoutNav />,
+    children: [
+      {
+        index: true,
+        element: <CommunitiesList1 />,
+      },
+    ],
+  },
+
+  
+  {
+    path: "/CommunitiesList",
+    element: <LayoutWithoutNav />,
+    children: [
+      {
+        index: true,
+        element: <CommunitiesList />,
+      },
+    ],
+  },
+  {
+    path: "/ModernUserProfile",
+    element: <LayoutWithoutNav />,
+    children: [
+      {
+        index: true,
+        element: <ModernUserProfile />,
+      },
+    ],
+  },
+  {
+    path: "/ProfilePage",
+    element: <LayoutWithoutNav />,
+    children: [
+      {
+        index: true,
+        element: <ProfilePage />,
+      },
+    ],
+  },
+
+
+  {
+    path: "/Create",
+    element: <LayoutWithoutNav />,
+    children: [
+      {
+        index: true,
+        element: <Create />,
+      },
+    ],
+  },
+
+
+   {
+    path: "/Join",
+    element: <LayoutWithoutNav />,
+    children: [
+      {
+        index: true,
+        element: <Join />,
+      },
+    ],
+  },
+
 ]);
+
+
 
 export default function AppRouter() {
   return <RouterProvider router={router} />;
