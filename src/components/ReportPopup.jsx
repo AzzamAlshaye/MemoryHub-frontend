@@ -21,52 +21,58 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
   const [customReason, setCustomReason] = useState("");
   const [description, setDescription] = useState("");
 
-  const swalOpts = { customClass: { container: "z-[9999]" } };
+  // Attach modals to body and ensure they float above the ViewPin overlay
+  const baseSwalOpts = {
+    target: "body",
+    customClass: {
+      container: "z-[9999]", // SweetAlert container
+      backdrop: "z-[9998]", // SweetAlert backdrop
+      popup: "z-[10000]", // SweetAlert dialog
+    },
+  };
+
+  const fireAlert = (opts) => Swal.fire({ ...baseSwalOpts, ...opts });
 
   const handleSubmit = async () => {
     const reason =
       selectedReason === "Other" ? customReason.trim() : selectedReason;
 
     if (!reason) {
-      return Swal.fire({
+      return fireAlert({
         icon: "warning",
         title: "Missing Reason",
         text: "Please select or enter a reason for reporting.",
-        ...swalOpts,
       });
     }
     if (!description.trim()) {
-      return Swal.fire({
+      return fireAlert({
         icon: "warning",
         title: "Missing Details",
         text: "Please provide additional details.",
-        ...swalOpts,
       });
     }
 
-    const { isConfirmed } = await Swal.fire({
+    const { isConfirmed } = await fireAlert({
       icon: "question",
       title: "Submit Report?",
       text: "Are you sure you want to report this?",
       showCancelButton: true,
       confirmButtonText: "Yes, report",
       cancelButtonText: "Cancel",
-      ...swalOpts,
     });
     if (!isConfirmed) return;
 
-    onSubmit({ target, reason, description });
-
-    await Swal.fire({
+    await fireAlert({
       icon: "success",
       title: "Report Submitted",
       text: "Thank you. Your report has been submitted.",
-      ...swalOpts,
     });
+
+    onSubmit({ target, reason, description });
   };
 
   return (
-    <div className="fixed inset-0 z-[50] flex items-center justify-center bg-black/60 p-4">
+    <div className="fixed inset-0 z-[3000] flex items-center justify-center bg-black/60 p-4">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 space-y-4">
         <h3 className="text-lg font-semibold">
           Report {target.type === "post" ? "Post" : "Comment"}
@@ -79,9 +85,9 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
             onChange={(e) => setSelectedReason(e.target.value)}
             className="w-full border rounded px-3 py-2 focus:outline-none"
           >
-            {DEFAULT_REASONS.map((reason) => (
-              <option key={reason} value={reason}>
-                {reason}
+            {DEFAULT_REASONS.map((r) => (
+              <option key={r} value={r}>
+                {r}
               </option>
             ))}
           </select>
@@ -115,12 +121,14 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
 
         <div className="flex justify-end space-x-2">
           <button
+            type="button"
             onClick={onCancel}
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
           >
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleSubmit}
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
           >

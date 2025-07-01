@@ -101,7 +101,7 @@ export default function PinsMapDemo() {
 
       {/* View-Pin Overlay */}
       {selectedPin && (
-        <div className="fixed inset-0 z-[9999]">
+        <div className="fixed inset-0 z-[2000]">
           <ViewPin
             pin={selectedPin}
             onClose={() => setSelectedPin(null)}

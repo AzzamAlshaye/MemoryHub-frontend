@@ -4,14 +4,22 @@ import { FaLocationDot } from "react-icons/fa6";
 import { FaThumbsUp, FaThumbsDown, FaFlag } from "react-icons/fa";
 import ReportPopup from "./ReportPopup";
 
-export default function ViewPin({ pin, onClose, currentUser }) {
+export default function ViewPin({ pin, onClose, currentUser, icons }) {
   if (!pin) return null;
 
-  // slideshow state
+  // Destructure optional icon overrides
+  const {
+    FaHeart = () => null,
+    FaComment = () => null,
+    FaShareAlt = () => null,
+    FaBookmark = () => null,
+    FaSyncAlt = () => null,
+  } = icons || {};
+
   const [idx, setIdx] = useState(0);
   const imgs = pin.media || [];
 
-  // fake comments data
+  // Sample comments or fetched via API
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -37,15 +45,11 @@ export default function ViewPin({ pin, onClose, currentUser }) {
     },
   ]);
 
-  // post like/dislike state
   const [postLikes, setPostLikes] = useState(pin.likes || 0);
   const [postDislikes, setPostDislikes] = useState(pin.dislikes || 0);
-
-  // report modal state: { type: "post" } or { type: "comment", id } or null
   const [reportTarget, setReportTarget] = useState(null);
 
-  // comment handlers
-  const toggleCommentReaction = (id, delta) =>
+  const toggleCommentReaction = (id, delta) => {
     setComments((cs) =>
       cs.map((c) =>
         c.id === id
@@ -57,22 +61,22 @@ export default function ViewPin({ pin, onClose, currentUser }) {
           : c
       )
     );
+  };
 
-  // open report modal
   const openReport = (target) => setReportTarget(target);
   const closeReport = () => setReportTarget(null);
-  const handleReportSubmit = ({ target, reason }) => {
-    console.log("Reporting", target, "for:", reason);
-    // TODO: send to API
+  const handleReportSubmit = ({ target, reason, description }) => {
+    // TODO: integrate with reporting API
+    console.log("Reported", target, "because:", reason, description);
     closeReport();
-    alert("Your report has been submitted.");
   };
 
   return (
     <>
+      {/* Overlay */}
       <div className="fixed inset-0 z-[2000] overflow-auto bg-gray-900/50 p-4">
         <div className="relative bg-white rounded-2xl shadow-xl max-w-4xl mx-auto my-8">
-          {/* Close */}
+          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl"
@@ -111,7 +115,7 @@ export default function ViewPin({ pin, onClose, currentUser }) {
             </div>
           </div>
 
-          {/* Slideshow */}
+          {/* Image Carousel */}
           {imgs.length > 0 && (
             <div className="relative w-full overflow-hidden">
               <img
@@ -145,7 +149,7 @@ export default function ViewPin({ pin, onClose, currentUser }) {
             </div>
           )}
 
-          {/* Body */}
+          {/* Description & Location */}
           <div className="p-6 space-y-6">
             <p className="text-gray-700">{pin.description}</p>
             <div className="border border-gray-200 rounded-xl p-4 flex items-center gap-4">
@@ -164,20 +168,20 @@ export default function ViewPin({ pin, onClose, currentUser }) {
             </div>
           </div>
 
-          {/* Post Actions */}
+          {/* Actions */}
           <div className="px-6 py-4 border-t flex items-center justify-between text-gray-600">
             <div className="flex items-center space-x-6">
               <button
                 onClick={() => setPostLikes(postLikes + 1)}
                 className="flex items-center gap-1 hover:text-blue-600"
               >
-                <FaThumbsUp /> Like {postLikes}
+                <FaThumbsUp /> {postLikes}
               </button>
               <button
                 onClick={() => setPostDislikes(postDislikes + 1)}
                 className="flex items-center gap-1 hover:text-red-600"
               >
-                <FaThumbsDown /> Dislike {postDislikes}
+                <FaThumbsDown /> {postDislikes}
               </button>
             </div>
             <button
@@ -188,7 +192,7 @@ export default function ViewPin({ pin, onClose, currentUser }) {
             </button>
           </div>
 
-          {/* Comments */}
+          {/* Comments Section */}
           <div className="px-6 pb-6 space-y-4">
             <h2 className="font-semibold text-lg">Comments</h2>
             {comments.map((c) => (
