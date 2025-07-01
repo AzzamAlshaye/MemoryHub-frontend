@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
-import Footer from "../components/Footer";
-import PinsMap from "../components/PinsMap";
-import Sidebar from "../components/Sidebar";
+import Footer from "../../components/Footer";
+import PinsMap from "../../components/PinsMap";
+import Sidebar from "../../components/Sidebar";
 
 export default function MapPage() {
   const [filter, setFilter] = useState("public");
