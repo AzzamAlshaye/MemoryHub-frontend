@@ -108,8 +108,9 @@ function ProfilePage() {
             </div>
           </div>
 
+
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Saved Memories</h2>
+            <h2 className="text-lg font-semibold">my Memories</h2>
             <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded">+ New Memory</button>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
