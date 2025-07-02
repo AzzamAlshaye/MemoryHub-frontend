@@ -41,65 +41,9 @@ const memories = [
   },
 ];
 
-function ModernUserProfile() {
+function Profile() {
   return (
     <div className="min-h-screen flex bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r p-6 hidden md:flex flex-col justify-between">
-        <div>
-          <div className="flex items-center gap-2 text-blue-600 font-bold text-lg mb-10">
-            <FaMapMarkedAlt className="text-xl" /> Map Memory
-          </div>
-          <ul className="space-y-4">
-            <li>
-              <a
-                href="/"
-                className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-              >
-                <FaHome /> Home
-              </a>
-            </li>
-            <li>
-              <a
-                href="/map"
-                className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-              >
-                <FaMapMarkedAlt /> Map
-              </a>
-            </li>
-            <li>
-              <a
-                href="/communities"
-                className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-              >
-                <FaUsers /> Communities
-              </a>
-            </li>
-            <li>
-              <a
-                href="/tickets"
-                className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-              >
-                <FaTicketAlt /> My Tickets
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div className="mt-10 flex items-center gap-3">
-          <img
-            src="https://randomuser.me/api/portraits/women/45.jpg"
-            alt="Sarah Johnson"
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <div>
-            <p className="text-sm font-semibold">Sarah Johnson</p>
-            <a href="#" className="text-xs text-blue-500">
-              View Profile
-            </a>
-          </div>
-        </div>
-      </aside>
-
       {/* Main Content */}
       <main className="flex-1 p-8 flex flex-col">
         {/* Profile Section */}
@@ -108,7 +52,6 @@ function ModernUserProfile() {
             <div className="relative">
               <img
                 src="https://randomuser.me/api/portraits/women/45.jpg"
-                alt="Sarah Johnson"
                 className="w-20 h-20 rounded-full border-4 border-blue-500 object-cover"
               />
               <button className="absolute bottom-0 right-0 bg-blue-500 p-1 rounded-full border-2 border-white shadow-lg">
@@ -128,13 +71,10 @@ function ModernUserProfile() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {[
-              { label: "Full Name", placeholder: "Enter Full Name" },
-              { label: "Nick Name", placeholder: "Enter Nick Name" },
-              { label: "Gender", placeholder: "Select Gender" },
-              { label: "Country", placeholder: "Select Country" },
-              { label: "Language", placeholder: "Select Language" },
-              { label: "Time Zone", placeholder: "Select Time Zone" },
-            ].map((field, idx) => (
+              { label: "Name", placeholder: "sarah Johnson" },
+              { label: "Email", placeholder: "Enter your Email" },
+              { label: "Password", placeholder: "**********" },
+                ].map((field, idx) => (
               <div key={idx} className="flex flex-col">
                 <label className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
                   {field.label}
@@ -217,4 +157,4 @@ function ModernUserProfile() {
   );
 }
 
-export default ModernUserProfile;
+export default Profile;

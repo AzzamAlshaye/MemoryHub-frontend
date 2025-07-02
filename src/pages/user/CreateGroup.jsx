@@ -18,14 +18,14 @@ function CreateGroup() {
   
 
   return (
-    <div className="rounded-2xl">
+    <div className="rounded-2xl bg-gradient-to-b from-sky-50 to-white">
       <div className="w-full">
         <h2 className="text-2xl font-bold text-gray-800 text-center py-6">
           Create New Group
         </h2>
 
         <div
-          className="w-28 h-28 mx-auto mb-4 rounded-full border-2 border-blue-500 flex items-center justify-center cursor-pointer"
+          className="w-28 h-28 mx-auto mb-4 rounded-full border-2 border-blue-700 flex items-center justify-center cursor-pointer"
           onClick={() => fileInputRef.current.click()}
         >
           {preview ? (
@@ -35,7 +35,7 @@ function CreateGroup() {
               className="w-full h-full object-cover rounded-full"
             />
           ) : (
-            <FaCamera size={24} className="text-blue-500" />
+            <FaCamera size={24} className="text-blue-200" />
           )}
           <input
             type="file"
@@ -77,7 +77,7 @@ function CreateGroup() {
 
         <button
          
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold py-2 rounded-md transition"
+          className="w-full bg-blue-700 hover:bg-blue-600 text-white text-sm font-semibold py-2 rounded-2xl transition"
         >
           Create Group
         </button>

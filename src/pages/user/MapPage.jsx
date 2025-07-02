@@ -1,16 +1,11 @@
 import React, { useState } from "react";
-
-import Footer from "../../components/Footer";
 import PinsMap from "../../components/PinsMap";
-import Sidebar from "../../components/Sidebar";
-
 export default function MapPage() {
   const [filter, setFilter] = useState("public");
 
   return (
     <>
       <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-        <Sidebar />
         <main className="flex-1 p-6">
           <div className="bg-white p-6 rounded shadow mb-6">
             <h1 className="text-xl font-semibold mb-1">Welcome back, John!</h1>
@@ -99,8 +94,6 @@ export default function MapPage() {
           </div>
         </main>
       </div>
-
-      <Footer />
     </>
   );
 }

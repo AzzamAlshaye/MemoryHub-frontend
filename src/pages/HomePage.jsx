@@ -1,32 +1,77 @@
-import React from 'react';
-import { FaMapMarkerAlt, FaUsers, FaGlobe } from 'react-icons/fa';
+import React from "react";
+import { motion } from "framer-motion";
+import { FaMapMarkerAlt, FaUsers, FaGlobe } from "react-icons/fa";
 
-function HomePage() {
+const scrollFadeIn = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] },
+  },
+};
+
+export default function HomePage() {
   return (
-    <>
+    <main className="space-y-24 overflow-hidden">
       {/* Hero Section */}
-      <section className="bg-blue-50 py-16 px-4">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <div className="text-center md:text-left">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-snug">
-              Save your memories where they happened
-            </h1>
-            <p className="text-gray-700 text-sm sm:text-base mb-6 max-w-md mx-auto md:mx-0">
-              Pin your favorite moments to real locations—videos, photos, voice notes, or personal notes—on an interactive map.
-            </p>
-            <button className="bg-blue-500 text-white px-6 py-2 rounded-full shadow hover:bg-blue-600 transition">
-              Start your first memory
-            </button>
+      <section className="relative bg-gradient-to-tr from-blue-100 to-blue-200 overflow-hidden">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={scrollFadeIn}
+          className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center"
+        >
+          <div className="space-y-6 text-center md:text-left">
+            <motion.h1
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={scrollFadeIn}
+              className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight"
+            >
+              Save Your Memories Where They Happened
+            </motion.h1>
+            <motion.p
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={scrollFadeIn}
+              className="text-gray-700 text-lg max-w-lg mx-auto md:mx-0"
+            >
+              Pin photos, videos, voice notes, and personal stories to exact map locations. Relive your adventures like never before.
+            </motion.p>
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 100, damping: 20 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-blue-600 text-white px-8 py-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+            >
+              Start Your First Memory
+            </motion.button>
           </div>
-        </div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ delay: 0.5, type: "spring", stiffness: 80, damping: 15 }}
+            className="w-full h-64 bg-indigo-200 rounded-lg flex items-center justify-center shadow-xl"
+          >
+            <FaGlobe className="text-indigo-600 text-8xl animate-pulse" />
+          </motion.div>
+        </motion.div>
       </section>
 
-     
+      {/* How it Works */}
       <section className="py-16 px-4">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-xl sm:text-2xl font-semibold mb-10">How Map Memory Works</h2>
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-            {/* Item 1 */}
             <div className="bg-gray-100 rounded-lg p-6 text-center sm:text-left">
               <FaMapMarkerAlt className="text-blue-500 text-2xl mb-4 mx-auto sm:mx-0" />
               <h3 className="font-semibold mb-2">Pin Your Memories</h3>
@@ -34,7 +79,6 @@ function HomePage() {
                 Attach your photos, videos, voice notes, and written memories to exact locations on the map.
               </p>
             </div>
-            {/* Item 2 */}
             <div className="bg-gray-100 rounded-lg p-6 text-center sm:text-left">
               <FaUsers className="text-blue-500 text-2xl mb-4 mx-auto sm:mx-0" />
               <h3 className="font-semibold mb-2">Share with Others</h3>
@@ -42,7 +86,6 @@ function HomePage() {
                 Choose to keep memories private or share them with friends, family, or the world.
               </p>
             </div>
-            {/* Item 3 */}
             <div className="bg-gray-100 rounded-lg p-6 text-center sm:text-left">
               <FaGlobe className="text-blue-500 text-2xl mb-4 mx-auto sm:mx-0" />
               <h3 className="font-semibold mb-2">Explore Journeys</h3>
@@ -54,61 +97,67 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Quote */}
-      <section className="bg-blue-50 py-12 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
-            <p className="text-gray-600 text-sm sm:text-base mb-4">
-              Every memory tells a story—and every story can inspire a journey. Share your moments, and let your posts become a guide for others exploring the world.
-            </p>
-            <p className="text-gray-500 text-sm">The Map Memory Team</p>
-          </div>
-        </div>
+      {/* Quote Section */}
+      <section className="bg-white py-12">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={scrollFadeIn}
+          className="max-w-3xl mx-auto text-center bg-gradient-to-r from-gray-100 to-gray-50 p-8 rounded-2xl shadow-md"
+        >
+          <p className="italic text-gray-700 text-lg mb-4">
+            “Every memory tells a story—and every story can inspire a journey. Share your moments, and let your posts become a guide for others exploring the world.”
+          </p>
+          <span className="font-semibold text-gray-500">— The Map Memory Team</span>
+        </motion.div>
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 px-4">
+      <section className="px-6 pb-16">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-10">What Our Users Say</h2>
-          <div className="grid gap-6 sm:grid-cols-2">
-            {/* Testimonial 1 */}
-            <div className="bg-gray-100 rounded-lg p-6 text-left flex gap-4 items-start">
-              <img
-                src="https://randomuser.me/api/portraits/women/44.jpg"
-                alt="Sarah Johnson"
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <div>
-                <div className="font-bold">Sarah Johnson</div>
-                <div className="text-sm text-gray-500 mb-2">Travel Blogger</div>
-                <p className="text-sm text-gray-600">
-                  Map Memory has transformed how I document my travels. Now I can revisit my adventures not just through photos,
-                  but by exactly where they happened. It's like having a personal travel diary mapped out!
-                </p>
-              </div>
-            </div>
-
-            {/* Testimonial 2 */}
-            <div className="bg-gray-100 rounded-lg p-6 text-left flex gap-4 items-start">
-              <img
-                src="https://randomuser.me/api/portraits/men/32.jpg"
-                alt="Michael Torres"
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <div>
-                <div className="font-bold">Michael Torres</div>
-                <div className="text-sm text-gray-500 mb-2">Photographer</div>
-                <p className="text-sm text-gray-600">
-                  As a photographer, I love being able to pin my photos to exact locations. It helps me remember the perfect spots
-                  for future shoots, and I've even connected with other photographers through shared locations.
-                </p>
-              </div>
-            </div>
+          <motion.h2
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={scrollFadeIn}
+            className="text-3xl font-semibold mb-10"
+          >
+            What Our Users Say
+          </motion.h2>
+          <div className="space-y-8 sm:space-y-0 sm:grid sm:grid-cols-2 gap-8">
+            {[
+              {
+                img: "https://randomuser.me/api/portraits/women/44.jpg",
+                name: "Sarah Johnson",
+                role: "Travel Blogger",
+                text: "Map Memory has transformed how I document my travels. It's like having a personal travel diary mapped out!",
+              },
+              {
+                img: "https://randomuser.me/api/portraits/men/32.jpg",
+                name: "Michael Torres",
+                role: "Photographer",
+                text: "As a photographer, pinning photos to exact locations helps me find perfect spots for future shoots.",
+              },
+            ].map((t, i) => (
+              <motion.div
+                key={i}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={scrollFadeIn}
+                transition={{ delay: i * 0.2 }}
+                className="bg-white rounded-xl p-6 flex flex-col items-center text-center shadow-md hover:shadow-lg transition"
+              >
+                <img src={t.img} alt={t.name} className="w-16 h-16 rounded-full mb-4" />
+                <div className="font-bold">{t.name}</div>
+                <div className="text-sm text-gray-500 mb-2">{t.role}</div>
+                <p className="text-gray-600 text-sm">{t.text}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }
-
-export default HomePage;

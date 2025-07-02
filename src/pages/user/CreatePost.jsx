@@ -10,18 +10,15 @@ function CreatePost() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  // upload multiple images/videos
   const handleMediaUpload = (e) => {
     const files = Array.from(e.target.files);
     setMediaFiles([...mediaFiles, ...files]);
   };
 
-  // handle privacy setting selection
   const handlePrivacySelect = (option) => {
     setSelectedPrivacy(option);
   };
 
-  // submit handler
   const handleSubmit = () => {
     if (!title.trim()) {
       Swal.fire({

@@ -1,63 +1,98 @@
+// src/components/Sidebar.jsx
 import React from "react";
+import { Link, useLocation } from "react-router";
 import { FaHome, FaMapMarkedAlt, FaUsers, FaTicketAlt } from "react-icons/fa";
-export default function Sidebar() {
-  return (
-    <>
-      <aside className="w-full md:w-64 bg-white border-r p-6 flex flex-col justify-between">
-        <div>
-          <div className="flex items-center gap-2 text-blue-600 font-bold text-lg mb-10">
-            <FaMapMarkedAlt className="text-xl" /> Map Memory
-          </div>
-          <ul className="space-y-4">
-            <li>
-              <a
-                href="/"
-                className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-              >
-                <FaHome /> Home
-              </a>
-            </li>
-            <li>
-              <a
-                href="/map"
-                className="flex items-center gap-2 text-gray-700 font-semibold"
-              >
-                <FaMapMarkedAlt /> Map
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-              >
-                <FaUsers /> Communities
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-              >
-                <FaTicketAlt /> My Tickets
-              </a>
-            </li>
-          </ul>
-        </div>
+import { motion } from "framer-motion";
 
-        <div className="mt-10 flex items-center gap-3">
+const menuItems = [
+  { to: "/", icon: <FaHome size={20} />, label: "Home" },
+  { to: "/map", icon: <FaMapMarkedAlt size={20} />, label: "Map" },
+  { to: "/communities1", icon: <FaUsers size={20} />, label: "Communities" },
+  { to: "/Mytickets", icon: <FaTicketAlt size={20} />, label: "My Tickets" },
+];
+
+export default function Sidebar() {
+  const { pathname } = useLocation();
+
+  return (
+    <motion.aside
+      initial={{ width: 80 }}
+      whileHover={{ width: 240 }}
+      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+      className="hidden lg:flex flex-col h-screen bg-white shadow-lg sticky top-0 z-20 overflow-hidden"
+    >
+      {/* Logo */}
+      <Link to="/" className="flex items-center gap-3 px-4 py-6">
+        <img src="/logo.webp" alt="Logo" className="w-10 h-10" />
+        <motion.span
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+          className="text-xl font-bold text-sky-700"
+        >
+          MapHub
+        </motion.span>
+      </Link>
+
+      {/* Menu */}
+      <nav className="flex-1 px-2 mt-4">
+        {menuItems.map((item) => {
+          const isActive = pathname === item.to;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`flex items-center gap-3 px-4 py-3 my-1 rounded-lg transition-colors duration-200 \
+                ${
+                  isActive
+                    ? "bg-sky-100 text-sky-700"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <motion.div whileHover={{ x: 5 }} className="flex-shrink-0">
+                {item.icon}
+              </motion.div>
+              <motion.span
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="whitespace-nowrap"
+              >
+                {item.label}
+              </motion.span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Profile */}
+      <div className="px-4 py-6 border-t border-gray-200">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          whileHover={{ scale: 1, opacity: 1 }}
+          className="flex items-center gap-3 cursor-pointer"
+        >
           <img
             src="https://randomuser.me/api/portraits/men/32.jpg"
-            className="w-10 h-10 rounded-full object-cover"
             alt="User avatar"
+            className="w-10 h-10 rounded-full object-cover"
           />
-          <div>
-            <p className="text-sm font-semibold">John Doe</p>
-            <a href="#" className="text-xs text-blue-500">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileHover={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="flex flex-col"
+          >
+            <span className="font-semibold text-gray-800">John Doe</span>
+            <Link
+              to="/dashboard"
+              className="text-xs text-sky-600 hover:underline"
+            >
               View Profile
-            </a>
-          </div>
-        </div>
-      </aside>
-    </>
+            </Link>
+          </motion.div>
+        </motion.div>
+      </div>
+    </motion.aside>
   );
 }
