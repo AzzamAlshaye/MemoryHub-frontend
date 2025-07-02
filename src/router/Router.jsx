@@ -1,6 +1,6 @@
 // src/AppRouter.jsx
 import React from "react";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router"; // تأكد من استخدام react-router-dom
 import SignInPage from "../pages/Auth/SignInPage.jsx";
 import SignupPage from "../pages/Auth/SignupPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
@@ -8,9 +8,8 @@ import MapPage from "../pages/user/MapPage.jsx";
 import GroupPage from "../pages/user/GroupPage.jsx";
 import CommunitiesList from "../pages/user/CommunitiesList.jsx";
 import Profile from "../pages/user/Profile.jsx";
-import CreatePost from "../pages/user/CreatePost.jsx";
 import Join from "../pages/user/JoinGroup.jsx";
-import GroupView from "../pages/user/GroupPage.jsx";
+import GroupInfo from "../components/GroupInfo.jsx";
 import MyTickets from "../pages/user/MyTickets.jsx";
 import AdminCrud from "../pages/admin/AdminCrud.jsx";
 import AdminTickets from "../pages/admin/AdminTickets.jsx";
@@ -46,29 +45,25 @@ const LayoutWithNav = () => (
 
 const router = createBrowserRouter([
   {
+    path: "/",
+    element: <LayoutWithNav />,
     children: [
-      {
-        element: <LayoutWithNav />,
-        children: [
-          { index: true, element: <HomePage /> },
-          { path: "/mapPage", element: <MapPage /> },
-          { path: "/GroupPage", element: <GroupPage /> },
-          { path: "/CommunitiesList", element: <CommunitiesList /> },
-          { path: "/Profile", element: <Profile /> },
-          { path: "/CreatePost", element: <CreatePost /> },
-          { path: "/Join", element: <Join /> },
-          { path: "/GroupView", element: <GroupView /> },
-          { path: "/MyTickets", element: <MyTickets /> },
-          { path: "/admin/crud", element: <AdminCrud /> },
-          { path: "/admin/tickets", element: <AdminTickets /> },
-          { path: "/SignInPage", element: <SignInPage /> },
-          { path: "/SignupPage", element: <SignupPage /> },
-          { path: "/unauthorized", element: <UnauthorizedPage /> },
-          { path: "*", element: <PageNotFound /> },
-        ],
-      },
+      { path: "", element: <HomePage /> },
+      { path: "mapPage", element: <MapPage /> },
+      { path: "GroupPage", element: <GroupPage /> },
+      { path: "CommunitiesList", element: <CommunitiesList /> },
+      { path: "Profile", element: <Profile /> },
+      { path: "Join", element: <Join /> },
+      { path: "GroupInfo", element: <GroupInfo /> },
+      { path: "MyTickets", element: <MyTickets /> },
+      { path: "admin/crud", element: <AdminCrud /> },
+      { path: "admin/tickets", element: <AdminTickets /> },
     ],
   },
+  { path: "/SignInPage", element: <SignInPage /> },
+  { path: "/SignupPage", element: <SignupPage /> },
+  { path: "/unauthorized", element: <UnauthorizedPage /> },
+  { path: "*", element: <PageNotFound /> },
 ]);
 
 export default function AppRouter() {
