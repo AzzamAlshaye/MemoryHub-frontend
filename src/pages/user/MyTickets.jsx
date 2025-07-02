@@ -104,7 +104,7 @@ export default function MyTickets() {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-gradient-to-br from-sky-50 to-white min-h-screen">
       {/* Page title and toast container for messages */}
       <h1 className="text-2xl font-bold mb-6 text-gray-800">My Tickets</h1>
       <ToastContainer />

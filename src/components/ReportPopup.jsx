@@ -1,4 +1,3 @@
-// src/components/ReportPopup.jsx
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 
@@ -10,24 +9,17 @@ const DEFAULT_REASONS = [
   "Other",
 ];
 
-/**
- * Props:
- *  - target: { type: "post" } or { type: "comment", id: number }
- *  - onCancel: () => void
- *  - onSubmit: (payload: { target, reason, description }) => void
- */
 export default function ReportPopup({ target, onCancel, onSubmit }) {
   const [selectedReason, setSelectedReason] = useState(DEFAULT_REASONS[0]);
   const [customReason, setCustomReason] = useState("");
   const [description, setDescription] = useState("");
 
-  // Attach modals to body and ensure they float above the ViewPin overlay
   const baseSwalOpts = {
     target: "body",
     customClass: {
-      container: "z-[9999]", // SweetAlert container
-      backdrop: "z-[9998]", // SweetAlert backdrop
-      popup: "z-[10000]", // SweetAlert dialog
+      container: "z-[1250]", // SweetAlert container
+      backdrop: "z-[1200]", // SweetAlert backdrop
+      popup: "z-[1300]", // SweetAlert dialog
     },
   };
 
@@ -72,7 +64,7 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[3000] flex items-center justify-center bg-black/60 p-4">
+    <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/60 p-4">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 space-y-4">
         <h3 className="text-lg font-semibold">
           Report {target.type === "post" ? "Post" : "Comment"}
@@ -121,14 +113,12 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
 
         <div className="flex justify-end space-x-2">
           <button
-            type="button"
             onClick={onCancel}
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
           >
             Cancel
           </button>
           <button
-            type="button"
             onClick={handleSubmit}
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
           >

@@ -1,12 +1,9 @@
-// src/pages/PinsMapDemo.jsx
+// src/pages/PinsMap.jsx
 import React, { useState } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-
 import CreatePost from "./CreatePost";
 import ViewPin from "../components/ViewPin";
-
-// React Icons (if your ViewPin needs them)
 import {
   FaHeart,
   FaComment,
@@ -15,7 +12,6 @@ import {
   FaSyncAlt,
 } from "react-icons/fa";
 
-// Your pins array
 const pins = [
   {
     id: "3",
@@ -46,27 +42,23 @@ const pins = [
   },
 ];
 
+function ClickHandler({ onMapClick }) {
+  useMapEvents({ click: (e) => onMapClick(e.latlng) });
+  return null;
+}
+
 export default function PinsMapDemo() {
   const [newPinPos, setNewPinPos] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
 
-  function ClickHandler({ onMapClick }) {
-    useMapEvents({ click: (e) => onMapClick(e.latlng) });
-    return null;
-  }
   const handleMapClick = (latlng) => setNewPinPos(latlng);
-  const handleCreate = (data) => {
-    console.log("Creating pin:", data, "at", newPinPos);
-    setNewPinPos(null);
-  };
 
   return (
-    <>
-      {/* Leaflet Map */}
+    <div className="relative w-full h-[calc(100vh-4rem)] bg-sky-50">
       <MapContainer
         center={[24.7136, 46.6753]}
         zoom={5}
-        className="h-[600px] w-full"
+        className="w-full h-full rounded-lg shadow-lg border border-gray-200"
       >
         <TileLayer
           attribution="&copy; OpenStreetMap"
@@ -84,32 +76,45 @@ export default function PinsMapDemo() {
         <ClickHandler onMapClick={handleMapClick} />
       </MapContainer>
 
-      {/* New-Pin Overlay */}
+      {/* New Pin Modal */}
       {newPinPos && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-3xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-lg relative">
             <button
               onClick={() => setNewPinPos(null)}
-              className="absolute top-4 right-4 text-2xl text-gray-600 hover:text-gray-800"
+              className="absolute top-3 right-3 text-gray-600 hover:text-gray-800 text-2xl"
             >
               ×
             </button>
-            <CreatePost onSubmit={handleCreate} />
+            <CreatePost
+              onSubmit={(data) => {
+                handleMapClick;
+                setNewPinPos(null);
+              }}
+            />
           </div>
         </div>
       )}
 
-      {/* View-Pin Overlay */}
+      {/* View Pin Modal */}
       {selectedPin && (
-        <div className="fixed inset-0 z-[2000]">
-          <ViewPin
-            pin={selectedPin}
-            onClose={() => setSelectedPin(null)}
-            currentUser={selectedPin.author}
-            icons={{ FaHeart, FaComment, FaShareAlt, FaBookmark, FaSyncAlt }}
-          />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-xl relative">
+            <button
+              onClick={() => setSelectedPin(null)}
+              className="absolute top-3 right-3 text-gray-600 hover:text-gray-800 text-2xl"
+            >
+              ×
+            </button>
+            <ViewPin
+              pin={selectedPin}
+              onClose={() => setSelectedPin(null)}
+              currentUser={selectedPin.author}
+              icons={{ FaHeart, FaComment, FaShareAlt, FaBookmark, FaSyncAlt }}
+            />
+          </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
