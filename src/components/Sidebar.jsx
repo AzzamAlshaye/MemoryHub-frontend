@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 const menuItems = [
   { to: "/", icon: <FaHome size={20} />, label: "Home" },
   { to: "/mapPage", icon: <FaMapMarkedAlt size={20} />, label: "Map" },
-  { to: "/communities1", icon: <FaUsers size={20} />, label: "Communities" },
+  { to: "/CommunitiesList", icon: <FaUsers size={20} />, label: "Communities" },
   { to: "/Mytickets", icon: <FaTicketAlt size={20} />, label: "My Tickets" },
 ];
 
@@ -85,7 +85,7 @@ export default function Sidebar() {
               John Doe
             </span>
             <Link
-              to="/dashboard"
+              to="/Profile"
               className="text-xs text-sky-600 hover:underline opacity-100"
             >
               View Profile
