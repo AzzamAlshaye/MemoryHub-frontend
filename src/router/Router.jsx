@@ -66,7 +66,6 @@ const router = createBrowserRouter([
           { index: true, element: <HomePage /> },
           { path: "/map", element: <MapPage /> },
           { path: "/group", element: <GroupPage /> },
-          { path: "/communities", element: <CommunitiesList /> },
           { path: "/communities1", element: <CommunitiesList1 /> },
           { path: "/modern-profile", element: <ModernUserProfile /> },
           { path: "/create-post", element: <CreatePost /> },
