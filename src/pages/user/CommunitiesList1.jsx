@@ -98,8 +98,8 @@ function CommunitiesList1() {
     MySwal.fire({
       html: <CreateGroup />,
       showConfirmButton: false,
-      background: "#fff",
-      customClass: { popup: "shadow-xl rounded-lg" },
+      background: "#",
+      customClass: { popup: "shadow-full rounded-full" },
     });
   };
 
@@ -195,13 +195,13 @@ function CommunitiesList1() {
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <button
                 onClick={openCreateModal}
-                className="flex-1 sm:flex-none py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-full font-medium transition flex items-center justify-center"
+                className="flex-1 sm:flex-none py-2 px-4 bg-blue-500 hover:bg-sky-600 text-white rounded-full font-medium transition flex items-center justify-center"
               >
                 <FaPlus className="mr-2" /> Create
               </button>
               <button
                 onClick={openJoinModal}
-                className="flex-1 sm:flex-none py-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium transition flex items-center justify-center"
+                className="flex-1 sm:flex-none py-2 px-4  bg-blue-500 hover:bg-sky-600  text-white rounded-full font-medium transition flex items-center justify-center"
               >
                 <FaSignInAlt className="mr-2" /> Join
               </button>
@@ -231,12 +231,7 @@ function CommunitiesList1() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center sm:flex-col gap-4 sm:gap-1 text-sm text-gray-500">
-                <span>{c.activity}</span>
-                <span className="font-medium text-blue-400">
-                  {c.unread > 0 ? `${c.unread} new` : `${c.members} members`}
-                </span>
-              </div>
+            
             </li>
           ))}
         </ul>

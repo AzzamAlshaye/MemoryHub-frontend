@@ -21,7 +21,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* How it Works */}
+     
       <section className="py-16 px-4">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-xl sm:text-2xl font-semibold mb-10">How Map Memory Works</h2>

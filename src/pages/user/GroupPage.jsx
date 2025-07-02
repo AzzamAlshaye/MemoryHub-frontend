@@ -161,7 +161,7 @@ function GroupPage() {
 
         {/* memories Cards */}
         <div
-          onClick={switchtoPostDetails}
+          // onClick={switchtoPostDetails}
           className="grid md:grid-cols-2 grid-cols-3 gap-3"
         >
           {handelSort().map((item, index) => (

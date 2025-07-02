@@ -1,6 +1,7 @@
 // import React, { useState, useRef } from 'react';
 // import Footer from '../components/Footer';
 // import { FaCamera } from 'react-icons/fa';
+// import Swal from 'sweetalert2';
 
 // function Create() {
 //   const [preview, setPreview] = useState(null);
@@ -14,17 +15,31 @@
 //     reader.readAsDataURL(file);
 //   };
 
+//   const handleCreateGroup = () => {
+//     Swal.fire({
+//       title: 'Group Created!',
+//       text: 'Your group has been successfully created.',
+//       icon: 'success',
+//       confirmButtonText: 'OK',
+//       width: 350,
+//       customClass: {
+//         popup: 'rounded-xl',
+//         confirmButton: 'bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mt-2',
+//       },
+//     });
+//   };
+
 //   return (
-//     <div className="min-h-screen flex bg-blue-100 justify-center items-center">
+//     <div className="min-h-screen flex bg-gradient-to-br from-blue-100 via-white to-blue-200 justify-center items-center px-4">
 //       <main className="w-full max-w-md p-6">
 //         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
 //           Create New Group
 //         </h1>
-//         <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
+//         <div className="bg-white p-6 rounded-lg shadow-lg space-y-6">
 
-//           {/* Image upload circle */}
+//           {/* Image Upload */}
 //           <div
-//             className="w-32 h-32 mx-auto rounded-full border-2 border-blue-500 overflow-hidden cursor-pointer relative"
+//             className="w-28 h-28 sm:w-32 sm:h-32 mx-auto rounded-full border-2 border-blue-500 overflow-hidden cursor-pointer relative"
 //             onClick={() => fileInputRef.current.click()}
 //           >
 //             {preview ? (
@@ -35,7 +50,7 @@
 //               />
 //             ) : (
 //               <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-500">
-//                 <FaCamera size={24} />
+//                 <FaCamera size={20} />
 //               </div>
 //             )}
 //             <input
@@ -47,7 +62,7 @@
 //             />
 //           </div>
 //           <p className="text-center text-sm text-gray-500">
-//             Click the circle to upload a group image
+//             Tap the circle to upload a group image
 //           </p>
 
 //           {/* Group Title */}
@@ -75,6 +90,7 @@
 
 //           {/* Create Button */}
 //           <button
+//             onClick={handleCreateGroup}
 //             className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-full font-semibold transition"
 //           >
 //             Create Group
@@ -86,3 +102,4 @@
 // }
 
 // export default Create;
+
