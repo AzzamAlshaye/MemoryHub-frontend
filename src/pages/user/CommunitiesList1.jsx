@@ -121,58 +121,6 @@ function CommunitiesList1() {
         </button>
       </div>
       {/* Sidebar */}
-      <aside
-        className={`${
-          sidebarOpen ? "block" : "hidden"
-        } md:block w-full md:w-64 flex-shrink-0 bg-white border-r shadow-lg md:overflow-auto`}
-        onClick={() => setSidebarOpen(false)}
-      >
-        <div className="p-6">
-          <div className="flex items-center gap-2 text-blue-600 font-bold text-xl mb-8">
-            <FaMapMarkedAlt className="text-2xl" />
-            <span>Map Memory</span>
-          </div>
-          <nav className="space-y-4">
-            {[
-              { href: "/", icon: FaHome, label: "Home" },
-              { href: "/map", icon: FaMapMarkedAlt, label: "Map" },
-              {
-                href: "/communities",
-                icon: FaUsers,
-                label: "Communities",
-                active: true,
-              },
-              { href: "/tickets", icon: FaTicketAlt, label: "My Tickets" },
-            ].map((item, idx) => (
-              <a
-                key={idx}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-2 rounded-lg transition ${
-                  item.active
-                    ? "bg-blue-100 text-blue-600 font-semibold"
-                    : "hover:bg-gray-100 text-gray-700"
-                }`}
-              >
-                <item.icon className="text-gray-600" />
-                <span>{item.label}</span>
-              </a>
-            ))}
-          </nav>
-        </div>
-        <div className="mt-auto p-6 flex items-center gap-3 border-t">
-          <img
-            src="https://randomuser.me/api/portraits/women/45.jpg"
-            alt="Sarah Johnson"
-            className="w-10 h-10 rounded-full"
-          />
-          <div>
-            <p className="text-sm font-semibold text-gray-800">Sarah Johnson</p>
-            <a href="#" className="text-xs text-blue-500 hover:underline">
-              View Profile
-            </a>
-          </div>
-        </div>
-      </aside>
 
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-6">
