@@ -17,7 +17,7 @@ import {
 
 const MySwal = withReactContent(Swal);
 
-function CommunitiesList1() {
+function CommunitiesList() {
   const [search, setSearch] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -192,4 +192,4 @@ function CommunitiesList1() {
   );
 }
 
-export default CommunitiesList1;
+export default CommunitiesList;

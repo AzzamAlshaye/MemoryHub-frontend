@@ -1,94 +1,98 @@
 // src/components/Sidebar.jsx
 import React from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { FaHome, FaMapMarkedAlt, FaUsers, FaTicketAlt } from "react-icons/fa";
+import { motion } from "framer-motion";
+
+const menuItems = [
+  { to: "/", icon: <FaHome size={20} />, label: "Home" },
+  { to: "/map", icon: <FaMapMarkedAlt size={20} />, label: "Map" },
+  { to: "/communities1", icon: <FaUsers size={20} />, label: "Communities" },
+  { to: "/Mytickets", icon: <FaTicketAlt size={20} />, label: "My Tickets" },
+];
 
 export default function Sidebar() {
-  const menuItems = [
-    {
-      to: "/",
-      icon: <FaHome className="text-sky-700" size={20} />,
-      label: "Home",
-    },
-    {
-      to: "/map",
-      icon: <FaMapMarkedAlt className="text-sky-700" size={20} />,
-      label: "Map",
-    },
-    {
-      to: "/communities1",
-      icon: <FaUsers className="text-sky-700" size={20} />,
-      label: "Communities",
-    },
-    {
-      to: "/Mytickets",
-      icon: <FaTicketAlt className="text-sky-700" size={20} />,
-      label: "My Tickets",
-    },
-  ];
+  const { pathname } = useLocation();
 
   return (
-    <aside
-      className="
-        hidden lg:flex flex-col
-        w-20 h-screen
-        bg-white border-r border-gray-200 p-4
-        rounded-tr-lg rounded-br-lg
-        sticky top-0 z-10
-        transition-all duration-300 overflow-hidden
-        group hover:w-64
-      "
+    <motion.aside
+      initial={{ width: 80 }}
+      whileHover={{ width: 240 }}
+      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+      className="hidden lg:flex flex-col h-screen bg-white shadow-lg sticky top-0 z-20 overflow-hidden"
     >
       {/* Logo */}
-      <Link to="/" className="flex items-center mb-8">
-        <img src="/logo.png" alt="Logo" className="w-8 h-8" />
-        <span
-          className="
-            ml-2 font-bold text-sky-700 whitespace-nowrap
-            opacity-0 transition-opacity duration-300
-            group-hover:opacity-100
-          "
+      <Link to="/" className="flex items-center gap-3 px-4 py-6">
+        <img src="/logo.webp" alt="Logo" className="w-10 h-10" />
+        <motion.span
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+          className="text-xl font-bold text-sky-700"
         >
-          Map Memory
-        </span>
+          MapHub
+        </motion.span>
       </Link>
 
       {/* Menu */}
-      <nav className="flex-1">
-        <ul className="space-y-6 ml-1.5">
-          {menuItems.map((item) => (
-            <li key={item.to}>
-              <Link to={item.to} className="flex items-center">
+      <nav className="flex-1 px-2 mt-4">
+        {menuItems.map((item) => {
+          const isActive = pathname === item.to;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`flex items-center gap-3 px-4 py-3 my-1 rounded-lg transition-colors duration-200 \
+                ${
+                  isActive
+                    ? "bg-sky-100 text-sky-700"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <motion.div whileHover={{ x: 5 }} className="flex-shrink-0">
                 {item.icon}
-                <span
-                  className="
-                    ml-3 whitespace-nowrap
-                    opacity-0 transition-opacity duration-300
-                    group-hover:opacity-100
-                  "
-                >
-                  {item.label}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+              </motion.div>
+              <motion.span
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="whitespace-nowrap"
+              >
+                {item.label}
+              </motion.span>
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Profile */}
-      <div className="mt-auto flex items-center gap-3 pt-8 border-t border-gray-200">
-        <img
-          src="https://randomuser.me/api/portraits/men/32.jpg"
-          alt="User avatar"
-          className="w-10 h-10 rounded-full object-cover"
-        />
-        <div className="opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <p className="font-semibold">John Doe</p>
-          <Link to="/dashboard" className="text-xs text-sky-700">
-            View Profile
-          </Link>
-        </div>
+      <div className="px-4 py-6 border-t border-gray-200">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          whileHover={{ scale: 1, opacity: 1 }}
+          className="flex items-center gap-3 cursor-pointer"
+        >
+          <img
+            src="https://randomuser.me/api/portraits/men/32.jpg"
+            alt="User avatar"
+            className="w-10 h-10 rounded-full object-cover"
+          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileHover={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="flex flex-col"
+          >
+            <span className="font-semibold text-gray-800">John Doe</span>
+            <Link
+              to="/dashboard"
+              className="text-xs text-sky-600 hover:underline"
+            >
+              View Profile
+            </Link>
+          </motion.div>
+        </motion.div>
       </div>
-    </aside>
+    </motion.aside>
   );
 }
