@@ -7,8 +7,8 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router";
 // import ProtectedRoute from "./components/ProtectedRoute.jsx";  // Remove comment to enable route protection
 
 // Auth Pages (uncomment to enable)
-// import SignInPage from "./pages/SignInPage.jsx";               // Remove comment to enable SignIn
-// import SignupPage from "./pages/SignupPage.jsx";               // Remove comment to enable Signup
+import SignInPage from "../pages/Auth/SignInPage.jsx"; // Remove comment to enable SignIn
+import SignupPage from "../pages/Auth/SignupPage.jsx"; // Remove comment to enable Signup
 
 // --------- PUBLIC PAGES ---------
 import HomePage from "../pages/HomePage.jsx";
@@ -33,16 +33,20 @@ import AdminTickets from "../pages/admin/AdminTickets.jsx";
 import UnauthorizedPage from "../pages/unauthorized/UnauthorizedPage.jsx";
 import PageNotFound from "../pages/unauthorized/NotFound.jsx";
 
-import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
+import Sidebar from "../components/Sidebar.jsx";
 
 // Layout including Navbar + Footer
 const LayoutWithNav = () => (
-  <>
-    <Navbar />
-    <Outlet />
+  <div className="flex flex-col">
+    <div className="flex flex-row">
+      <Sidebar />
+      <div className="flex flex-col w-full">
+        <Outlet />
+      </div>
+    </div>
     <Footer />
-  </>
+  </div>
 );
 
 const router = createBrowserRouter([
@@ -73,9 +77,12 @@ const router = createBrowserRouter([
           { path: "/join", element: <Join /> },
           { path: "/view-group", element: <GroupView /> },
           { path: "/dashboard", element: <ProfilePage /> },
+          { path: "/MyTickets", element: <MyTickets /> },
           // { path: "/admin/dashboard", element: <AdminDashboard /> },
           { path: "/admin/crud", element: <AdminCrud /> },
           { path: "/admin/tickets", element: <AdminTickets /> },
+          { path: "/signin", element: <SignInPage /> }, // Sign-in page (auth)
+          { path: "/signup", element: <SignupPage /> }, // Signup page (auth
 
           // --------- USER-PROTECTED PAGE (uncomment when ready) ---------
           // {
