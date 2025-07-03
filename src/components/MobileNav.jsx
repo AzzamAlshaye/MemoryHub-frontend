@@ -25,7 +25,7 @@ export default function MobileNav() {
     <header className="lg:hidden">
       <div className="flex items-center justify-between bg-white px-4 py-3 shadow-md">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="Logo" className="w-8 h-8" />
+          <img src="/logo.webp" alt="Logo" className="w-8 h-8" />
           <span className="font-bold text-sky-700 text-lg">Map Memory</span>
         </Link>
         <button onClick={() => setIsOpen(true)}>
@@ -55,7 +55,7 @@ export default function MobileNav() {
             <div className="relative bg-white w-64 h-full shadow-xl p-6 flex flex-col">
               <div className="flex items-center justify-between mb-8">
                 <Link to="/" className="flex items-center gap-2">
-                  <img src="/logo.png" alt="Logo" className="w-8 h-8" />
+                  <img src="/logo.webp" alt="Logo" className="w-8 h-8" />
                   <span className="font-bold text-sky-700">Map Memory</span>
                 </Link>
                 <button onClick={() => setIsOpen(false)}>

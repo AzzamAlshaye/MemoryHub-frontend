@@ -29,7 +29,7 @@ export default function Footer() {
         {/* Branding */}
         <div className="space-y-4 text-center lg:text-left">
           <div className="flex flex-col items-center lg:items-start gap-3">
-            <FaMapMarkedAlt className="text-3xl text-indigo-600" />
+            <FaMapMarkedAlt className="text-3xl text-sky-600" />
             <span className="text-2xl font-bold">MapHub</span>
           </div>
           <p className="text-sm">
@@ -44,15 +44,15 @@ export default function Footer() {
           <h4 className="font-semibold text-lg">Contact Us</h4>
           <ul className="space-y-2 text-sm text-gray-600">
             <li className="flex flex-col sm:flex-row sm:items-center sm:justify-center lg:justify-start gap-1">
-              <FaMapMarkerAlt className="text-indigo-600" />
+              <FaMapMarkerAlt className="text-sky-600" />
               <span>123 Atlas Ave, Suite 5, Riyadh, SA</span>
             </li>
             <li className="flex flex-col sm:flex-row sm:items-center sm:justify-center lg:justify-start gap-1">
-              <FaPhoneAlt className="text-indigo-600" />
+              <FaPhoneAlt className="text-sky-600" />
               <span>+966 5 1234 5678</span>
             </li>
             <li className="flex flex-col sm:flex-row sm:items-center sm:justify-center lg:justify-start gap-1">
-              <FaEnvelope className="text-indigo-600" />
+              <FaEnvelope className="text-sky-600" />
               <span>support@maphub.com</span>
             </li>
           </ul>

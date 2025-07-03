@@ -16,7 +16,7 @@ export default function HomePage() {
   return (
     <main className="space-y-24 overflow-hidden">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-tr from-blue-100 to-blue-200 overflow-hidden">
+      <section className="relative bg-gradient-to-tr from-sky-100 to-blue-200 overflow-hidden">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -56,7 +56,7 @@ export default function HomePage() {
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-blue-600 text-white px-8 py-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+              className="bg-sky-700 text-white px-8 py-3 rounded-full shadow-lg hover:bg-sky-800 transition"
             >
               Start Your First Memory
             </motion.button>
@@ -73,9 +73,9 @@ export default function HomePage() {
               stiffness: 80,
               damping: 15,
             }}
-            className="w-full h-64 bg-indigo-200 rounded-lg flex items-center justify-center shadow-xl"
+            className="w-full h-64 bg-sky-100 rounded-lg flex items-center justify-center shadow-xl"
           >
-            <FaGlobe className="text-indigo-600 text-8xl animate-pulse" />
+            <FaGlobe className="text-sky-700 text-8xl animate-pulse" />
           </motion.div>
         </motion.div>
       </section>
@@ -119,7 +119,7 @@ export default function HomePage() {
                 transition={{ delay: idx * 0.2 }}
                 className="bg-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition"
               >
-                <div className="text-blue-600 text-4xl mb-4">{item.icon}</div>
+                <div className="text-sky-600 text-4xl mb-4">{item.icon}</div>
                 <h3 className="font-semibold text-xl mb-2">{item.title}</h3>
                 <p className="text-gray-600 text-sm">{item.desc}</p>
               </motion.div>
