@@ -1,17 +1,19 @@
+// src/pages/SignInPage.jsx
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { Link } from "react-router";
-// import { useAuth } from "../../contexts/AuthContext";
-import { ToastContainer } from "react-toastify";
-import { useTitle } from "../../hooks/useTitle";
+import { useNavigate, Link } from "react-router";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useTitle } from "../../hooks/useTitle";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { authService } from "../../service/authService";
 
 export default function SignInPage() {
-  // const { login } = useAuth();
+  const navigate = useNavigate();
   useTitle("Login | Map Memory");
 
   const initialValues = { email: "", password: "" };
-
   const validate = (values) => {
     const errors = {};
     if (!values.email) errors.email = "Email is required";
@@ -20,8 +22,30 @@ export default function SignInPage() {
   };
 
   const onSubmit = async (values, { setSubmitting }) => {
-    await login(values.email, values.password);
-    setSubmitting(false);
+    try {
+      // 1) sign in
+      const { token } = await authService.signin({
+        email: values.email.trim(),
+        password: values.password,
+      });
+
+      // 2) persist token & header
+      localStorage.setItem("token", token);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      // 3) decode & redirect
+      const decoded = jwtDecode(token);
+      toast.success("Signed in! Redirecting…");
+      if (decoded.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Sign-in failed");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -42,7 +66,11 @@ export default function SignInPage() {
           Let’s get you back to your memories
         </p>
 
-        <Formik initialValues={initialValues} validate={validate} onSubmit={onSubmit}>
+        <Formik
+          initialValues={initialValues}
+          validate={validate}
+          onSubmit={onSubmit}
+        >
           {({ isSubmitting }) => (
             <Form className="space-y-6">
               {/* Email */}
@@ -60,7 +88,11 @@ export default function SignInPage() {
                 >
                   Email
                 </label>
-                <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
               </div>
 
               {/* Password */}
@@ -79,14 +111,21 @@ export default function SignInPage() {
                   Password
                 </label>
                 <div className="text-right text-sm mt-1">
-                  <Link to="/forgot-password" className="text-blue-400 hover:underline">
+                  <Link
+                    to="/forgot-password"
+                    className="text-blue-400 hover:underline"
+                  >
                     Forgot password?
                   </Link>
                 </div>
-                <ErrorMessage name="password" component="div" className="text-red-500 text-sm mt-1" />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
               </div>
 
-              {/* Submit Button */}
+              {/* Submit */}
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -95,10 +134,12 @@ export default function SignInPage() {
                 {isSubmitting ? "Signing In..." : "Sign In"}
               </button>
 
-              {/* Sign up link */}
               <p className="text-center text-sm text-gray-600 mt-4">
                 Don’t have an account?{" "}
-                <Link to="/signup" className="text-blue-500 hover:underline font-medium">
+                <Link
+                  to="/signup"
+                  className="text-blue-500 hover:underline font-medium"
+                >
                   Sign up
                 </Link>
               </p>
@@ -106,7 +147,6 @@ export default function SignInPage() {
           )}
         </Formik>
 
-        {/* Footer */}
         <div className="mt-8 text-center text-xs text-gray-400">
           © {new Date().getFullYear()} Map Memory
         </div>
