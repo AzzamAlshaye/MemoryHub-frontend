@@ -52,7 +52,6 @@ function Profile() {
             <div className="relative">
               <img
                 src="https://randomuser.me/api/portraits/women/45.jpg"
-                alt="Sarah Johnson"
                 className="w-20 h-20 rounded-full border-4 border-blue-500 object-cover"
               />
               <button className="absolute bottom-0 right-0 bg-blue-500 p-1 rounded-full border-2 border-white shadow-lg">
@@ -72,13 +71,10 @@ function Profile() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {[
-              { label: "Full Name", placeholder: "Enter Full Name" },
-              { label: "Nick Name", placeholder: "Enter Nick Name" },
-              { label: "Gender", placeholder: "Select Gender" },
-              { label: "Country", placeholder: "Select Country" },
-              { label: "Language", placeholder: "Select Language" },
-              { label: "Time Zone", placeholder: "Select Time Zone" },
-            ].map((field, idx) => (
+              { label: "Name", placeholder: "sarah Johnson" },
+              { label: "Email", placeholder: "Enter your Email" },
+              { label: "Password", placeholder: "**********" },
+                ].map((field, idx) => (
               <div key={idx} className="flex flex-col">
                 <label className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
                   {field.label}

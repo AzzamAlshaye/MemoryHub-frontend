@@ -2,7 +2,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FaMapMarkerAlt, FaUsers, FaGlobe } from "react-icons/fa";
 
-// Unified scroll-triggered fade-in-up variant
 const scrollFadeIn = {
   hidden: { opacity: 0, y: 50 },
   visible: {
@@ -41,19 +40,13 @@ export default function HomePage() {
               variants={scrollFadeIn}
               className="text-gray-700 text-lg max-w-lg mx-auto md:mx-0"
             >
-              Pin photos, videos, voice notes, and personal stories to exact map
-              locations. Relive your adventures like never before.
+              Pin photos, videos, voice notes, and personal stories to exact map locations. Relive your adventures like never before.
             </motion.p>
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, amount: 0.3 }}
-              transition={{
-                delay: 0.3,
-                type: "spring",
-                stiffness: 100,
-                damping: 20,
-              }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 100, damping: 20 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-sky-700 text-white px-8 py-3 rounded-full shadow-lg hover:bg-sky-800 transition"
@@ -62,11 +55,11 @@ export default function HomePage() {
             </motion.button>
           </div>
 
-          {/* Placeholder Illustration */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, amount: 0.3 }}
+
             transition={{
               delay: 0.5,
               type: "spring",
@@ -74,11 +67,13 @@ export default function HomePage() {
               damping: 15,
             }}
             className="w-full h-64 bg-sky-100 rounded-lg flex items-center justify-center shadow-xl"
+
           >
             <FaGlobe className="text-sky-700 text-8xl animate-pulse" />
           </motion.div>
         </motion.div>
       </section>
+
 
       {/* How It Works */}
       <section className="px-6">
@@ -124,11 +119,12 @@ export default function HomePage() {
                 <p className="text-gray-600 text-sm">{item.desc}</p>
               </motion.div>
             ))}
+
           </div>
         </div>
       </section>
 
-      {/* Quote */}
+      {/* Quote Section */}
       <section className="bg-white py-12">
         <motion.div
           initial="hidden"
@@ -138,13 +134,9 @@ export default function HomePage() {
           className="max-w-3xl mx-auto text-center bg-gradient-to-r from-gray-100 to-gray-50 p-8 rounded-2xl shadow-md"
         >
           <p className="italic text-gray-700 text-lg mb-4">
-            “Every memory tells a story—and every story can inspire a journey.
-            Share your moments, and let your posts become a guide for others
-            exploring the world.”
+            “Every memory tells a story—and every story can inspire a journey. Share your moments, and let your posts become a guide for others exploring the world.”
           </p>
-          <span className="font-semibold text-gray-500">
-            — The Map Memory Team
-          </span>
+          <span className="font-semibold text-gray-500">— The Map Memory Team</span>
         </motion.div>
       </section>
 
@@ -184,11 +176,7 @@ export default function HomePage() {
                 transition={{ delay: i * 0.2 }}
                 className="bg-white rounded-xl p-6 flex flex-col items-center text-center shadow-md hover:shadow-lg transition"
               >
-                <img
-                  src={t.img}
-                  alt={t.name}
-                  className="w-16 h-16 rounded-full mb-4"
-                />
+                <img src={t.img} alt={t.name} className="w-16 h-16 rounded-full mb-4" />
                 <div className="font-bold">{t.name}</div>
                 <div className="text-sm text-gray-500 mb-2">{t.role}</div>
                 <p className="text-gray-600 text-sm">{t.text}</p>
@@ -200,10 +188,3 @@ export default function HomePage() {
     </main>
   );
 }
-
-/*
-  Scroll-triggered animations via Framer Motion's whileInView and viewport props.
-  Placeholder replaces external illustration.
-  Install framer-motion if needed:
-    npm install framer-motion
-*/

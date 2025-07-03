@@ -1,90 +1,55 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-
 import CreateGroup from "./CreateGroup";
 import JoinGroup from "./JoinGroup";
-import {
-  FaHome,
-  FaUsers,
-  FaTicketAlt,
-  FaSearch,
-  FaMapMarkedAlt,
-  FaPlus,
-  FaSignInAlt,
-  FaBars,
-} from "react-icons/fa";
+import { FaSearch, FaPlus, FaSignInAlt } from "react-icons/fa";
 
 const MySwal = withReactContent(Swal);
 
 function CommunitiesList() {
   const [search, setSearch] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const data = [
     {
       title: "Travel Enthusiasts",
       description: "Share travel memories and tips.",
-      activity: "2h ago",
-      members: "42",
       img: "/Travel.png",
-      unread: 3,
     },
     {
       title: "City Explorers",
       description: "Discover hidden city gems.",
-      activity: "5h ago",
-      members: "88",
       img: "/City.png",
-      unread: 0,
     },
     {
       title: "Photography Club",
       description: "Join photo walks and share shots.",
-      activity: "1d ago",
-      members: "125",
       img: "/Photography.png",
-      unread: 5,
     },
     {
       title: "Hiking Buddies",
       description: "Plan group hikes and trail tips.",
-      activity: "3d ago",
-      members: "64",
       img: "/Hiking.png",
-      unread: 0,
     },
     {
       title: "Foodie Adventures",
       description: "Culinary experiences and tours.",
-      activity: "12h ago",
-      members: "102",
       img: "/Foodie.png",
-      unread: 2,
     },
     {
       title: "Historical Sites",
       description: "Landmarks and history shared.",
-      activity: "2d ago",
-      members: "57",
       img: "/History.png",
-      unread: 0,
     },
     {
       title: "Beach Lovers",
       description: "Sun, surf, and seafood spots.",
-      activity: "7h ago",
-      members: "77",
       img: "/Beach.png",
-      unread: 1,
     },
     {
       title: "Cultural Exchange",
       description: "International traditions and languages.",
-      activity: "1h ago",
-      members: "93",
       img: "/Culture.png",
-      unread: 0,
     },
   ];
 
@@ -113,14 +78,11 @@ function CommunitiesList() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
-      {/* Main Content */}
+    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-b from-sky-50 to-white">
       <main className="flex-1 p-4 md:p-6">
-        {/* Header & Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
           <h1 className="text-3xl font-bold text-gray-800">Communities</h1>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-            {/* Search */}
             <div className="relative flex-1 sm:flex-none">
               <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
@@ -131,17 +93,16 @@ function CommunitiesList() {
                 className="w-full sm:w-64 py-2 pl-12 pr-4 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
             </div>
-            {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <button
                 onClick={openCreateModal}
-                className="flex-1 sm:flex-none py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-full font-medium transition flex items-center justify-center"
+                className="flex-1 sm:flex-none py-2 px-4 bg-green-100 hover:bg-green-200 hover:text-green-800 text-green-700 rounded-full font-medium transition flex items-center justify-center"
               >
                 <FaPlus className="mr-2" /> Create
               </button>
               <button
                 onClick={openJoinModal}
-                className="flex-1 sm:flex-none py-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium transition flex items-center justify-center"
+                className="flex-1 sm:flex-none py-2 px-4 bg-blue-100 hover:bg-blue-200  text-blue-700 rounded-full font-medium transition flex items-center justify-center"
               >
                 <FaSignInAlt className="mr-2" /> Join
               </button>
@@ -149,7 +110,6 @@ function CommunitiesList() {
           </div>
         </div>
 
-        {/* Communities List */}
         <ul className="divide-y divide-gray-200 bg-white rounded-lg shadow overflow-hidden">
           {filtered.map((c, idx) => (
             <li
@@ -159,7 +119,6 @@ function CommunitiesList() {
               <div className="flex items-center gap-4 min-w-0">
                 <img
                   src={c.img}
-                  alt={c.title}
                   className="w-12 h-12 rounded-full object-cover"
                 />
                 <div className="min-w-0">
@@ -171,17 +130,10 @@ function CommunitiesList() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center sm:flex-col gap-4 sm:gap-1 text-sm text-gray-500">
-                <span>{c.activity}</span>
-                <span className="font-medium text-blue-400">
-                  {c.unread > 0 ? `${c.unread} new` : `${c.members} members`}
-                </span>
-              </div>
             </li>
           ))}
         </ul>
 
-        {/* Load More Button */}
         <div className="mt-6 flex justify-center">
           <button className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full font-medium transition">
             Load More
