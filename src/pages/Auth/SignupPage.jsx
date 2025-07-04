@@ -1,10 +1,13 @@
+// src/pages/SignupPage.jsx
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useNavigate, Link } from "react-router";
-// import { primaryAPI } from "../../api/axiosConfig";
 import { useTitle } from "../../hooks/useTitle";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { authService } from "../../service/authService";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -17,11 +20,9 @@ export default function SignupPage() {
     confirmPassword: "",
   };
 
-// Name: count only non-space characters
   const validate = (values) => {
     const errors = {};
     const nameLetters = values.name.replace(/\s/g, "");
-
     if (!nameLetters) {
       errors.name = "Required";
     } else if (nameLetters.length < 3) {
@@ -54,31 +55,30 @@ export default function SignupPage() {
   };
 
   const onSubmit = async (values, { setSubmitting, resetForm }) => {
-    const emailTrimmed = values.email.trim();
-    const payload = {
-      name: values.name.trim(),
-      email: emailTrimmed,
-      password: values.password,
-    };
-
     try {
-      const { data: allUsers } = await primaryAPI.get("/auth");
-      const exists = allUsers.some(
-        (u) => u.email.toLowerCase() === emailTrimmed.toLowerCase()
-      );
+      // 1) call the authService
+      const { token } = await authService.signup({
+        email: values.email.trim(),
+        password: values.password,
+        // pass role if your API needs it, otherwise omit
+        role: "user",
+      });
 
-      if (exists) {
-        toast.error("This email is already registered");
-        setSubmitting(false);
-        return;
-      }
+      // 2) persist token & set default header
+      localStorage.setItem("token", token);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      await primaryAPI.post("/auth", payload);
-      toast.success("Sign-up successful! Redirecting to login…");
+      // 3) decode and redirect based on role
+      const decoded = jwtDecode(token);
+      toast.success("Sign-up successful! Redirecting…");
       resetForm();
-      setTimeout(() => navigate("/login"), 1000);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Registration failed");
+      if (decoded.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Registration failed");
     } finally {
       setSubmitting(false);
     }
@@ -102,10 +102,14 @@ export default function SignupPage() {
           Start saving your memories today!
         </p>
 
-        <Formik initialValues={initialValues} validate={validate} onSubmit={onSubmit}>
+        <Formik
+          initialValues={initialValues}
+          validate={validate}
+          onSubmit={onSubmit}
+        >
           {({ isSubmitting }) => (
             <Form className="space-y-6">
-              {/* Name */}
+              {/* Name Field */}
               <div className="relative">
                 <Field
                   id="name"
@@ -120,10 +124,14 @@ export default function SignupPage() {
                 >
                   Name
                 </label>
-                <ErrorMessage name="name" component="div" className="text-red-500 text-sm mt-1" />
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
               </div>
 
-              {/* Email */}
+              {/* Email Field */}
               <div className="relative">
                 <Field
                   id="email"
@@ -138,10 +146,14 @@ export default function SignupPage() {
                 >
                   Email
                 </label>
-                <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
               </div>
 
-              {/* Password */}
+              {/* Password Field */}
               <div className="relative">
                 <Field
                   id="password"
@@ -156,10 +168,14 @@ export default function SignupPage() {
                 >
                   Password
                 </label>
-                <ErrorMessage name="password" component="div" className="text-red-500 text-sm mt-1" />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
               </div>
 
-              {/* Confirm Password */}
+              {/* Confirm Password Field */}
               <div className="relative">
                 <Field
                   id="confirmPassword"
@@ -174,7 +190,11 @@ export default function SignupPage() {
                 >
                   Confirm Password
                 </label>
-                <ErrorMessage name="confirmPassword" component="div" className="text-red-500 text-sm mt-1" />
+                <ErrorMessage
+                  name="confirmPassword"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
               </div>
 
               {/* Submit */}
@@ -188,7 +208,10 @@ export default function SignupPage() {
 
               <p className="text-center text-sm text-gray-600 mt-4">
                 Already have an account?{" "}
-                <Link to="/signin" className="text-blue-500 hover:underline font-medium">
+                <Link
+                  to="/signin"
+                  className="text-blue-500 hover:underline font-medium"
+                >
                   Log in
                 </Link>
               </p>
