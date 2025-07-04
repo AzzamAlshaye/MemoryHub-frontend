@@ -5,10 +5,8 @@ import { useNavigate, Link } from "react-router";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useTitle } from "../../hooks/useTitle";
-import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 import { authService } from "../../service/authService";
-
+import { userService } from "../../service/userService";
 export default function SignInPage() {
   const navigate = useNavigate();
   useTitle("Login | Map Memory");
@@ -23,23 +21,24 @@ export default function SignInPage() {
 
   const onSubmit = async (values, { setSubmitting }) => {
     try {
-      // 1) sign in
+      // 1) Sign in and get the raw token
       const { token } = await authService.signin({
         email: values.email.trim(),
         password: values.password,
       });
 
-      // 2) persist token & header
+      // 2) Persist only the raw JWT; primaryAPI interceptor will add "Bearer "
       localStorage.setItem("token", token);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      // 3) decode & redirect
-      const decoded = jwtDecode(token);
+      // 3) Fetch the full user object (with role)
+      const me = await userService.getCurrentUser();
+
+      // 4) Redirect based on role
       toast.success("Signed in! Redirecting…");
-      if (decoded.role === "admin") {
-        navigate("/admin");
+      if (me.role === "admin") {
+        navigate("/admin/crud");
       } else {
-        navigate("/dashboard");
+        navigate("/mapPage");
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Sign-in failed");
@@ -80,7 +79,7 @@ export default function SignInPage() {
                   name="email"
                   type="email"
                   placeholder=" "
-                  className="peer w-full px-4 pt-5 pb-2 border border-gray-300 rounded-md text-gray-900 placeholder-transparent focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                  className="peer w-full px-4 pt-5 pb-2 border border-gray-300 rounded-md placeholder-transparent text-gray-900 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                 />
                 <label
                   htmlFor="email"
@@ -102,7 +101,7 @@ export default function SignInPage() {
                   name="password"
                   type="password"
                   placeholder=" "
-                  className="peer w-full px-4 pt-5 pb-2 border border-gray-300 rounded-md text-gray-900 placeholder-transparent focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                  className="peer w-full px-4 pt-5 pb-2 border border-gray-300 rounded-md placeholder-transparent text-gray-900 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                 />
                 <label
                   htmlFor="password"

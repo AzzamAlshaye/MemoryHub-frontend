@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode";
 import { toast } from "react-toastify";
 import { authService } from "../service/authService";
 
@@ -29,28 +29,30 @@ export default function AuthProvider({ children }) {
         return;
       }
 
-      const token = raw.split(" ")[1];
-      let payload;
+      // remove "Bearer " prefix
+      const token = raw.replace(/^Bearer\s+/, "");
+
+      // 1) check expiry from the JWT
       try {
-        payload = jwtDecode(token);
+        const { exp } = jwtDecode < { exp: number } > token;
+        if (exp * 1000 <= Date.now()) {
+          throw new Error("Token expired");
+        }
       } catch (e) {
         localStorage.removeItem("token");
         setLoading(false);
         return;
       }
 
-      if (payload.exp * 1000 <= Date.now()) {
-        localStorage.removeItem("token");
-        setLoading(false);
-        return;
-      }
-
+      // 2) attach header for all axios requests
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
+      // 3) fetch the current user
       try {
         const me = await authService.getCurrentUser();
         setUser(me);
         setAuthenticated(true);
+        // redirect based on the fresh user object
         if (me.role === "admin") {
           navigate("/admin", { replace: true });
         } else {
@@ -90,6 +92,7 @@ export default function AuthProvider({ children }) {
 
   async function login({ email, password }) {
     const { token } = await authService.signin({ email, password });
+    // store with Bearer prefix for consistency
     localStorage.setItem("token", `Bearer ${token}`);
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 

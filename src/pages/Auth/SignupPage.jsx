@@ -5,9 +5,8 @@ import { useNavigate, Link } from "react-router";
 import { useTitle } from "../../hooks/useTitle";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 import { authService } from "../../service/authService";
+import { userService } from "../../service/userService";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -56,26 +55,27 @@ export default function SignupPage() {
 
   const onSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      // 1) call the authService
+      // 1) call signup
       const { token } = await authService.signup({
+        name: values.name.trim(),
         email: values.email.trim(),
         password: values.password,
-        // pass role if your API needs it, otherwise omit
         role: "user",
       });
 
-      // 2) persist token & set default header
+      // 2) persist only the raw JWT (primaryAPI interceptor will add "Bearer ")
       localStorage.setItem("token", token);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      // 3) decode and redirect based on role
-      const decoded = jwtDecode(token);
+      // 3) fetch the current user (with role)
+      const me = await userService.getCurrentUser();
+
+      // 4) success toast + redirect based on role
       toast.success("Sign-up successful! Redirecting…");
       resetForm();
-      if (decoded.role === "admin") {
-        navigate("/admin");
+      if (me.role === "admin") {
+        navigate("/admin/crud");
       } else {
-        navigate("/dashboard");
+        navigate("/mapPage");
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");

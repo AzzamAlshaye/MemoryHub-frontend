@@ -1,19 +1,22 @@
+// src/api/client.js
 import axios from "axios";
 
-// pick up from env or fallback:
-const API_BASE = "https://final-project-backend-playground.onrender.com";
-// process.env.REACT_APP_PRIMARY_API_URL ||
+const API_BASE =
+  // process.env.REACT_APP_PRIMARY_API_URL ||
+  "http://localhost:3000/";
 
-export const primaryAPI = axios.create({
-  baseURL: API_BASE,
-});
+export const primaryAPI = axios.create({ baseURL: API_BASE });
 
-// every request: if you have a token, add it
 primaryAPI.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  let token = localStorage.getItem("token");
   if (token) {
+    // if they already saved "Bearer abc123", use it as-is;
+    // otherwise prefix it.
+    if (!token.startsWith("Bearer ")) {
+      token = `Bearer ${token}`;
+    }
     config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = token;
   }
   return config;
 });
