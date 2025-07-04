@@ -36,6 +36,13 @@ export const userService = {
   get(id) {
     return primaryAPI.get(userEndpoints.get(id)).then((r) => r.data);
   },
+  /**
+   * GET /api/users/me
+   * @returns {Promise<{ id:string, email:string, role:string }>}
+   */
+  getCurrentUser() {
+    return primaryAPI.get(userEndpoints.me).then((res) => res.data);
+  },
 
   /**
    * PUT /users/:id

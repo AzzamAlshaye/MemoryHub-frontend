@@ -4,12 +4,13 @@
 // ─── Auth ────────────────────────────────────────────────────────────────
 export const authEndpoints = {
   signup: "/auth/signup", // POST   /api/auth/signup
-  signin: "/auth/login", // POST   /api/auth/login
-  signout: "/auth/logout", // POST   /api/auth/logout
+  signin: "/auth/signin", // POST   /api/auth/login
+  signout: "/auth/signout", // POST   /api/auth/logout
 };
 
 // ─── Users ───────────────────────────────────────────────────────────────
 export const userEndpoints = {
+  me: "/users/me", // GET /api/users/me
   updateSelf: "/users/me", // PUT    /api/users/me
   deleteSelf: "/users/me", // DELETE /api/users/me
   list: "/users", // GET    /api/users
