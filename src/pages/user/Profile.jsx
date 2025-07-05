@@ -1,121 +1,126 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-  FaMapMarkedAlt,
-  FaHome,
-  FaUsers,
-  FaTicketAlt,
-  FaBell,
-  FaEnvelope,
   FaCamera,
+  FaEllipsisV,
   FaEdit,
   FaTrash,
 } from "react-icons/fa";
+import { useNavigate } from "react-router";
 
 const memories = [
   {
+    id: "1",
     title: "Sunset Beach Walk",
     location: "Malibu, California",
     description:
       "Beautiful sunset walk along the beach. The colors were absolutely breathtaking!",
-    date: "June 15, 2023",
+    date: "2023-06-15",
     visibility: "Public",
     image: "/Sunset.png",
   },
   {
+    id: "2",
     title: "City Lights",
     location: "New York City, NY",
     description:
       "The city that never sleeps. Amazing view from the rooftop bar!",
-    date: "May 28, 2023",
+    date: "2023-05-28",
     visibility: "Private",
     image: "/City.png",
   },
   {
+    id: "3",
     title: "Mountain Trail",
     location: "Rocky Mountains, CO",
     description:
       "Hiking with friends in the Rockies. Such an amazing experience!",
-    date: "April 10, 2023",
+    date: "2023-04-10",
     visibility: "Group",
     image: "/Mountain.png",
   },
 ];
 
-function Profile() {
+export default function Profile() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      {/* Main Content */}
-      <main className="flex-1 p-8 flex flex-col">
-        {/* Profile Section */}
-        <section className="bg-white rounded-xl shadow-lg p-8 mb-10">
-          <div className="flex items-center gap-6 mb-6">
-            <div className="relative">
-              <img
-                src="https://randomuser.me/api/portraits/women/45.jpg"
-                className="w-20 h-20 rounded-full border-4 border-blue-500 object-cover"
-              />
-              <button className="absolute bottom-0 right-0 bg-blue-500 p-1 rounded-full border-2 border-white shadow-lg">
-                <FaCamera className="text-white" />
+    <div className="min-h-screen bg-gray-50 p-6">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h1>
+
+      <div className="bg-white rounded-xl shadow-md p-6 relative mb-10">
+        <div className="absolute top-4 right-4">
+          <button
+            className="text-gray-500 hover:text-gray-700"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <FaEllipsisV />
+          </button>
+          {menuOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+              <button className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                Delete Account
               </button>
             </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-800">
-                Sarah Johnson
-              </h2>
-              <p className="text-sm text-gray-500">sarah.johnson@example.com</p>
-            </div>
-            <button className="ml-auto bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg shadow transition">
-              Edit Profile
+          )}
+        </div>
+
+        <div className="flex items-center gap-6">
+          <div className="relative">
+            <img
+              src="https://randomuser.me/api/portraits/women/45.jpg"
+              className="w-24 h-24 rounded-full border-4 border-blue-500 object-cover"
+            />
+            <button className="absolute bottom-0 right-0 bg-blue-500 p-1 rounded-full border-2 border-white shadow">
+              <FaCamera className="text-white" />
             </button>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {[
-              { label: "Name", placeholder: "sarah Johnson" },
-              { label: "Email", placeholder: "Enter your Email" },
-              { label: "Password", placeholder: "**********" },
-                ].map((field, idx) => (
-              <div key={idx} className="flex flex-col">
-                <label className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
-                  {field.label}
-                </label>
-                <input
-                  type="text"
-                  placeholder={field.placeholder}
-                  className="border border-gray-200 bg-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                />
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-              Email Address
-            </h3>
-            <div className="flex items-center gap-4 bg-gray-100 p-4 rounded-lg">
-              <FaEnvelope className="text-blue-500" size={18} />
-              <div>
-                <p className="text-gray-800">sarah.johnson@example.com</p>
-                <span className="text-xs text-gray-400">1 month ago</span>
-              </div>
-              <button className="ml-auto text-sm text-blue-500 hover:underline">
-                {" "}
-                Edit Email
-              </button>
+          <div>
+            <h2 className="text-lg font-bold text-gray-800">Sarah Johnson</h2>
+            <p className="text-sm text-gray-500">Joined: January 2023</p>
+            <div className="flex gap-3 mt-2">
+              <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs">
+                87 Memories
+              </span>
+              <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs">
+                4 Groups
+              </span>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* Memories Section */}
-        <section className="flex-1 mb-10">
-          <h3 className="text-xl font-semibold text-gray-800 mb-6">
-            My Memories
-          </h3>
-          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {memories.map((memory, idx) => (
+        <div className="grid md:grid-cols-2 gap-6 mt-8">
+          {[
+            { label: "Full Name", value: "Sarah Johnson" },
+            { label: "Email Address", value: "sarah.johnson@example.com" },
+            { label: "Password", value: "**********" },
+          ].map((item, idx) => (
+            <div
+              key={idx}
+              className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center justify-between"
+            >
+              <div>
+                <p className="text-xs text-gray-500">{item.label}</p>
+                <p className="text-gray-800 font-medium">{item.value}</p>
+              </div>
+              <button className="text-blue-500">
+                <FaEdit />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-6">My Memories</h3>
+        <div className="flex flex-wrap justify-center lg:justify-start gap-6">
+          {[...memories]
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .map((memory, idx) => (
               <div
                 key={idx}
-                className="group bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:scale-105 transition duration-300"
+                className="group bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:scale-105 transition duration-300 w-[260px]"
               >
                 <div className="relative">
                   <img
@@ -125,7 +130,13 @@ function Profile() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition">
+                    <button
+                      className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition"
+                      onClick={() => {
+                        localStorage.setItem("editMemory", JSON.stringify(memory));
+                        navigate(`/edit/${memory.id}`);
+                      }}
+                    >
                       <FaEdit className="text-gray-600" />
                     </button>
                     <button className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition">
@@ -143,18 +154,12 @@ function Profile() {
                   <p className="text-gray-500 text-xs mb-1 uppercase tracking-wide">
                     {memory.location}
                   </p>
-                  <p className="text-gray-700 text-sm mb-4 line-clamp-3">
-                    {memory.description}
-                  </p>
                   <p className="text-gray-400 text-xs">{memory.date}</p>
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-      </main>
+        </div>
+      </div>
     </div>
   );
 }
-
-export default Profile;

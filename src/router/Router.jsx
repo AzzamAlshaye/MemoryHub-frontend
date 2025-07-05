@@ -18,6 +18,7 @@ import PageNotFound from "../pages/unauthorized/NotFound.jsx";
 import Footer from "../components/Footer.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import MobileNav from "../components/MobileNav.jsx";
+import EditPost from "../components/EditPost.jsx";
 
 const LayoutWithNav = () => (
   <div className="flex flex-col min-h-screen">
@@ -53,6 +54,7 @@ const router = createBrowserRouter([
       { path: "GroupPage", element: <GroupPage /> },
       { path: "CommunitiesList", element: <CommunitiesList /> },
       { path: "Profile", element: <Profile /> },
+      { path: "/edit/:postId", element: <EditPost /> },
       { path: "Join", element: <Join /> },
       { path: "GroupInfo", element: <GroupInfo /> },
       { path: "MyTickets", element: <MyTickets /> },

@@ -53,7 +53,21 @@ export const userService = {
   update(id, data) {
     return primaryAPI.put(userEndpoints.update(id), data).then((r) => r.data);
   },
-
+  /**
+   * PATCH /users/:id/avatar
+   * @param {string} id
+   * @param {File} file
+   * @returns {Promise<Object>}
+   */
+  uploadAvatar(id, file) {
+    const form = new FormData();
+    form.append("avatar", file);
+    return primaryAPI
+      .patch(userEndpoints.update(id), form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => res.data);
+  },
   /**
    * DELETE /users/:id
    * @param {string} id
