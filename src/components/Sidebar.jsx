@@ -51,7 +51,7 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/signin");
+    navigate("/SignInPage");
   };
 
   const menuItems = [
@@ -141,7 +141,7 @@ export default function Sidebar() {
               </button>
             ) : (
               <Link
-                to="/signin"
+                to="/SignInPage"
                 className="text-xs text-sky-600 hover:underline flex items-center gap-1"
               >
                 <FaSignInAlt size={12} />

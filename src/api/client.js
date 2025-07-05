@@ -2,8 +2,7 @@
 import axios from "axios";
 
 const API_BASE =
-  // process.env.REACT_APP_PRIMARY_API_URL ||
-  "http://localhost:3000/";
+  import.meta.env.REACT_APP_PRIMARY_API_URL;
 
 export const primaryAPI = axios.create({ baseURL: API_BASE });
 

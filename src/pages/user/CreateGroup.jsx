@@ -15,8 +15,6 @@ function CreateGroup() {
     reader.readAsDataURL(file);
   };
 
-  
-
   return (
     <div className="rounded-2xl bg-gradient-to-b from-sky-50 to-white">
       <div className="w-full">
@@ -31,7 +29,6 @@ function CreateGroup() {
           {preview ? (
             <img
               src={preview}
-             
               className="w-full h-full object-cover rounded-full"
             />
           ) : (
@@ -75,10 +72,7 @@ function CreateGroup() {
           />
         </div>
 
-        <button
-         
-          className="w-full bg-blue-700 hover:bg-blue-600 text-white text-sm font-semibold py-2 rounded-2xl transition"
-        >
+        <button className="w-full bg-blue-700 hover:bg-blue-600 text-white text-sm font-semibold py-2 rounded-2xl transition">
           Create Group
         </button>
       </div>
