@@ -5,7 +5,7 @@ import { likeEndpoints } from "../api/endpoints";
 export const likeService = {
   /**
    * POST /likes
-   * @param {{ targetType: string, targetId: string }} data
+   * @param {{ targetType: string, targetId: string, type: "like" | "dislike" }} data
    * @returns {Promise<Object>}
    */
   create(data) {
@@ -14,12 +14,26 @@ export const likeService = {
 
   /**
    * GET /likes/:targetType/:targetId
-   * @param {string} type
-   * @param {string} id
-   * @returns {Promise<Array>}
+   * @param {string} targetType
+   * @param {string} targetId
+   * @returns {Promise<{likes: number, dislikes: number}>}
    */
-  list(type, id) {
-    return primaryAPI.get(likeEndpoints.list(type, id)).then((r) => r.data);
+  list(targetType, targetId) {
+    return primaryAPI
+      .get(likeEndpoints.list(targetType, targetId))
+      .then((r) => r.data);
+  },
+
+  /**
+   * GET /likes/:targetType/:targetId/me
+   * @param {string} targetType
+   * @param {string} targetId
+   * @returns {Promise<{ type: "like"|"dislike" } | null>}
+   */
+  getMyReaction(targetType, targetId) {
+    return primaryAPI
+      .get(likeEndpoints.getMy(targetType, targetId))
+      .then((r) => r.data);
   },
 
   /**

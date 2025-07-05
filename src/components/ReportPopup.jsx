@@ -1,3 +1,4 @@
+// src/components/ReportPopup.jsx
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 
@@ -26,9 +27,11 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
   const fireAlert = (opts) => Swal.fire({ ...baseSwalOpts, ...opts });
 
   const handleSubmit = async () => {
+    // derive the final reason text
     const reason =
       selectedReason === "Other" ? customReason.trim() : selectedReason;
 
+    // validate
     if (!reason) {
       return fireAlert({
         icon: "warning",
@@ -44,6 +47,7 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
       });
     }
 
+    // confirm
     const { isConfirmed } = await fireAlert({
       icon: "question",
       title: "Submit Report?",
@@ -54,20 +58,22 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
     });
     if (!isConfirmed) return;
 
+    // success toast
     await fireAlert({
       icon: "success",
       title: "Report Submitted",
       text: "Thank you. Your report has been submitted.",
     });
 
-    onSubmit({ target, reason, description });
+    // now call onSubmit with only the data our backend expects
+    onSubmit({ reason, description });
   };
 
   return (
     <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/60 p-4">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 space-y-4">
         <h3 className="text-lg font-semibold">
-          Report {target.type === "post" ? "Post" : "Comment"}
+          Report {target.type === "pin" ? "Post" : "Comment"}
         </h3>
 
         <div>

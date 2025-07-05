@@ -10,7 +10,7 @@ export const authEndpoints = {
 
 // ─── Users ───────────────────────────────────────────────────────────────
 export const userEndpoints = {
-  me: "/users/me", // GET /api/users/me
+  me: "/users/me", // GET    /api/users/me
   updateSelf: "/users/me", // PUT    /api/users/me
   deleteSelf: "/users/me", // DELETE /api/users/me
   list: "/users", // GET    /api/users
@@ -40,6 +40,7 @@ export const commentEndpoints = {
 export const likeEndpoints = {
   create: "/likes", // POST   /api/likes
   list: (type, id) => `/likes/${type}/${id}`, // GET    /api/likes/:targetType/:targetId
+  getMy: (type, id) => `/likes/${type}/${id}/me`, // GET    /api/likes/:targetType/:targetId/me
   remove: (id) => `/likes/${id}`, // DELETE /api/likes/:id
 };
 
