@@ -38,6 +38,21 @@ export const groupService = {
   update(id, data) {
     return primaryAPI.put(groupEndpoints.update(id), data).then((r) => r.data);
   },
+  /**
+   * PATCH /groups/:id/avatar
+   * @param {string} id
+   * @param {File} file
+   * @returns {Promise<Object>}
+   */
+  uploadAvatar(id, file) {
+    const form = new FormData();
+    form.append("groupAvatar", file);
+    return primaryAPI
+      .patch(groupEndpoints.update(id), form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => res.data);
+  },
 
   /**
    * DELETE /groups/:id
