@@ -15,7 +15,7 @@ export default function HomePage() {
   return (
     <main className="space-y-24 overflow-hidden">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-tr from-blue-100 to-blue-200 overflow-hidden">
+      <section className="relative bg-gradient-to-tr from-sky-100 to-blue-200 overflow-hidden">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -49,7 +49,7 @@ export default function HomePage() {
               transition={{ delay: 0.3, type: "spring", stiffness: 100, damping: 20 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-blue-600 text-white px-8 py-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+              className="bg-sky-700 text-white px-8 py-3 rounded-full shadow-lg hover:bg-sky-800 transition"
             >
               Start Your First Memory
             </motion.button>
@@ -59,40 +59,67 @@ export default function HomePage() {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ delay: 0.5, type: "spring", stiffness: 80, damping: 15 }}
-            className="w-full h-64 bg-indigo-200 rounded-lg flex items-center justify-center shadow-xl"
+
+            transition={{
+              delay: 0.5,
+              type: "spring",
+              stiffness: 80,
+              damping: 15,
+            }}
+            className="w-full h-64 bg-sky-100 rounded-lg flex items-center justify-center shadow-xl"
+
           >
-            <FaGlobe className="text-indigo-600 text-8xl animate-pulse" />
+            <FaGlobe className="text-sky-700 text-8xl animate-pulse" />
           </motion.div>
         </motion.div>
       </section>
 
-      {/* How it Works */}
-      <section className="py-16 px-4">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-10">How Map Memory Works</h2>
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-            <div className="bg-gray-100 rounded-lg p-6 text-center sm:text-left">
-              <FaMapMarkerAlt className="text-blue-500 text-2xl mb-4 mx-auto sm:mx-0" />
-              <h3 className="font-semibold mb-2">Pin Your Memories</h3>
-              <p className="text-gray-600 text-sm">
-                Attach your photos, videos, voice notes, and written memories to exact locations on the map.
-              </p>
-            </div>
-            <div className="bg-gray-100 rounded-lg p-6 text-center sm:text-left">
-              <FaUsers className="text-blue-500 text-2xl mb-4 mx-auto sm:mx-0" />
-              <h3 className="font-semibold mb-2">Share with Others</h3>
-              <p className="text-gray-600 text-sm">
-                Choose to keep memories private or share them with friends, family, or the world.
-              </p>
-            </div>
-            <div className="bg-gray-100 rounded-lg p-6 text-center sm:text-left">
-              <FaGlobe className="text-blue-500 text-2xl mb-4 mx-auto sm:mx-0" />
-              <h3 className="font-semibold mb-2">Explore Journeys</h3>
-              <p className="text-gray-600 text-sm">
-                Revisit your past adventures or discover new places through others' shared experiences.
-              </p>
-            </div>
+
+      {/* How It Works */}
+      <section className="px-6">
+        <div className="max-w-5xl mx-auto text-center space-y-8">
+          <motion.h2
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={scrollFadeIn}
+            className="text-3xl font-semibold"
+          >
+            How Map Memory Works
+          </motion.h2>
+          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
+            {[
+              {
+                icon: <FaMapMarkerAlt />,
+                title: "Pin Your Memories",
+                desc: "Attach photos, videos, voice notes, and written memories to exact map locations.",
+              },
+              {
+                icon: <FaUsers />,
+                title: "Share with Others",
+                desc: "Keep memories private or share them with friends, family, or the world.",
+              },
+              {
+                icon: <FaGlobe />,
+                title: "Explore Journeys",
+                desc: "Revisit past adventures or discover new places through shared posts.",
+              },
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={scrollFadeIn}
+                transition={{ delay: idx * 0.2 }}
+                className="bg-white rounded-xl p-6 shadow-lg hover:shadow-2xl transition"
+              >
+                <div className="text-sky-600 text-4xl mb-4">{item.icon}</div>
+                <h3 className="font-semibold text-xl mb-2">{item.title}</h3>
+                <p className="text-gray-600 text-sm">{item.desc}</p>
+              </motion.div>
+            ))}
+
           </div>
         </div>
       </section>
