@@ -5,28 +5,35 @@ import {
   FaEdit,
   FaTrash,
 } from "react-icons/fa";
+import { useNavigate } from "react-router";
 
 const memories = [
   {
+    id: "1",
     title: "Sunset Beach Walk",
     location: "Malibu, California",
-    description: "Beautiful sunset walk along the beach. The colors were absolutely breathtaking!",
+    description:
+      "Beautiful sunset walk along the beach. The colors were absolutely breathtaking!",
     date: "2023-06-15",
     visibility: "Public",
     image: "/Sunset.png",
   },
   {
+    id: "2",
     title: "City Lights",
     location: "New York City, NY",
-    description: "The city that never sleeps. Amazing view from the rooftop bar!",
+    description:
+      "The city that never sleeps. Amazing view from the rooftop bar!",
     date: "2023-05-28",
     visibility: "Private",
     image: "/City.png",
   },
   {
+    id: "3",
     title: "Mountain Trail",
     location: "Rocky Mountains, CO",
-    description: "Hiking with friends in the Rockies. Such an amazing experience!",
+    description:
+      "Hiking with friends in the Rockies. Such an amazing experience!",
     date: "2023-04-10",
     visibility: "Group",
     image: "/Mountain.png",
@@ -35,15 +42,13 @@ const memories = [
 
 export default function Profile() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      {/* Page Title */}
       <h1 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h1>
 
-      {/* Profile Card */}
       <div className="bg-white rounded-xl shadow-md p-6 relative mb-10">
-        {/* Dots menu */}
         <div className="absolute top-4 right-4">
           <button
             className="text-gray-500 hover:text-gray-700"
@@ -61,7 +66,6 @@ export default function Profile() {
         </div>
 
         <div className="flex items-center gap-6">
-          {/* Avatar */}
           <div className="relative">
             <img
               src="https://randomuser.me/api/portraits/women/45.jpg"
@@ -72,7 +76,6 @@ export default function Profile() {
             </button>
           </div>
 
-          {/* Name + Joined */}
           <div>
             <h2 className="text-lg font-bold text-gray-800">Sarah Johnson</h2>
             <p className="text-sm text-gray-500">Joined: January 2023</p>
@@ -87,7 +90,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Fields */}
         <div className="grid md:grid-cols-2 gap-6 mt-8">
           {[
             { label: "Full Name", value: "Sarah Johnson" },
@@ -110,16 +112,15 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Memories Section */}
       <div>
         <h3 className="text-xl font-semibold text-gray-800 mb-6">My Memories</h3>
-        <div className="flex flex-wrap justify-start gap-6">
+        <div className="flex flex-wrap justify-center lg:justify-start gap-6">
           {[...memories]
             .sort((a, b) => new Date(b.date) - new Date(a.date))
             .map((memory, idx) => (
               <div
                 key={idx}
-                className="group bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:scale-105 transition duration-300 w-[320px]"
+                className="group bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:scale-105 transition duration-300 w-[260px]"
               >
                 <div className="relative">
                   <img
@@ -129,7 +130,13 @@ export default function Profile() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition">
+                    <button
+                      className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition"
+                      onClick={() => {
+                        localStorage.setItem("editMemory", JSON.stringify(memory));
+                        navigate(`/edit/${memory.id}`);
+                      }}
+                    >
                       <FaEdit className="text-gray-600" />
                     </button>
                     <button className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition">
@@ -146,9 +153,6 @@ export default function Profile() {
                   </h4>
                   <p className="text-gray-500 text-xs mb-1 uppercase tracking-wide">
                     {memory.location}
-                  </p>
-                  <p className="text-gray-700 text-sm mb-4 line-clamp-3">
-                    {memory.description}
                   </p>
                   <p className="text-gray-400 text-xs">{memory.date}</p>
                 </div>

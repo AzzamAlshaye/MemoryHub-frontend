@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { FaMapMarkerAlt, FaFlag } from "react-icons/fa";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
+import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
 import { FiSend } from "react-icons/fi";
+import ReportPopup from "../../components/ReportPopup";
 
 const postsData = [
   {
@@ -86,12 +87,67 @@ const postsData = [
 
 export default function GroupPage() {
   const navigate = useNavigate();
-  const [posts] = useState(postsData);
+  const [posts, setPosts] = useState(postsData);
+  const [newComment, setNewComment] = useState("");
+  const [reportTarget, setReportTarget] = useState(null);
+
+  const handleAddComment = (postId) => {
+    if (!newComment.trim()) return;
+    const updated = posts.map((post) => {
+      if (post.id === postId) {
+        const comment = {
+          name: "You",
+          time: new Date().toLocaleString(),
+          text: newComment,
+          likes: 0,
+          dislikes: 0,
+        };
+        return { ...post, comments: [...post.comments, comment] };
+      }
+      return post;
+    });
+    setPosts(updated);
+    setNewComment("");
+  };
+
+  const handleLikePost = (postId) => {
+    setPosts((prev) =>
+      prev.map((p) => (p.id === postId ? { ...p, likes: p.likes + 1 } : p))
+    );
+  };
+
+  const handleDislikePost = (postId) => {
+    setPosts((prev) =>
+      prev.map((p) => (p.id === postId ? { ...p, dislikes: p.dislikes + 1 } : p))
+    );
+  };
+
+  const handleReactToComment = (postId, commentIdx, delta) => {
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== postId) return p;
+        const comments = [...p.comments];
+        const comment = { ...comments[commentIdx] };
+        if (delta > 0) comment.likes++;
+        else comment.dislikes = (comment.dislikes || 0) + 1;
+        comments[commentIdx] = comment;
+        return { ...p, comments };
+      })
+    );
+  };
+
+  const handleOpenReport = (type, id) => {
+    setReportTarget({ type, id });
+  };
+
+  const handleSubmitReport = (data) => {
+    console.log("Report submitted:", data);
+    setReportTarget(null);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 space-y-6">
-
-      {/* Top Header with back + group name + filter */}
+      {/* Top Header */}
       <div className="max-w-6xl mx-auto mb-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-gray-600 hover:text-black">
@@ -111,11 +167,10 @@ export default function GroupPage() {
         </div>
       </div>
 
-      {/* Posts */}
+
       {posts.map((post, postIdx) => (
         <div key={post.id} className="max-w-3xl mx-auto bg-white rounded-xl shadow p-5 space-y-4">
-
-          {/* Post Header */}
+          {/* Post Header & Image */}
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
               <img src={post.avatar} className="rounded-full w-9 h-9" alt="avatar" />
@@ -129,7 +184,6 @@ export default function GroupPage() {
             <div className="text-xl text-gray-400 hover:text-gray-600 cursor-pointer">⋯</div>
           </div>
 
-          {/* Image */}
           <div className="relative w-full h-[370px] rounded-md overflow-hidden">
             <img src={post.image} className="object-cover w-full h-full" alt="memory" />
             <div className="absolute inset-0 flex items-center justify-between px-3 text-white text-xl">
@@ -140,24 +194,24 @@ export default function GroupPage() {
               📍 {post.location}
             </div>
           </div>
-
-          {/* Caption */}
           <p className="text-gray-800 text-sm">{post.caption}</p>
 
           {/* Reactions */}
           <div className="flex justify-between text-gray-600 text-sm items-center">
             <div className="flex gap-5 items-center">
-              <button className="flex items-center gap-1 hover:text-blue-600">
-                <AiOutlineLike size={18} /> {post.likes}
+              <button onClick={() => handleLikePost(post.id)} className="flex items-center gap-1 hover:text-blue-600">
+                <FaThumbsUp size={18} /> {post.likes}
               </button>
-              <button className="flex items-center gap-1 hover:text-gray-500">
-                <AiOutlineDislike size={18} />
+              <button onClick={() => handleDislikePost(post.id)} className="flex items-center gap-1 hover:text-red-600">
+                <FaThumbsDown size={18} /> {post.dislikes}
               </button>
             </div>
             <div className="flex items-center gap-3 text-gray-400">
-              <FaFlag className="hover:text-red-500 cursor-pointer" />
+              <FaFlag onClick={() => handleOpenReport("post", post.id)} className="hover:text-red-500 cursor-pointer" />
             </div>
           </div>
+
+          <hr className="my-4 border-gray-300" />
 
           {/* Comments */}
           <div>
@@ -166,7 +220,7 @@ export default function GroupPage() {
               {post.comments.map((comment, idx) => (
                 <div key={idx}>
                   <div className="flex gap-3 items-start">
-                    <img src={`https://i.pravatar.cc/30?img=${idx + 30 + postIdx * 10}`} className="w-8 h-8 rounded-full mt-1" alt="comment avatar" />
+                    <img src={`https://i.pravatar.cc/30?img=${idx + 30 + postIdx * 10}`} className="w-8 h-8 rounded-full mt-1" alt="avatar" />
                     <div className="border border-gray-200 px-4 py-2 rounded-xl w-full bg-white shadow-sm">
                       <div className="flex justify-between text-xs text-gray-600 font-medium">
                         <span>{comment.name}</span>
@@ -176,13 +230,13 @@ export default function GroupPage() {
                     </div>
                   </div>
                   <div className="flex gap-4 text-gray-500 text-sm mt-1 ps-12">
-                    <button className="flex items-center gap-1 hover:text-blue-600">
-                      <AiOutlineLike size={16} /> {comment.likes}
+                    <button onClick={() => handleReactToComment(post.id, idx, 1)} className="flex items-center gap-1 hover:text-blue-600">
+                      <FaThumbsUp size={16} /> {comment.likes}
                     </button>
-                    <button className="flex items-center gap-1 hover:text-gray-600">
-                      <AiOutlineDislike size={16} />
+                    <button onClick={() => handleReactToComment(post.id, idx, -1)} className="flex items-center gap-1 hover:text-red-600">
+                      <FaThumbsDown size={16} /> {comment.dislikes || 0}
                     </button>
-                    <button className="flex items-center gap-1 hover:text-red-500">
+                    <button onClick={() => handleOpenReport("comment", `${post.id}-${idx}`)} className="flex items-center gap-1 hover:text-red-500">
                       <FaFlag size={14} />
                     </button>
                   </div>
@@ -196,10 +250,12 @@ export default function GroupPage() {
               <div className="flex items-center justify-between border border-gray-300 rounded-xl px-4 py-2 w-full bg-white shadow-sm">
                 <input
                   type="text"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Add a comment..."
                   className="flex-1 text-sm focus:outline-none bg-transparent"
                 />
-                <button className="text-blue-600 hover:text-blue-800 ms-2">
+                <button onClick={() => handleAddComment(post.id)} className="text-blue-600 hover:text-blue-800 ms-2">
                   <FiSend size={18} />
                 </button>
               </div>
@@ -207,6 +263,14 @@ export default function GroupPage() {
           </div>
         </div>
       ))}
+
+      {reportTarget && (
+        <ReportPopup
+          target={reportTarget}
+          onCancel={() => setReportTarget(null)}
+          onSubmit={handleSubmitReport}
+        />
+      )}
     </div>
   );
 }
