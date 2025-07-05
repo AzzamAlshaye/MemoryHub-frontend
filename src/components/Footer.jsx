@@ -1,3 +1,4 @@
+// src/components/Footer.jsx
 import React from "react";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import {
@@ -25,33 +26,32 @@ export default function Footer() {
       <div className="border-t border-gray-200"></div>
 
       {/* Main Grid */}
-      <div className="max-w-6xl mx-auto px-6 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center lg:justify-items-start">
+      <div className="max-w-6xl mx-auto px-6 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center lg:text-left">
         {/* Branding */}
-        <div className="space-y-4 text-center lg:text-left">
-          <div className="flex flex-col items-center lg:items-start gap-3">
+        <div className="space-y-4">
+          <div className="flex items-center justify-center lg:justify-start gap-2">
             <FaMapMarkedAlt className="text-3xl text-sky-600" />
             <span className="text-2xl font-bold">MapHub</span>
           </div>
-          <p className="text-sm">
-            MapHub helps you capture and revisit your favorite spots around the
-            world.
+          <p className="text-sm max-w-xs mx-auto lg:mx-0">
+            MapHub helps you capture and revisit your favorite spots around the world.
           </p>
           <p className="text-xs text-gray-500">© {year} MapHub</p>
         </div>
 
         {/* Contact Info */}
-        <div className="space-y-3 text-center lg:text-left">
+        <div className="space-y-3">
           <h4 className="font-semibold text-lg">Contact Us</h4>
           <ul className="space-y-2 text-sm text-gray-600">
-            <li className="flex flex-col sm:flex-row sm:items-center sm:justify-center lg:justify-start gap-1">
+            <li className="flex items-center justify-center lg:justify-start gap-2">
               <FaMapMarkerAlt className="text-sky-600" />
               <span>123 Atlas Ave, Suite 5, Riyadh, SA</span>
             </li>
-            <li className="flex flex-col sm:flex-row sm:items-center sm:justify-center lg:justify-start gap-1">
+            <li className="flex items-center justify-center lg:justify-start gap-2">
               <FaPhoneAlt className="text-sky-600" />
               <span>+966 5 1234 5678</span>
             </li>
-            <li className="flex flex-col sm:flex-row sm:items-center sm:justify-center lg:justify-start gap-1">
+            <li className="flex items-center justify-center lg:justify-start gap-2">
               <FaEnvelope className="text-sky-600" />
               <span>support@maphub.com</span>
             </li>
@@ -59,7 +59,7 @@ export default function Footer() {
         </div>
 
         {/* Resources */}
-        <div className="space-y-3 text-center lg:text-left">
+        <div className="space-y-3">
           <h4 className="font-semibold text-lg">Resources</h4>
           <ul className="space-y-2 text-sm">
             {["Blog", "FAQ", "Tutorials", "API Docs"].map((item) => (
@@ -76,7 +76,7 @@ export default function Footer() {
         </div>
 
         {/* Social Icons */}
-        <div className="space-y-4 text-center lg:text-left">
+        <div className="space-y-4">
           <h4 className="font-semibold text-lg">Follow Us</h4>
           <div className="flex justify-center lg:justify-start space-x-4">
             {socials.map(({ icon, label, href }) => (

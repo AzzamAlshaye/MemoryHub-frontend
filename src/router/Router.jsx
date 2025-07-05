@@ -6,7 +6,6 @@ import SignupPage from "../pages/Auth/SignupPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
 import MapPage from "../pages/user/MapPage.jsx";
 import GroupPage from "../pages/user/GroupPage.jsx";
-import CommunitiesList from "../pages/user/CommunitiesList.jsx";
 import Profile from "../pages/user/Profile.jsx";
 import Join from "../pages/user/JoinGroup.jsx";
 import GroupInfo from "../components/GroupInfo.jsx";
@@ -18,6 +17,7 @@ import PageNotFound from "../pages/unauthorized/NotFound.jsx";
 import Footer from "../components/Footer.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import MobileNav from "../components/MobileNav.jsx";
+import GroupList from "../pages/user/GroupList.jsx";
 import EditPost from "../components/EditPost.jsx";
 
 const LayoutWithNav = () => (
@@ -52,7 +52,7 @@ const router = createBrowserRouter([
       { path: "", element: <HomePage /> },
       { path: "mapPage", element: <MapPage /> },
       { path: "GroupPage", element: <GroupPage /> },
-      { path: "CommunitiesList", element: <CommunitiesList /> },
+      { path: "GroupList", element: <GroupList /> },
       { path: "Profile", element: <Profile /> },
       { path: "/edit/:postId", element: <EditPost /> },
       { path: "Join", element: <Join /> },
