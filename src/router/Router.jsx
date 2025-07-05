@@ -1,6 +1,6 @@
 // src/AppRouter.jsx
 import React from "react";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router"; // تأكد من استخدام react-router-dom
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router";
 import SignInPage from "../pages/Auth/SignInPage.jsx";
 import SignupPage from "../pages/Auth/SignupPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
