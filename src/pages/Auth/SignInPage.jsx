@@ -52,8 +52,8 @@ export default function SignInPage() {
 
       <div className="w-full max-w-md bg-gray-100 rounded-3xl shadow-xl px-5 py-3 sm:p-12">
         {/* Logo */}
-        <div className="flex justify-center mb-6">
-          <img src="/new-logo.png" alt="Map Memory" className="w-30 h-20 hover:scale-110 delay-300 duration-400" />
+        <div className="flex justify-center">
+          <img src="/public/Logo-all.png" alt="Map Memory" className="w-40 hover:scale-110 delay-300 duration-400" />
         </div>
 
         {/* Title */}
@@ -135,7 +135,7 @@ export default function SignInPage() {
               <p className="text-center text-sm text-gray-600 mt-4">
                 Don’t have an account?{" "}
                 <Link
-                  to="/signup"
+                  to="/SignupPage"
                   className="text-amber-600 hover:underline font-medium"
                 >
                   Sign up
