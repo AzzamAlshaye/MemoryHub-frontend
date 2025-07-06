@@ -1,8 +1,8 @@
 // src/pages/user/MapPage.jsx
 import React, { useState, useEffect, useMemo } from "react";
-import PinsMap from "../../components/PinsMap";
-import ViewPin from "../../components/ViewPin";
-import CreatePost from "../../components/CreatePost";
+import PinsMap from "../../components/map/PinsMap";
+import ViewPin from "../../components/map/ViewPin";
+import CreatePost from "../../components/map/CreatePost";
 import { pinService } from "../../service/pinService";
 import { groupService } from "../../service/groupService";
 

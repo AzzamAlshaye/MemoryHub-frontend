@@ -4,8 +4,8 @@ import { useNavigate, useParams } from "react-router";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { FaThumbsUp, FaThumbsDown, FaFlag } from "react-icons/fa";
 import { FiSend } from "react-icons/fi";
-import ReportPopup from "../../components/ReportPopup";
-import { groupService } from "../../service/groupService";
+import ReportPopup from "../../../components/map/ReportPopup";
+import { groupService } from "../../../service/groupService";
 
 export default function GroupPage() {
   const { groupId } = useParams();

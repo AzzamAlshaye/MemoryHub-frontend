@@ -11,10 +11,10 @@ import {
 } from "react-icons/fa";
 import ReportPopup from "./ReportPopup";
 
-import { pinService } from "../service/pinService";
-import { commentService } from "../service/commentService";
-import { likeService } from "../service/likeService";
-import { reportService } from "../service/reportService";
+import { pinService } from "../../service/pinService";
+import { commentService } from "../../service/commentService";
+import { likeService } from "../../service/likeService";
+import { reportService } from "../../service/reportService";
 
 export default function ViewPin({
   pinId,

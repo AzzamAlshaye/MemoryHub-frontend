@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import CreateGroup from "./CreateGroup";
-import JoinGroup from "./JoinGroup";
+import CreateGroup from "../../../components/group/CreateGroup";
+import JoinGroup from "../../../components/group/JoinGroup";
 import { FaSearch, FaPlus, FaSignInAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { groupService } from "../../service/groupService";
+import { groupService } from "../../../service/groupService";
 
 const MySwal = withReactContent(Swal);
 
