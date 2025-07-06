@@ -1,22 +1,64 @@
+// src/components/CreateGroup.jsx
 import React, { useState, useRef } from "react";
 import { FaCamera } from "react-icons/fa";
+import { groupService } from "../../service/groupService";
 
-function CreateGroup() {
+export default function CreateGroup() {
   const [preview, setPreview] = useState(null);
+  const [file, setFile] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef();
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const selected = e.target.files[0];
+    if (!selected) return;
+    setFile(selected);
     const reader = new FileReader();
     reader.onload = () => setPreview(reader.result);
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(selected);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title.trim()) {
+      alert("Please enter a group title");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // 1) Create the group (name & description)
+      const newGroup = await groupService.create({
+        name: title,
+        description,
+      });
+
+      // 2) If an image was selected, upload it
+      if (file) {
+        await groupService.uploadAvatar(newGroup.id, file);
+      }
+
+      // 3) Reset form / notify success
+      setTitle("");
+      setDescription("");
+      setFile(null);
+      setPreview(null);
+      alert("Group created successfully!");
+    } catch (err) {
+      console.error("Failed to create group:", err);
+      alert("There was an error creating your group.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="rounded-lg p-6 w-full max-w-md mx-auto bg-white">
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-lg p-6 w-full max-w-md mx-auto bg-white"
+    >
       <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
         Create New Group
       </h2>
@@ -28,8 +70,8 @@ function CreateGroup() {
         {preview ? (
           <img
             src={preview}
-            className="w-full h-full object-cover rounded-full"
             alt="Preview"
+            className="w-full h-full object-cover rounded-full"
           />
         ) : (
           <FaCamera size={24} className="text-amber-500" />
@@ -72,11 +114,15 @@ function CreateGroup() {
         />
       </div>
 
-      <button className="w-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold py-2 rounded-lg transition">
-        Create Group
+      <button
+        type="submit"
+        disabled={loading}
+        className={`w-full ${
+          loading ? "bg-amber-300" : "bg-amber-500 hover:bg-amber-600"
+        } text-white text-sm font-semibold py-2 rounded-lg transition`}
+      >
+        {loading ? "Creating…" : "Create Group"}
       </button>
-    </div>
+    </form>
   );
 }
-
-export default CreateGroup;
