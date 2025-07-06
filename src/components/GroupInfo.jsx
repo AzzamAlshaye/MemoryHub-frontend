@@ -9,7 +9,7 @@ import {
   FaTrash,
 } from "react-icons/fa";
 
-export default function GroupInfo() {
+function GroupInfo() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [groupAvatar, setGroupAvatar] = useState("https://i.pravatar.cc/60");
@@ -26,7 +26,7 @@ export default function GroupInfo() {
     {
       name: "Sarah Johnson",
       email: "sarah@example.com",
-      role: "Moderator",
+      role: "Member",
       joined: "Feb 3, 2023",
       memories: 24,
       avatar: "https://i.pravatar.cc/40?img=2",
@@ -55,9 +55,10 @@ export default function GroupInfo() {
       icon: "success",
       title: "Copied!",
       text: "Invite link copied successfully.",
-      confirmButtonColor: "#2563eb",
       timer: 1500,
       showConfirmButton: false,
+      background: "#fff",
+      customClass: { popup: "shadow-lg rounded-lg" },
     });
   };
 
@@ -71,7 +72,9 @@ export default function GroupInfo() {
       },
       confirmButtonText: "Upload",
       showCancelButton: true,
-      confirmButtonColor: "#2563eb",
+      confirmButtonColor: "#d97706", // amber-600
+      background: "#fff",
+      customClass: { popup: "shadow-lg rounded-lg" },
     });
 
     if (file) {
@@ -84,6 +87,8 @@ export default function GroupInfo() {
           imageUrl: reader.result,
           imageAlt: "New Avatar",
           confirmButtonText: "OK",
+          background: "#fff",
+          customClass: { popup: "shadow-lg rounded-lg" },
         });
       };
       reader.readAsDataURL(file);
@@ -91,11 +96,11 @@ export default function GroupInfo() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gradient-to-tr from-amber-50 to-amber-200">
       <main className="flex-1 p-6">
         {/* Group Details */}
         <section className="mb-6">
-          <h1 className="text-2xl font-bold mb-2">Group Details</h1>
+          <h1 className="text-2xl font-bold mb-2 text-gray-800">Group Details</h1>
           <p className="text-sm text-gray-500 mb-4">
             Manage your group settings and members
           </p>
@@ -104,7 +109,7 @@ export default function GroupInfo() {
             {/* Group Info Left */}
             <div className="flex items-center gap-4 flex-1">
               {/* Avatar with edit icon */}
-              <div className="relative w-16 h-16 group">
+              <div className="relative w-16 h-16">
                 <img
                   src={groupAvatar}
                   alt="group avatar"
@@ -112,7 +117,7 @@ export default function GroupInfo() {
                 />
                 <button
                   title="Edit photo"
-                  className="absolute top-0 right-0 bg-white p-1 rounded-full shadow text-blue-600 hover:bg-blue-50 transition"
+                  className="absolute top-0 right-0 bg-white p-1 rounded-full shadow text-amber-600 hover:bg-amber-100 transition"
                   onClick={handleAvatarEdit}
                 >
                   <FaUserEdit className="w-4 h-4" />
@@ -120,7 +125,7 @@ export default function GroupInfo() {
               </div>
 
               <div>
-                <h2 className="text-lg font-bold">Travel Enthusiasts</h2>
+                <h2 className="text-lg font-bold text-gray-800">Travel Enthusiasts</h2>
                 <p className="text-sm text-gray-600 max-w-md">
                   A community of passionate travelers sharing their journey
                   memories from around the world.
@@ -141,17 +146,17 @@ export default function GroupInfo() {
 
             {/* Invite Link Right */}
             <div className="w-full lg:w-1/3">
-              <h3 className="text-sm font-semibold mb-1">Invite Link</h3>
+              <h3 className="text-sm font-semibold mb-1 text-gray-700">Invite Link</h3>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
                   readOnly
                   value="https://mapmemory.com/invite/travel-enthusiasts-9d2f8e"
-                  className="w-full px-3 py-2 rounded-md border border-gray-300 text-sm"
+                  className="w-full px-3 py-2 rounded-md border border-gray-300 text-sm bg-white"
                 />
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1 text-blue-600 text-sm hover:underline"
+                  className="flex items-center gap-1 text-amber-600 text-sm hover:text-amber-700 transition"
                 >
                   <FaSyncAlt className="text-sm" />
                   Copy
@@ -168,7 +173,7 @@ export default function GroupInfo() {
         <section>
           <div className="bg-white p-6 rounded-xl shadow-md">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Group Members</h3>
+              <h3 className="text-lg font-semibold text-gray-800">Group Members</h3>
             </div>
 
             {/* Search Input */}
@@ -177,7 +182,7 @@ export default function GroupInfo() {
               placeholder="Search members..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="mb-4 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              className="mb-4 w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
             />
 
             {/* Table */}
@@ -192,46 +197,45 @@ export default function GroupInfo() {
                 </tr>
               </thead>
               <tbody>
-                {filteredMembers.map((m, index) => (
+                {filteredMembers.map((item, i) => (
                   <tr
-                    key={index}
-                    className="border-b border-gray-100 hover:bg-gray-50"
+                    key={i}
+                    className="border-b border-gray-100 hover:bg-amber-50 transition"
                   >
                     <td className="py-2">
                       <div className="flex items-center gap-3">
                         <img
-                          src={m.avatar}
-                          alt={m.name}
+                          src={item.avatar}
+                          alt={item.name}
                           className="w-10 h-10 rounded-full"
                         />
                         <div>
-                          <p className="font-medium">{m.name}</p>
-                          <p className="text-xs text-gray-500">{m.email}</p>
+                          <p className="font-medium text-gray-800">{item.name}</p>
+                          <p className="text-xs text-gray-500">{item.email}</p>
                         </div>
                       </div>
                     </td>
                     <td>
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          m.role === "Admin"
-                            ? "bg-blue-100 text-blue-700"
-                            : m.role === "Moderator"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-100 text-gray-600"
+                          item.role === "Admin"
+                            ? "bg-amber-100 text-amber-700"
+                           
+                            : "bg-gray-50 text-gray-600"
                         }`}
                       >
-                        {m.role}
+                        {item.role}
                       </span>
                     </td>
-                    <td>{m.joined}</td>
-                    <td>{m.memories}</td>
+                    <td className="text-gray-700">{item.joined}</td>
+                    <td className="text-gray-700">{item.memories}</td>
                     <td className="space-x-2">
-                      {m.role !== "Admin" && (
+                      {item.role !== "Admin" && (
                         <>
-                          <button className="text-blue-600 hover:text-blue-800">
+                          <button className="text-amber-600 hover:text-amber-800 transition">
                             <FaUserEdit />
                           </button>
-                          <button className="text-red-600 hover:text-red-800">
+                          <button className="text-red-600 hover:text-red-800 transition">
                             <FaTrash />
                           </button>
                         </>
@@ -248,10 +252,10 @@ export default function GroupInfo() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`w-8 h-8 rounded-md text-sm ${
+                  className={`w-8 h-8 rounded-md text-sm font-medium transition ${
                     currentPage === page
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
+                      ? "bg-amber-500 text-white shadow"
+                      : "bg-white text-gray-700 border border-amber-300 hover:bg-amber-100"
                   }`}
                 >
                   {page}
@@ -264,3 +268,4 @@ export default function GroupInfo() {
     </div>
   );
 }
+export default GroupInfo

@@ -146,7 +146,7 @@ export default function GroupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 space-y-6">
+    <div className="min-h-screen bg-gradient-to-tr from-amber-50 to-amber-200 p-4 space-y-6">
       {/* Top Header */}
       <div className="max-w-6xl mx-auto mb-4 flex justify-between items-center">
         <div className="flex items-center gap-3">

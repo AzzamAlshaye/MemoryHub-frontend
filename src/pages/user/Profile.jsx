@@ -29,6 +29,38 @@ const memories = [
     image: "/City.png",
   },
   {
+    id: "2",
+    title: "City Lights",
+    location: "New York City, NY",
+    description:
+      "The city that never sleeps. Amazing view from the rooftop bar!",
+    date: "2023-05-28",
+    visibility: "Private",
+    image: "/City.png",
+  },
+
+  {
+    id: "2",
+    title: "City Lights",
+    location: "New York City, NY",
+    description:
+      "The city that never sleeps. Amazing view from the rooftop bar!",
+    date: "2023-05-28",
+    visibility: "Private",
+    image: "/City.png",
+  },
+
+  {
+    id: "2",
+    title: "City Lights",
+    location: "New York City, NY",
+    description:
+      "The city that never sleeps. Amazing view from the rooftop bar!",
+    date: "2023-05-28",
+    visibility: "Private",
+    image: "/City.png",
+  },
+  {
     id: "3",
     title: "Mountain Trail",
     location: "Rocky Mountains, CO",
@@ -45,7 +77,7 @@ export default function Profile() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gradient-to-tr from-amber-50 to-amber-200  p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h1>
 
       <div className="bg-white rounded-xl shadow-md p-6 relative mb-10">
@@ -114,18 +146,18 @@ export default function Profile() {
 
       <div>
         <h3 className="text-xl font-semibold text-gray-800 mb-6">My Memories</h3>
-        <div className="flex flex-wrap justify-center lg:justify-start gap-6">
+        <div className="flex flex-wrap justify-center lg:justify-start ml-3.5 gap-6">
           {[...memories]
             .sort((a, b) => new Date(b.date) - new Date(a.date))
             .map((memory, idx) => (
               <div
                 key={idx}
-                className="group bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:scale-105 transition duration-300 w-[260px]"
+                className="group bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:scale-105 transition duration-300 w-80"
               >
                 <div className="relative">
                   <img
                     src={memory.image}
-                    alt={memory.title}
+                    
                     className="w-full h-48 object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

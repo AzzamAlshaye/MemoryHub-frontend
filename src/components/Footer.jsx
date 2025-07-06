@@ -21,7 +21,7 @@ const socials = [
 export default function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="w-full bg-gray-50 text-gray-700">
+    <footer className="w-full b text-gray-700">
       {/* Divider */}
       <div className="border-t border-gray-200"></div>
 
@@ -30,7 +30,7 @@ export default function Footer() {
         {/* Branding */}
         <div className="space-y-4">
           <div className="flex items-center justify-center lg:justify-start gap-2">
-            <FaMapMarkedAlt className="text-3xl text-sky-600" />
+            <FaMapMarkedAlt className="text-3xl text-[#fb8951]" />
             <span className="text-2xl font-bold">MapHub</span>
           </div>
           <p className="text-sm max-w-xs mx-auto lg:mx-0">
@@ -44,15 +44,15 @@ export default function Footer() {
           <h4 className="font-semibold text-lg">Contact Us</h4>
           <ul className="space-y-2 text-sm text-gray-600">
             <li className="flex items-center justify-center lg:justify-start gap-2">
-              <FaMapMarkerAlt className="text-sky-600" />
+              <FaMapMarkerAlt className="text-[#fb8951]" />
               <span>123 Atlas Ave, Suite 5, Riyadh, SA</span>
             </li>
             <li className="flex items-center justify-center lg:justify-start gap-2">
-              <FaPhoneAlt className="text-sky-600" />
+              <FaPhoneAlt className="text-[#fb8951]" />
               <span>+966 5 1234 5678</span>
             </li>
             <li className="flex items-center justify-center lg:justify-start gap-2">
-              <FaEnvelope className="text-sky-600" />
+              <FaEnvelope className="text-[#fb8951]" />
               <span>support@maphub.com</span>
             </li>
           </ul>
@@ -66,7 +66,7 @@ export default function Footer() {
               <li key={item}>
                 <a
                   href={`/${item.toLowerCase().replace(/ /g, "-")}`}
-                  className="text-gray-600 hover:text-indigo-600 transition hover:underline"
+                  className="text-gray-600 hover:text-[#fb8951] transition hover:underline"
                 >
                   {item}
                 </a>
@@ -84,9 +84,11 @@ export default function Footer() {
                 key={label}
                 href={href}
                 aria-label={label}
-                className="p-3 bg-white rounded-full shadow hover:bg-indigo-50 hover:shadow-lg transition transform hover:-translate-y-1"
-              >
-                <span className="text-xl text-gray-700 hover:text-indigo-600 block">
+                className="p-3 bg-white rounded-full shadow hover:bg-[#f4e9e4] hover:shadow-lg transition transform hover:-translate-y-1"
+              >  
+                <span className="text-xl text-gray-700 hover:text-[#fb8951] block">
+                  
+                 
                   {icon}
                 </span>
               </a>
