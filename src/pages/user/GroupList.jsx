@@ -1,20 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import CreateGroup from "./CreateGroup";
 import JoinGroup from "./JoinGroup";
 import { FaSearch, FaPlus, FaSignInAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { groupService } from "../../service/groupService";
 
 const MySwal = withReactContent(Swal);
 
-const Card = ({ title, description, img }) => (
+const Card = ({ title, description, avatar, onClick }) => (
   <motion.div
+    onClick={onClick}
     whileHover={{ scale: 1.04, boxShadow: "0 20px 40px rgba(0,0,0,0.15)" }}
-    className="bg-white rounded-2xl overflow-hidden transform transition-shadow duration-300 w-full max-w-xs sm:max-w-sm md:max-w-md"
+    className="cursor-pointer bg-white rounded-2xl overflow-hidden transform transition-shadow duration-300 w-full max-w-xs sm:max-w-sm md:max-w-md"
   >
     <div className="relative h-48">
-      <img src={img} alt={title} className="w-full h-full object-cover" />
+      <img
+        src={avatar || "https://via.placeholder.com/400x200.png?text=No+Image"}
+        alt={title}
+        className="w-full h-full object-cover"
+      />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
       <div className="absolute bottom-4 left-4">
         <h3 className="text-white text-xl sm:text-2xl font-extrabold drop-shadow-lg">
@@ -24,78 +31,53 @@ const Card = ({ title, description, img }) => (
     </div>
     <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
       <p className="text-gray-700 text-sm leading-relaxed">{description}</p>
-      <button className="w-full py-2 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-semibold transition  focus:outline-none focus:ring-2 focus:ring-amber-300">
+      <button className="w-full py-2 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-semibold transition focus:outline-none focus:ring-2 focus:ring-amber-300">
         View Group
       </button>
     </div>
   </motion.div>
 );
 
-function GroupList() {
+export default function GroupList() {
   const [search, setSearch] = useState("");
+  const [groups, setGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const data = [
-    {
-      title: "Travel Enthusiasts",
-      description:
-        "Embark on unforgettable journeys with like-minded travelers...",
-      img: "https://th.bing.com/th/id/R.bbb118c427c3255e9385041e5b7e0382?rik=9E3ANGguMBN6ZA&pid=ImgRaw&r=0",
-    },
-    {
-      title: "City Explorers",
-      description: "Dive into the heart of the city with guided strolls...",
-      img: "https://tse3.mm.bing.net/th/id/OIP.cH0Ft9jXIEPotKyaEQEduQHaFj?w=1200&h=900&pid=ImgDetMain&r=0",
-    },
-    {
-      title: "Photography Club",
-      description:
-        "Capture the world through your lens and join photo walks...",
-      img: "https://tse3.mm.bing.net/th/id/OIP.wIH4eidy8xc-bYhrg-DKLQHaE8?rs=1&pid=ImgDetMain&r=0",
-    },
-    {
-      title: "Hiking Buddies",
-      description:
-        "Plan scenic trail excursions, share gear recommendations...",
-      img: "https://via.placeholder.com/400x200.png?text=Hiking+Buddies",
-    },
-    {
-      title: "Foodie Adventures",
-      description: "Savor culinary delights, explore hidden gems...",
-      img: "https://via.placeholder.com/400x200.png?text=Foodie+Adventures",
-    },
-    {
-      title: "Historical Sites",
-      description: "Delve into rich histories, organize heritage visits...",
-      img: "https://via.placeholder.com/400x200.png?text=Historical+Sites",
-    },
-    {
-      title: "Beach Lovers",
-      description: "Catch the perfect wave, relax on golden sands...",
-      img: "https://via.placeholder.com/400x200.png?text=Beach+Lovers",
-    },
-    {
-      title: "Cultural Exchange",
-      description: "Celebrate diversity by sharing language lessons...",
-      img: "https://via.placeholder.com/400x200.png?text=Cultural+Exchange",
-    },
-    {
-      title: "Tech Innovators",
-      description: "Collaborate on cutting-edge projects...",
-      img: "https://via.placeholder.com/400x200.png?text=Tech+Innovators",
-    },
-    {
-      title: "Fitness Freaks",
-      description:
-        "Join daily workout challenges, exchange nutrition advice...",
-      img: "https://via.placeholder.com/400x200.png?text=Fitness+Freaks",
-    },
-  ];
-
-  const filtered = data.filter(
-    (c) =>
-      c.title.toLowerCase().includes(search.toLowerCase()) ||
-      c.description.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    setLoading(true);
+    groupService
+      .list()
+      .then((data) => {
+        // Detect HTML fallback
+        if (
+          typeof data === "string" &&
+          data.trim().startsWith("<!DOCTYPE html>")
+        ) {
+          console.error(
+            "API returned HTML: likely wrong endpoint or missing proxy"
+          );
+          throw new Error(
+            "Unexpected HTML response from server. Check API URL or proxy config."
+          );
+        }
+        let list = [];
+        if (Array.isArray(data)) {
+          list = data;
+        } else if (data.groups && Array.isArray(data.groups)) {
+          list = data.groups;
+        } else {
+          console.warn("Unexpected groups list format", data);
+        }
+        setGroups(list);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err.message || "Failed to load groups");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const openCreateModal = () => {
     MySwal.fire({
@@ -115,12 +97,20 @@ function GroupList() {
     });
   };
 
+  const filtered = Array.isArray(groups)
+    ? groups.filter(
+        (g) =>
+          g.name.toLowerCase().includes(search.toLowerCase()) ||
+          (g.description || "").toLowerCase().includes(search.toLowerCase())
+      )
+    : [];
+
   return (
     <div className="flex flex-col min-h-screen bg-[#FDF7F0] px-4 sm:px-6 lg:px-8">
       <main className="flex-1 py-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
-            GroupList
+            Groups
           </h1>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
             <div className="relative w-full sm:w-72">
@@ -129,7 +119,7 @@ function GroupList() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search communities..."
+                placeholder="Search groups..."
                 className="w-full py-3 pl-12 pr-4 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400"
               />
             </div>
@@ -150,18 +140,30 @@ function GroupList() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 place-items-center">
-          {filtered.length > 0 ? (
-            filtered.map((c, i) => <Card key={i} {...c} />)
-          ) : (
-            <div className="text-center col-span-full text-gray-500 text-lg font-medium mt-10">
-              No groups match your search.
-            </div>
-          )}
-        </div>
+        {loading ? (
+          <div className="text-center text-gray-600">Loading...</div>
+        ) : error ? (
+          <div className="text-center text-red-500">Error: {error}</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 place-items-center">
+            {filtered.length > 0 ? (
+              filtered.map((group) => (
+                <Card
+                  key={group.id}
+                  title={group.name}
+                  description={group.description}
+                  avatar={group.avatar}
+                  onClick={() => navigate(`/group/${group.id}`)}
+                />
+              ))
+            ) : (
+              <div className="text-center col-span-full text-gray-500 text-lg font-medium mt-10">
+                No groups match your search.
+              </div>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
 }
-
-export default GroupList;

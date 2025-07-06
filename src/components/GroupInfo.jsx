@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+// src/components/GroupInfo.jsx
+
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router";
 import Swal from "sweetalert2";
 import {
   FaUsers,
@@ -7,274 +10,232 @@ import {
   FaSyncAlt,
   FaUserEdit,
   FaTrash,
+  FaUserShield,
 } from "react-icons/fa";
+import { groupService } from "../service/groupService";
 
-function GroupInfo() {
-  const [currentPage, setCurrentPage] = useState(1);
+export default function GroupInfo() {
+  const { groupId } = useParams();
+  const [group, setGroup] = useState(null);
+  const [members, setMembers] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [groupAvatar, setGroupAvatar] = useState("https://i.pravatar.cc/60");
+  const [loading, setLoading] = useState(true);
 
-  const members = [
-    {
-      name: "Alex Morgan",
-      email: "alex@example.com",
-      role: "Admin",
-      joined: "Jan 15, 2023",
-      memories: 38,
-      avatar: "https://i.pravatar.cc/40?img=1",
-    },
-    {
-      name: "Sarah Johnson",
-      email: "sarah@example.com",
-      role: "Member",
-      joined: "Feb 3, 2023",
-      memories: 24,
-      avatar: "https://i.pravatar.cc/40?img=2",
-    },
-    {
-      name: "Michael Chen",
-      email: "michael@example.com",
-      role: "Member",
-      joined: "Mar 12, 2023",
-      memories: 17,
-      avatar: "https://i.pravatar.cc/40?img=3",
-    },
-  ];
+  const baseInviteUrl =
+    window.location.origin + `/group/${groupId}/join?token=`;
 
-  const filteredMembers = members.filter(
-    (m) =>
-      m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      m.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Load group details
+  useEffect(() => {
+    groupService
+      .get(groupId)
+      .then((g) => {
+        setGroup(g);
+        setMembers(g.members || []);
+      })
+      .catch((err) => {
+        console.error(err);
+        Swal.fire("Error", "Could not load group info.", "error");
+      })
+      .finally(() => setLoading(false));
+  }, [groupId]);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(
-      "https://mapmemory.com/invite/travel-enthusiasts-9d2f8e"
-    );
-    Swal.fire({
-      icon: "success",
-      title: "Copied!",
-      text: "Invite link copied successfully.",
-      timer: 1500,
-      showConfirmButton: false,
-      background: "#fff",
-      customClass: { popup: "shadow-lg rounded-lg" },
-    });
-  };
-
-  const handleAvatarEdit = async () => {
-    const { value: file } = await Swal.fire({
-      title: "Upload New Group Photo",
-      input: "file",
-      inputAttributes: {
-        accept: "image/*",
-        "aria-label": "Upload your group photo",
-      },
-      confirmButtonText: "Upload",
-      showCancelButton: true,
-      confirmButtonColor: "#d97706", // amber-600
-      background: "#fff",
-      customClass: { popup: "shadow-lg rounded-lg" },
-    });
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setGroupAvatar(reader.result);
-        Swal.fire({
-          title: "Preview",
-          text: "Avatar updated successfully!",
-          imageUrl: reader.result,
-          imageAlt: "New Avatar",
-          confirmButtonText: "OK",
-          background: "#fff",
-          customClass: { popup: "shadow-lg rounded-lg" },
-        });
-      };
-      reader.readAsDataURL(file);
+  // Generate a fresh invite token
+  const handleRegenerateInvite = async () => {
+    try {
+      const { inviteToken } = await groupService.invite(groupId);
+      setGroup((g) => ({ ...g, inviteToken }));
+      Swal.fire(
+        "New link generated!",
+        "Invite link has been updated.",
+        "success"
+      );
+    } catch (err) {
+      console.error(err);
+      Swal.fire(
+        "Error",
+        err.message || "Could not generate invite link.",
+        "error"
+      );
     }
   };
 
+  if (loading || members === null) {
+    return <div className="p-6 text-center">Loading group info…</div>;
+  }
+
+  const term = searchTerm.toLowerCase();
+  const filteredMembers = members.filter((m) => {
+    const name = (m.name || "").toLowerCase();
+    const email = (m.email || "").toLowerCase();
+    return name.includes(term) || email.includes(term);
+  });
+
   return (
     <div className="flex min-h-screen bg-[#FDF7F0]">
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-6 space-y-6">
         {/* Group Details */}
-        <section className="mb-6">
-          <h1 className="text-2xl font-bold mb-2 text-gray-800">
-            Group Details
-          </h1>
-          <p className="text-sm text-gray-500 mb-4">
-            Manage your group settings and members
-          </p>
-
-          <div className="bg-white p-6 rounded-xl shadow-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            {/* Group Info Left */}
-            <div className="flex items-center gap-4 flex-1">
-              {/* Avatar with edit icon */}
-              <div className="relative w-16 h-16">
-                <img
-                  src={groupAvatar}
-                  alt="group avatar"
-                  className="rounded-full w-full h-full object-cover border border-gray-300"
-                />
-                <button
-                  title="Edit photo"
-                  className="absolute top-0 right-0 bg-white p-1 rounded-full shadow text-amber-600 hover:bg-amber-100 transition"
-                  onClick={handleAvatarEdit}
-                >
-                  <FaUserEdit className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div>
-                <h2 className="text-lg font-bold text-gray-800">
-                  Travel Enthusiasts
-                </h2>
-                <p className="text-sm text-gray-600 max-w-md">
-                  A community of passionate travelers sharing their journey
-                  memories from around the world.
-                </p>
-                <div className="flex flex-wrap gap-4 text-sm mt-3 text-gray-600">
-                  <div className="flex items-center gap-1">
-                    <FaUsers /> 42 Members
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <FaCalendarAlt /> Created: Jan 15, 2023
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <FaMapPin /> 152 Memories
-                  </div>
+        <section className="bg-white p-6 rounded-xl shadow-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="relative w-16 h-16">
+              <img
+                src={group.avatar}
+                alt="group avatar"
+                className="rounded-full w-full h-full object-cover border border-gray-300"
+              />
+              <button
+                title="Edit photo"
+                onClick={async () => {
+                  const { value: file } = await Swal.fire({
+                    title: "Upload New Group Photo",
+                    input: "file",
+                    inputAttributes: { accept: "image/*" },
+                    confirmButtonText: "Upload",
+                    showCancelButton: true,
+                    background: "#fff",
+                    customClass: { popup: "shadow-lg rounded-lg" },
+                  });
+                  if (file) {
+                    try {
+                      const { avatarUrl } = await groupService.uploadAvatar(
+                        groupId,
+                        file
+                      );
+                      setGroup((g) => ({ ...g, avatar: avatarUrl }));
+                      Swal.fire("Success", "Avatar updated!", "success");
+                    } catch (e) {
+                      console.error(e);
+                      Swal.fire("Error", "Upload failed.", "error");
+                    }
+                  }
+                }}
+                className="absolute top-0 right-0 bg-white p-1 rounded-full shadow text-amber-600 hover:bg-amber-100 transition"
+              >
+                <FaUserEdit className="w-4 h-4" />
+              </button>
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-800">{group.name}</h2>
+              <p className="text-sm text-gray-600 max-w-md">
+                {group.description}
+              </p>
+              <div className="flex flex-wrap gap-4 text-sm mt-3 text-gray-600">
+                <div className="flex items-center gap-1">
+                  <FaUsers /> {members.length} Members
+                </div>
+                <div className="flex items-center gap-1">
+                  <FaCalendarAlt /> Created:{" "}
+                  {new Date(group.createdAt).toLocaleDateString()}
+                </div>
+                <div className="flex items-center gap-1">
+                  <FaMapPin /> {group.postCount} Memories
                 </div>
               </div>
             </div>
-
-            {/* Invite Link Right */}
-            <div className="w-full lg:w-1/3">
-              <h3 className="text-sm font-semibold mb-1 text-gray-700">
-                Invite Link
-              </h3>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  readOnly
-                  value="https://mapmemory.com/invite/travel-enthusiasts-9d2f8e"
-                  className="w-full px-3 py-2 rounded-md border border-gray-300 text-sm bg-white"
-                />
-                <button
-                  onClick={handleCopy}
-                  className="flex items-center gap-1 text-amber-600 text-sm hover:text-amber-700 transition"
-                >
-                  <FaSyncAlt className="text-sm" />
-                  Copy
-                </button>
-              </div>
-              <p className="text-xs text-gray-400 mt-1">
-                Only share with people you trust.
-              </p>
+          </div>
+          {/* Invite Link */}
+          <div className="w-full lg:w-1/3 space-y-2">
+            <h3 className="text-sm font-semibold text-gray-700">Invite Link</h3>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                readOnly
+                value={baseInviteUrl + group.inviteToken}
+                className="flex-1 px-3 py-2 rounded-md border border-gray-300 bg-white text-sm"
+              />
+              <button
+                onClick={handleRegenerateInvite}
+                className="flex items-center gap-1 text-amber-600 hover:text-amber-800 transition"
+                title="Regenerate Link"
+              >
+                <FaSyncAlt />
+              </button>
             </div>
+            <p className="text-xs text-gray-400">
+              Share this to invite new members.
+            </p>
           </div>
         </section>
 
         {/* Members Table */}
-        <section>
-          <div className="bg-white p-6 rounded-xl shadow-md">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                Group Members
-              </h3>
-            </div>
-
-            {/* Search Input */}
-            <input
-              type="text"
-              placeholder="Search members..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="mb-4 w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
-            />
-
-            {/* Table */}
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-gray-600 border-b border-gray-200">
-                  <th className="py-2">Member</th>
-                  <th>Role</th>
-                  <th>Joined</th>
-                  <th>Memories</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredMembers.map((item, i) => (
-                  <tr
-                    key={i}
-                    className="border-b border-gray-100 hover:bg-amber-50 transition"
-                  >
-                    <td className="py-2">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={item.avatar}
-                          alt={item.name}
-                          className="w-10 h-10 rounded-full"
-                        />
-                        <div>
-                          <p className="font-medium text-gray-800">
-                            {item.name}
-                          </p>
-                          <p className="text-xs text-gray-500">{item.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          item.role === "Admin"
-                            ? "bg-amber-100 text-amber-700"
-                            : "bg-gray-50 text-gray-600"
-                        }`}
-                      >
-                        {item.role}
-                      </span>
-                    </td>
-                    <td className="text-gray-700">{item.joined}</td>
-                    <td className="text-gray-700">{item.memories}</td>
-                    <td className="space-x-2">
-                      {item.role !== "Admin" && (
-                        <>
-                          <button className="text-amber-600 hover:text-amber-800 transition">
-                            <FaUserEdit />
-                          </button>
-                          <button className="text-red-600 hover:text-red-800 transition">
-                            <FaTrash />
-                          </button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* Pagination */}
-            <div className="mt-4 flex justify-end gap-2">
-              {[1, 2, 3].map((page) => (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`w-8 h-8 rounded-md text-sm font-medium transition ${
-                    currentPage === page
-                      ? "bg-amber-500 text-white shadow"
-                      : "bg-white text-gray-700 border border-amber-300 hover:bg-amber-100"
-                  }`}
+        <section className="bg-white p-6 rounded-xl shadow-md">
+          <h3 className="text-lg font-semibold mb-4 text-gray-800">
+            Group Members
+          </h3>
+          <input
+            type="text"
+            placeholder="Search members..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="mb-4 w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+          />
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-gray-600 border-b border-gray-200">
+                <th className="py-2">Member</th>
+                <th>Role</th>
+                <th>Joined</th>
+                <th>Memories</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredMembers.map((m) => (
+                <tr
+                  key={m.id}
+                  className="border-b border-gray-100 hover:bg-amber-50 transition"
                 >
-                  {page}
-                </button>
+                  <td className="py-2">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={m.avatar}
+                        alt={m.name}
+                        className="w-10 h-10 rounded-full"
+                      />
+                      <div>
+                        <p className="font-medium text-gray-800">{m.name}</p>
+                        <p className="text-xs text-gray-500">{m.email}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        m.role === "Admin"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-gray-50 text-gray-600"
+                      }`}
+                    >
+                      {m.role}
+                    </span>
+                  </td>
+                  <td className="text-gray-700">{m.joinedAt}</td>
+                  <td className="text-gray-700">{m.postCount}</td>
+                  <td className="space-x-2">
+                    {m.role !== "Admin" && (
+                      <>
+                        <button
+                          onClick={() => handlePromote(m.id)}
+                          className="text-green-600 hover:text-green-800 transition"
+                          title="Promote to Admin"
+                        >
+                          <FaUserShield />
+                        </button>
+                        <button
+                          onClick={() => handleKick(m.id)}
+                          className="text-red-600 hover:text-red-800 transition"
+                          title="Kick Member"
+                        >
+                          <FaTrash />
+                        </button>
+                      </>
+                    )}
+                  </td>
+                </tr>
               ))}
-            </div>
-          </div>
+            </tbody>
+          </table>
         </section>
       </main>
     </div>
   );
 }
-export default GroupInfo;
