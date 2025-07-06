@@ -103,7 +103,7 @@ export default function MapPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-amber-50 to-amber-200">
+    <div className="flex flex-col min-h-screen bg-[#FDF7F0]">
       <main className="flex-1 max-w-7xl mx-auto p-4">
         {/* Search & Filter */}
         <div className="bg-white p-4 rounded shadow mb-6 flex gap-4">

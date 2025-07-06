@@ -49,7 +49,6 @@ function Sidebar() {
       };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
     navigate("/Profile");
   };
 
@@ -69,7 +68,10 @@ function Sidebar() {
     >
       {/* Logo */}
       <Link to="/" className="flex items-center gap-4 px-3 py-6">
-        <img src="/public/logoupdata.png" className="w-8 h-auto object-contain" />
+        <img
+          src="/public/logoupdata.png"
+          className="w-8 h-auto object-contain"
+        />
         <motion.span
           initial={{ opacity: 1 }}
           whileHover={{ opacity: 1 }}
