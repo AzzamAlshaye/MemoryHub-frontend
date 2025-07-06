@@ -14,11 +14,7 @@ const Card = ({ title, description, img }) => (
     className="bg-white rounded-2xl overflow-hidden transform transition-shadow duration-300 w-full max-w-xs sm:max-w-sm md:max-w-md"
   >
     <div className="relative h-48">
-      <img
-        src={img}
-        alt={title}
-        className="w-full h-full object-cover"
-      />
+      <img src={img} alt={title} className="w-full h-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
       <div className="absolute bottom-4 left-4">
         <h3 className="text-white text-xl sm:text-2xl font-extrabold drop-shadow-lg">
@@ -28,7 +24,7 @@ const Card = ({ title, description, img }) => (
     </div>
     <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
       <p className="text-gray-700 text-sm leading-relaxed">{description}</p>
-      <button className="w-full py-2 rounded-full bg-gradient-to-r from-amber-300 to-amber-600 hover:from-amber-400 hover:to-amber-700 text-white font-semibold transition">
+      <button className="w-full py-2 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-semibold transition  focus:outline-none focus:ring-2 focus:ring-amber-300">
         View Group
       </button>
     </div>
@@ -41,7 +37,8 @@ function GroupList() {
   const data = [
     {
       title: "Travel Enthusiasts",
-      description: "Embark on unforgettable journeys with like-minded travelers...",
+      description:
+        "Embark on unforgettable journeys with like-minded travelers...",
       img: "https://th.bing.com/th/id/R.bbb118c427c3255e9385041e5b7e0382?rik=9E3ANGguMBN6ZA&pid=ImgRaw&r=0",
     },
     {
@@ -51,12 +48,14 @@ function GroupList() {
     },
     {
       title: "Photography Club",
-      description: "Capture the world through your lens and join photo walks...",
+      description:
+        "Capture the world through your lens and join photo walks...",
       img: "https://tse3.mm.bing.net/th/id/OIP.wIH4eidy8xc-bYhrg-DKLQHaE8?rs=1&pid=ImgDetMain&r=0",
     },
     {
       title: "Hiking Buddies",
-      description: "Plan scenic trail excursions, share gear recommendations...",
+      description:
+        "Plan scenic trail excursions, share gear recommendations...",
       img: "https://via.placeholder.com/400x200.png?text=Hiking+Buddies",
     },
     {
@@ -86,7 +85,8 @@ function GroupList() {
     },
     {
       title: "Fitness Freaks",
-      description: "Join daily workout challenges, exchange nutrition advice...",
+      description:
+        "Join daily workout challenges, exchange nutrition advice...",
       img: "https://via.placeholder.com/400x200.png?text=Fitness+Freaks",
     },
   ];
@@ -116,10 +116,12 @@ function GroupList() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-amber-50 to-amber-200 px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-col min-h-screen bg-[#FDF7F0] px-4 sm:px-6 lg:px-8">
       <main className="flex-1 py-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">GroupList</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+            GroupList
+          </h1>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
             <div className="relative w-full sm:w-72">
               <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />

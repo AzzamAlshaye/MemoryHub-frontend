@@ -96,11 +96,13 @@ function GroupInfo() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-tr from-amber-50 to-amber-200">
+    <div className="flex min-h-screen bg-[#FDF7F0]">
       <main className="flex-1 p-6">
         {/* Group Details */}
         <section className="mb-6">
-          <h1 className="text-2xl font-bold mb-2 text-gray-800">Group Details</h1>
+          <h1 className="text-2xl font-bold mb-2 text-gray-800">
+            Group Details
+          </h1>
           <p className="text-sm text-gray-500 mb-4">
             Manage your group settings and members
           </p>
@@ -125,7 +127,9 @@ function GroupInfo() {
               </div>
 
               <div>
-                <h2 className="text-lg font-bold text-gray-800">Travel Enthusiasts</h2>
+                <h2 className="text-lg font-bold text-gray-800">
+                  Travel Enthusiasts
+                </h2>
                 <p className="text-sm text-gray-600 max-w-md">
                   A community of passionate travelers sharing their journey
                   memories from around the world.
@@ -146,7 +150,9 @@ function GroupInfo() {
 
             {/* Invite Link Right */}
             <div className="w-full lg:w-1/3">
-              <h3 className="text-sm font-semibold mb-1 text-gray-700">Invite Link</h3>
+              <h3 className="text-sm font-semibold mb-1 text-gray-700">
+                Invite Link
+              </h3>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -173,7 +179,9 @@ function GroupInfo() {
         <section>
           <div className="bg-white p-6 rounded-xl shadow-md">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Group Members</h3>
+              <h3 className="text-lg font-semibold text-gray-800">
+                Group Members
+              </h3>
             </div>
 
             {/* Search Input */}
@@ -210,7 +218,9 @@ function GroupInfo() {
                           className="w-10 h-10 rounded-full"
                         />
                         <div>
-                          <p className="font-medium text-gray-800">{item.name}</p>
+                          <p className="font-medium text-gray-800">
+                            {item.name}
+                          </p>
                           <p className="text-xs text-gray-500">{item.email}</p>
                         </div>
                       </div>
@@ -220,7 +230,6 @@ function GroupInfo() {
                         className={`px-2 py-1 rounded-full text-xs font-semibold ${
                           item.role === "Admin"
                             ? "bg-amber-100 text-amber-700"
-                           
                             : "bg-gray-50 text-gray-600"
                         }`}
                       >
@@ -268,4 +277,4 @@ function GroupInfo() {
     </div>
   );
 }
-export default GroupInfo
+export default GroupInfo;

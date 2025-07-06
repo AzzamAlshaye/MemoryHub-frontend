@@ -118,7 +118,9 @@ export default function GroupPage() {
 
   const handleDislikePost = (postId) => {
     setPosts((prev) =>
-      prev.map((p) => (p.id === postId ? { ...p, dislikes: p.dislikes + 1 } : p))
+      prev.map((p) =>
+        p.id === postId ? { ...p, dislikes: p.dislikes + 1 } : p
+      )
     );
   };
 
@@ -146,15 +148,20 @@ export default function GroupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-amber-50 to-amber-200 p-4 space-y-6">
+    <div className="min-h-screen bg-[#FDF7F0] p-4 space-y-6">
       {/* Top Header */}
       <div className="max-w-6xl mx-auto mb-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="text-gray-600 hover:text-black">
+          <button
+            onClick={() => navigate(-1)}
+            className="text-gray-600 hover:text-black"
+          >
             <IoIosArrowBack size={20} />
           </button>
           <div>
-            <h1 className="font-semibold text-lg text-gray-800">Downtown Memories</h1>
+            <h1 className="font-semibold text-lg text-gray-800">
+              Downtown Memories
+            </h1>
             <p className="text-sm text-gray-500">Group • 28 members</p>
           </div>
         </div>
@@ -167,25 +174,38 @@ export default function GroupPage() {
         </div>
       </div>
 
-
       {posts.map((post, postIdx) => (
-        <div key={post.id} className="max-w-3xl mx-auto bg-white rounded-xl shadow p-5 space-y-4">
+        <div
+          key={post.id}
+          className="max-w-3xl mx-auto bg-white rounded-xl shadow p-5 space-y-4"
+        >
           {/* Post Header & Image */}
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
-              <img src={post.avatar} className="rounded-full w-9 h-9" alt="avatar" />
+              <img
+                src={post.avatar}
+                className="rounded-full w-9 h-9"
+                alt="avatar"
+              />
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-gray-800">
-                  {post.user} <span className="text-blue-500">• Downtown Memories</span>
+                  {post.user}{" "}
+                  <span className="text-blue-500">• Downtown Memories</span>
                 </span>
                 <span className="text-xs text-gray-500">{post.date}</span>
               </div>
             </div>
-            <div className="text-xl text-gray-400 hover:text-gray-600 cursor-pointer">⋯</div>
+            <div className="text-xl text-gray-400 hover:text-gray-600 cursor-pointer">
+              ⋯
+            </div>
           </div>
 
           <div className="relative w-full h-[370px] rounded-md overflow-hidden">
-            <img src={post.image} className="object-cover w-full h-full" alt="memory" />
+            <img
+              src={post.image}
+              className="object-cover w-full h-full"
+              alt="memory"
+            />
             <div className="absolute inset-0 flex items-center justify-between px-3 text-white text-xl">
               <IoIosArrowBack className="cursor-pointer hover:scale-110" />
               <IoIosArrowForward className="cursor-pointer hover:scale-110" />
@@ -199,15 +219,24 @@ export default function GroupPage() {
           {/* Reactions */}
           <div className="flex justify-between text-gray-600 text-sm items-center">
             <div className="flex gap-5 items-center">
-              <button onClick={() => handleLikePost(post.id)} className="flex items-center gap-1 hover:text-blue-600">
+              <button
+                onClick={() => handleLikePost(post.id)}
+                className="flex items-center gap-1 hover:text-blue-600"
+              >
                 <FaThumbsUp size={18} /> {post.likes}
               </button>
-              <button onClick={() => handleDislikePost(post.id)} className="flex items-center gap-1 hover:text-red-600">
+              <button
+                onClick={() => handleDislikePost(post.id)}
+                className="flex items-center gap-1 hover:text-red-600"
+              >
                 <FaThumbsDown size={18} /> {post.dislikes}
               </button>
             </div>
             <div className="flex items-center gap-3 text-gray-400">
-              <FaFlag onClick={() => handleOpenReport("post", post.id)} className="hover:text-red-500 cursor-pointer" />
+              <FaFlag
+                onClick={() => handleOpenReport("post", post.id)}
+                className="hover:text-red-500 cursor-pointer"
+              />
             </div>
           </div>
 
@@ -215,28 +244,49 @@ export default function GroupPage() {
 
           {/* Comments */}
           <div>
-            <h4 className="text-sm font-medium text-gray-600">Comments ({post.comments.length})</h4>
+            <h4 className="text-sm font-medium text-gray-600">
+              Comments ({post.comments.length})
+            </h4>
             <div className="mt-2 space-y-5">
               {post.comments.map((comment, idx) => (
                 <div key={idx}>
                   <div className="flex gap-3 items-start">
-                    <img src={`https://i.pravatar.cc/30?img=${idx + 30 + postIdx * 10}`} className="w-8 h-8 rounded-full mt-1" alt="avatar" />
+                    <img
+                      src={`https://i.pravatar.cc/30?img=${
+                        idx + 30 + postIdx * 10
+                      }`}
+                      className="w-8 h-8 rounded-full mt-1"
+                      alt="avatar"
+                    />
                     <div className="border border-gray-200 px-4 py-2 rounded-xl w-full bg-white shadow-sm">
                       <div className="flex justify-between text-xs text-gray-600 font-medium">
                         <span>{comment.name}</span>
                         <span>{comment.time}</span>
                       </div>
-                      <p className="text-gray-700 text-sm mt-1">{comment.text}</p>
+                      <p className="text-gray-700 text-sm mt-1">
+                        {comment.text}
+                      </p>
                     </div>
                   </div>
                   <div className="flex gap-4 text-gray-500 text-sm mt-1 ps-12">
-                    <button onClick={() => handleReactToComment(post.id, idx, 1)} className="flex items-center gap-1 hover:text-blue-600">
+                    <button
+                      onClick={() => handleReactToComment(post.id, idx, 1)}
+                      className="flex items-center gap-1 hover:text-blue-600"
+                    >
                       <FaThumbsUp size={16} /> {comment.likes}
                     </button>
-                    <button onClick={() => handleReactToComment(post.id, idx, -1)} className="flex items-center gap-1 hover:text-red-600">
+                    <button
+                      onClick={() => handleReactToComment(post.id, idx, -1)}
+                      className="flex items-center gap-1 hover:text-red-600"
+                    >
                       <FaThumbsDown size={16} /> {comment.dislikes || 0}
                     </button>
-                    <button onClick={() => handleOpenReport("comment", `${post.id}-${idx}`)} className="flex items-center gap-1 hover:text-red-500">
+                    <button
+                      onClick={() =>
+                        handleOpenReport("comment", `${post.id}-${idx}`)
+                      }
+                      className="flex items-center gap-1 hover:text-red-500"
+                    >
                       <FaFlag size={14} />
                     </button>
                   </div>
@@ -246,7 +296,11 @@ export default function GroupPage() {
 
             {/* Add Comment */}
             <div className="flex gap-3 mt-4 items-start">
-              <img src="https://i.pravatar.cc/30?img=1" className="w-8 h-8 rounded-full mt-1" alt="your avatar" />
+              <img
+                src="https://i.pravatar.cc/30?img=1"
+                className="w-8 h-8 rounded-full mt-1"
+                alt="your avatar"
+              />
               <div className="flex items-center justify-between border border-gray-300 rounded-xl px-4 py-2 w-full bg-white shadow-sm">
                 <input
                   type="text"
@@ -255,7 +309,10 @@ export default function GroupPage() {
                   placeholder="Add a comment..."
                   className="flex-1 text-sm focus:outline-none bg-transparent"
                 />
-                <button onClick={() => handleAddComment(post.id)} className="text-blue-600 hover:text-blue-800 ms-2">
+                <button
+                  onClick={() => handleAddComment(post.id)}
+                  className="text-blue-600 hover:text-blue-800 ms-2"
+                >
                   <FiSend size={18} />
                 </button>
               </div>

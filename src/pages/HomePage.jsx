@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaMapMarkerAlt, FaUsers, FaGlobe } from "react-icons/fa";
-import { useNavigate } from "react-router";
 
 const scrollFadeIn = {
   hidden: { opacity: 0, y: 50 },
@@ -12,32 +11,24 @@ const scrollFadeIn = {
   },
 };
 
-function HomePage() {
+export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
 
-  const handleButtonClick = () => {
-    if (isLoggedIn) {
-      navigate("/mapPage");
-    } else {
-      navigate("/SignupPage");
-    }
-  };
-
   return (
-    <main className="overflow-hidden">
-      <section className="relative bg-gradient-to-tr from-amber-50 to-amber-200 py-24">
+    <main className="space-y-24 overflow-hidden">
+      {/* Hero Section */}
+      <section className="relative bg-[#FDF7F0]">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={scrollFadeIn}
-          className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center"
+          className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center"
         >
           <div className="space-y-6 text-center md:text-left">
             <motion.h1
@@ -71,12 +62,12 @@ function HomePage() {
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleButtonClick}
               className="bg-[#fb8951] text-white px-8 py-3 rounded-full shadow-lg hover:opacity-90 scale-110 cursor-pointer hover:delay-300 duration-400"
             >
               {isLoggedIn ? "Create Your Memory" : "Start Your First Memory"}
             </motion.button>
           </div>
+
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -90,15 +81,17 @@ function HomePage() {
             className="w-full flex items-center justify-center"
           >
             <img
-              src="/public/logoupdata.png"
-              className="w-40 h-auto hover:scale-105 transition-transform duration-300"
+              src="/Logo-all.png"
+              alt="Map Memory Logo"
+              className="w-80 h-auto hover:scale-105 transition-transform duration-300"
             />
           </motion.div>
         </motion.div>
       </section>
 
-      <section className="py-24 px-6 bg-white">
-        <div className="max-w-5xl mx-auto text-center space-y-12">
+      {/* How It Works */}
+      <section className="px-6 pt-5">
+        <div className="max-w-5xl mx-auto text-center space-y-8">
           <motion.h2
             initial="hidden"
             whileInView="visible"
@@ -144,13 +137,14 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="bg-gray-50 py-24">
+      {/* Quote Section */}
+      <section className="bg-white py-12">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={scrollFadeIn}
-          className="max-w-3xl mx-auto text-center bg-white p-8 rounded-2xl shadow-md"
+          className="max-w-3xl mx-auto text-center bg-gradient-to-r from-gray-100 to-gray-50 p-8 rounded-2xl shadow-md"
         >
           <p className="italic text-gray-700 text-lg mb-4">
             “Every memory tells a story—and every story can inspire a journey.
@@ -163,18 +157,19 @@ function HomePage() {
         </motion.div>
       </section>
 
-      <section className="py-24 px-6 bg-white">
-        <div className="max-w-5xl mx-auto text-center space-y-12">
+      {/* Testimonials */}
+      <section className="px-6 pb-16">
+        <div className="max-w-5xl mx-auto text-center">
           <motion.h2
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
             variants={scrollFadeIn}
-            className="text-3xl text-gray-800 font-semibold"
+            className="text-3xl text-gray-800 font-semibold mb-10"
           >
             What Our Users Say
           </motion.h2>
-          <div className="space-y-8 sm:space-y-0 sm:grid sm:grid-cols-2 gap-8 hover:cursor-pointer">
+          <div className="space-y-8 text-gray-800 sm:space-y-0 sm:grid sm:grid-cols-2 gap-8 hover:cursor-pointer">
             {[
               {
                 img: "https://randomuser.me/api/portraits/women/44.jpg",
@@ -211,24 +206,6 @@ function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Quote */}
-      <section className="bg-blue-50 py-12 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
-            <p className="text-gray-600 text-sm sm:text-base mb-4">
-              Every memory tells a story—and every story can inspire a journey.
-              Share your moments, and let your posts become a guide for others
-              exploring the world.
-            </p>
-            <p className="text-gray-500 text-sm">The Map Memory Team</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
     </main>
   );
 }
-
-export default HomePage;
