@@ -1,264 +1,276 @@
-import React, { useState, useEffect } from "react";
-import { FaUserPlus } from "react-icons/fa6";
-import { IoIosSearch } from "react-icons/io";
-import { FaSort } from "react-icons/fa";
-import { IoMdSettings } from "react-icons/io";
+// src/pages/user/GroupPage.jsx
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
-function GroupPage() {
+import { FaMapMarkerAlt, FaFlag } from "react-icons/fa";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
+import { FiSend } from "react-icons/fi";
+import ReportPopup from "../../components/ReportPopup";
+
+const postsData = [
+  {
+    id: 1,
+    user: "Michael Johnson",
+    date: "July 4, 2025 at 3:24 PM",
+    avatar: "https://i.pravatar.cc/36?img=10",
+    location: "Downtown Square",
+    image:
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+    caption:
+      "Amazing sunset view from the rooftop bar downtown! Can’t believe it’s been 2 years since we first discovered this hidden gem. The live music was incredible as always. Who’s joining next weekend? 🎤 #DowntownMemories",
+    likes: 42,
+    dislikes: 2,
+    comments: [
+      {
+        name: "Sarah Williams",
+        time: "July 4, 2025 at 4:15 PM",
+        text: "Such a beautiful view! I'll definitely join next weekend!",
+        likes: 5,
+      },
+      {
+        name: "David Chen",
+        time: "July 4, 2025 at 5:32 PM",
+        text: "The band was amazing! What was the name of that last song they played?",
+        likes: 2,
+      },
+    ],
+  },
+  {
+    id: 2,
+    user: "Emily Rodriguez",
+    date: "July 3, 2025 at 11:45 AM",
+    avatar: "https://i.pravatar.cc/36?img=20",
+    location: "Riverside Café",
+    image:
+      "https://images.unsplash.com/photo-1533777324565-a040eb52fac1?auto=format&fit=crop&w=800&q=80",
+    caption:
+      "Found this adorable café by the river today! They have the best pastries and the latte art is incredible. Perfect spot for our next book club meeting. Who's in? 📚☕ #RiversideCafé",
+    likes: 27,
+    dislikes: 0,
+    comments: [
+      {
+        name: "Jessica Lee",
+        time: "July 3, 2025 at 12:30 PM",
+        text: "I'm definitely in for the book club! Their almond croissants are to die for!",
+        likes: 3,
+      },
+    ],
+  },
+  {
+    id: 3,
+    user: "Thomas Wilson",
+    date: "July 2, 2025 at 7:18 PM",
+    avatar: "https://i.pravatar.cc/36?img=33",
+    location: "Arts District",
+    image:
+      "https://images.unsplash.com/photo-1603575448362-5a8c50ffb309?auto=format&fit=crop&w=800&q=80",
+    caption:
+      "Just discovered this incredible new mural in the Arts District! The artist finished it last week. It’s even more impressive in person - the colors are so vibrant. Definitely worth checking out if you're in the area. 🎨 #StreetArt #ArtsDistrict",
+    likes: 36,
+    dislikes: 1,
+    comments: [
+      {
+        name: "Olivia Martinez",
+        time: "July 2, 2025 at 8:05 PM",
+        text: "I love this! Do you know who the artist is? I’d like to check out more of their work.",
+        likes: 4,
+      },
+      {
+        name: "Thomas Wilson",
+        time: "July 2, 2025 at 8:17 PM",
+        text: "@Olivia The artist is Maya Sanchez. She has an Instagram account @MayaArtistry where she posts all her work!",
+        likes: 2,
+      },
+    ],
+  },
+];
+
+export default function GroupPage() {
   const navigate = useNavigate();
-  const initialCommunities = [
-    {
-      title: "Travel Enthusiasts",
-      description:
-        "A community for sharing travel memories, tips, and planning group adventures around the world.",
-      location: "Global",
-      activity: "Active 2h ago",
-      members: 42,
-      img: "/magical-golden-glittering-wave-in-abstract-sparkling-background-for-festive-design-photo.jpg",
-      postedDate: "2025-06-29",
-    },
-    {
-      title: "City Explorers",
-      description:
-        "Discover hidden gems in your city with fellow urban adventurers. Weekly meetups and photo challenges.",
-      location: "New York",
-      activity: "Active 5h ago",
-      members: 88,
-      img: "/magical-golden-glittering-wave-in-abstract-sparkling-background-for-festive-design-photo.jpg",
-      postedDate: "2025-06-28",
-    },
-    {
-      title: "Photography Club",
-      description:
-        "Share your best shots, learn techniques, and join photo walks with fellow photography enthusiasts.",
-      location: "Multiple locations",
-      activity: "Active 1d ago",
-      members: 125,
-      img: "/magical-golden-glittering-wave-in-abstract-sparkling-background-for-festive-design-photo.jpg",
-      postedDate: "2025-06-27",
-    },
-  ];
-  // handel with sort
-  const [communities, setCommunities] = useState(initialCommunities);
-  const [showModal, setShowModal] = useState(false);
-  const [sortBy, setSortBy] = useState("recent");
-  const [searchTerm, setSearchTerm] = useState("");
-  const sortPosts = (data, criterion) => {
-    let sorted = [...data];
-    switch (criterion) {
-      case "recent":
-        sorted.sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate));
-        break;
-      case "alphabetical":
-        sorted.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      case "members":
-        sorted.sort((a, b) => b.members - a.members);
-        break;
-      default:
-        break;
-    }
-    return sorted;
-  };
-  // handel with sort
-  const handleSortChange = (e) => {
-    const value = e.target.value;
-    setSortBy(value);
-  };
-  // handel with search
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+  const [posts, setPosts] = useState(postsData);
+  const [newComment, setNewComment] = useState("");
+  const [reportTarget, setReportTarget] = useState(null);
+
+  const handleAddComment = (postId) => {
+    if (!newComment.trim()) return;
+    const updated = posts.map((post) => {
+      if (post.id === postId) {
+        const comment = {
+          name: "You",
+          time: new Date().toLocaleString(),
+          text: newComment,
+          likes: 0,
+          dislikes: 0,
+        };
+        return { ...post, comments: [...post.comments, comment] };
+      }
+      return post;
+    });
+    setPosts(updated);
+    setNewComment("");
   };
 
-  const handelSort = () => {
-    //  serach bar
-    const filtered = communities.filter((c) =>
-      c.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const handleLikePost = (postId) => {
+    setPosts((prev) =>
+      prev.map((p) => (p.id === postId ? { ...p, likes: p.likes + 1 } : p))
     );
-    // show result of serach
-    return sortPosts(filtered, sortBy);
   };
-  useEffect(() => {
-    // sort community
-    setCommunities((prev) => sortPosts(prev, sortBy));
-  }, [sortBy]);
-  function switchtoSettingsGroup() {
-    navigate();
-  }
+
+  const handleDislikePost = (postId) => {
+    setPosts((prev) =>
+      prev.map((p) => (p.id === postId ? { ...p, dislikes: p.dislikes + 1 } : p))
+    );
+  };
+
+  const handleReactToComment = (postId, commentIdx, delta) => {
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== postId) return p;
+        const comments = [...p.comments];
+        const comment = { ...comments[commentIdx] };
+        if (delta > 0) comment.likes++;
+        else comment.dislikes = (comment.dislikes || 0) + 1;
+        comments[commentIdx] = comment;
+        return { ...p, comments };
+      })
+    );
+  };
+
+  const handleOpenReport = (type, id) => {
+    setReportTarget({ type, id });
+  };
+
+  const handleSubmitReport = (data) => {
+    console.log("Report submitted:", data);
+    setReportTarget(null);
+  };
+
   return (
-    <>
-      <div className="min-h-screen bg-gray-50 px-6 py-4">
-        {/* group headet-info */}
-        <div className="flex  md:flex-row justify-between items-start md:items-center mb-6">
-          <div>
-            <h1 className="text-[.8rem] lg:text-xl font-bold text-blue-900">
-              Travel Buddies Group
-            </h1>
-            <p className="text-gray-500 text-sm">
-              Share your travel memories with your friends
-            </p>
-          </div>
-          <div className="flex flex-row gap-2 mt-4 md:mt-0">
-            <button className="bg-blue-200 hover:bg-blue-300 text-white text-sm p-2 lg:px-4 lg:py-2 rounded">
-              + New Group
-            </button>
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-white text-black shadow-md text-sm px-4 py-2 rounded flex items-center gap-2"
-            >
-              <FaUserPlus /> Invite Members
-            </button>
-            <button onClick={switchtoSettingsGroup}>
-              <IoMdSettings />
-            </button>
-          </div>
-        </div>
-        {/* group */}
-        <div className="mb-6 flex gap-0.5">
-          <h2 className="text-md font-semibold mb-2">Members:</h2>
-          <div className="flex items-center ">
-            <img
-              src="/images.jpg"
-              alt="member1"
-              className="w-6 h-6 rounded-full object-cover"
-            />
-            <img
-              src="/images.jpg"
-              alt="member2"
-              className="w-6 h-6 rounded-full object-cover"
-            />
-            <span className="text-blue-400 text-sm text-[.6rem] cursor-pointer hover:underline">
-              View all
-            </span>
-          </div>
-        </div>
-        {/* sort and search */}
-        <div className="flex gap-4 mb-6 items-center justify-between">
-          <div className="relative w-full md:w-80">
-            <input
-              type="text"
-              placeholder="Search memories..."
-              className="w-full text-[.7rem] flex items-center border border-gray-300 px-4 py-2 pl-10 rounded-md text-sm"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-            <IoIosSearch className="absolute top-3 flex items-center left-3 text-gray-400 text-lg" />
-          </div>
-          <div className="flex items-center gap-2 border border-gray-300 rounded px-2 py-1 w-max">
-            <FaSort className="text-gray-600" />
-            <select
-              className="text-sm rounded border-none outline-none"
-              value={sortBy}
-              onChange={handleSortChange}
-            >
-              {/* <option value="Sort">Sort</option>  */}
-              <option value="recent">Recently Active</option>
-              <option value="alphabetical">A - Z</option>
-              <option value="members">Most Members</option>
-            </select>
-          </div>
-        </div>
-
-        {/* memories Cards */}
-        <div
-          onClick={switchtoPostDetails}
-          className="grid md:grid-cols-2 grid-cols-3 gap-3"
-        >
-          {handelSort().map((item, index) => (
-            <div
-              key={index}
-              className="bg-white shadow rounded overflow-hidden"
-            >
-              <img
-                src={item.img}
-                alt={item.title}
-                className="w-full h-40 object-cover"
-              />
-              <div className="flex items-center gap-2 px-2">
-                <img
-                  src="/images.jpg"
-                  alt="author"
-                  className="w-6 h-6 rounded-full object-cover"
-                />
-                <div className="text-sm">
-                  <p className="font-medium text-[.5rem] text-gray-800">
-                    username
-                  </p>
-                  <p className="text-xs text-[.4rem] text-gray-400">
-                    Posted {item.postedDate}
-                  </p>
-                </div>
-              </div>
-              <div className="p-2">
-                <h3 className="font-semibold text-[.7rem] text-blue-900 text-base">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-[.6rem] text-gray-500 ">
-                  {item.description}
-                </p>
-                <p className="text-xs text-[.4rem] text-gray-400 ">
-                  {item.location} • {item.activity}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* load more memories */}
-        <div className="mt-6 flex justify-center">
-          <button className="px-4 py-2 border rounded text-sm text-gray-600 hover:text-blue-500">
-            Load More memories
+    <div className="min-h-screen bg-gradient-to-tr from-amber-50 to-amber-200 p-4 space-y-6">
+      {/* Top Header */}
+      <div className="max-w-6xl mx-auto mb-4 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate(-1)} className="text-gray-600 hover:text-black">
+            <IoIosArrowBack size={20} />
           </button>
+          <div>
+            <h1 className="font-semibold text-lg text-gray-800">Downtown Memories</h1>
+            <p className="text-sm text-gray-500">Group • 28 members</p>
+          </div>
         </div>
-        {/* show invite model */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-md relative">
-              <button
-                onClick={() => setShowModal(false)}
-                className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-lg font-bold"
-              >
-                &times;
-              </button>
+        <div>
+          <select className="border border-gray-300 rounded-md px-3 py-1 text-sm text-gray-700 focus:outline-none">
+            <option value="latest">Latest</option>
+            <option value="oldest">Oldest</option>
+            <option value="mostLiked">Most Liked</option>
+          </select>
+        </div>
+      </div>
 
-              <h2 className="text-lg font-semibold text-blue-900 mb-4">
-                Invite a Member
-              </h2>
 
-              <form className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Email
-                  </label>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="example@example.com"
-                  />
-                </div>
+      {posts.map((post, postIdx) => (
+        <div key={post.id} className="max-w-3xl mx-auto bg-white rounded-xl shadow p-5 space-y-4">
+          {/* Post Header & Image */}
+          <div className="flex justify-between items-start">
+            <div className="flex items-center gap-3">
+              <img src={post.avatar} className="rounded-full w-9 h-9" alt="avatar" />
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-gray-800">
+                  {post.user} <span className="text-blue-500">• Downtown Memories</span>
+                </span>
+                <span className="text-xs text-gray-500">{post.date}</span>
+              </div>
+            </div>
+            <div className="text-xl text-gray-400 hover:text-gray-600 cursor-pointer">⋯</div>
+          </div>
 
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="text-sm px-4 py-2 border rounded text-gray-600 hover:text-red-500"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="text-sm px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  >
-                    Send Invite
-                  </button>
-                </div>
-              </form>
+          <div className="relative w-full h-[370px] rounded-md overflow-hidden">
+            <img src={post.image} className="object-cover w-full h-full" alt="memory" />
+            <div className="absolute inset-0 flex items-center justify-between px-3 text-white text-xl">
+              <IoIosArrowBack className="cursor-pointer hover:scale-110" />
+              <IoIosArrowForward className="cursor-pointer hover:scale-110" />
+            </div>
+            <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+              📍 {post.location}
             </div>
           </div>
-        )}
-      </div>
-    </>
+          <p className="text-gray-800 text-sm">{post.caption}</p>
+
+          {/* Reactions */}
+          <div className="flex justify-between text-gray-600 text-sm items-center">
+            <div className="flex gap-5 items-center">
+              <button onClick={() => handleLikePost(post.id)} className="flex items-center gap-1 hover:text-blue-600">
+                <FaThumbsUp size={18} /> {post.likes}
+              </button>
+              <button onClick={() => handleDislikePost(post.id)} className="flex items-center gap-1 hover:text-red-600">
+                <FaThumbsDown size={18} /> {post.dislikes}
+              </button>
+            </div>
+            <div className="flex items-center gap-3 text-gray-400">
+              <FaFlag onClick={() => handleOpenReport("post", post.id)} className="hover:text-red-500 cursor-pointer" />
+            </div>
+          </div>
+
+          <hr className="my-4 border-gray-300" />
+
+          {/* Comments */}
+          <div>
+            <h4 className="text-sm font-medium text-gray-600">Comments ({post.comments.length})</h4>
+            <div className="mt-2 space-y-5">
+              {post.comments.map((comment, idx) => (
+                <div key={idx}>
+                  <div className="flex gap-3 items-start">
+                    <img src={`https://i.pravatar.cc/30?img=${idx + 30 + postIdx * 10}`} className="w-8 h-8 rounded-full mt-1" alt="avatar" />
+                    <div className="border border-gray-200 px-4 py-2 rounded-xl w-full bg-white shadow-sm">
+                      <div className="flex justify-between text-xs text-gray-600 font-medium">
+                        <span>{comment.name}</span>
+                        <span>{comment.time}</span>
+                      </div>
+                      <p className="text-gray-700 text-sm mt-1">{comment.text}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 text-gray-500 text-sm mt-1 ps-12">
+                    <button onClick={() => handleReactToComment(post.id, idx, 1)} className="flex items-center gap-1 hover:text-blue-600">
+                      <FaThumbsUp size={16} /> {comment.likes}
+                    </button>
+                    <button onClick={() => handleReactToComment(post.id, idx, -1)} className="flex items-center gap-1 hover:text-red-600">
+                      <FaThumbsDown size={16} /> {comment.dislikes || 0}
+                    </button>
+                    <button onClick={() => handleOpenReport("comment", `${post.id}-${idx}`)} className="flex items-center gap-1 hover:text-red-500">
+                      <FaFlag size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Add Comment */}
+            <div className="flex gap-3 mt-4 items-start">
+              <img src="https://i.pravatar.cc/30?img=1" className="w-8 h-8 rounded-full mt-1" alt="your avatar" />
+              <div className="flex items-center justify-between border border-gray-300 rounded-xl px-4 py-2 w-full bg-white shadow-sm">
+                <input
+                  type="text"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Add a comment..."
+                  className="flex-1 text-sm focus:outline-none bg-transparent"
+                />
+                <button onClick={() => handleAddComment(post.id)} className="text-blue-600 hover:text-blue-800 ms-2">
+                  <FiSend size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {reportTarget && (
+        <ReportPopup
+          target={reportTarget}
+          onCancel={() => setReportTarget(null)}
+          onSubmit={handleSubmitReport}
+        />
+      )}
+    </div>
   );
 }
-
-export default GroupPage;

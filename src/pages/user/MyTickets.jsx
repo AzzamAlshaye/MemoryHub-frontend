@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-import { FaFlag, FaThumbtack, FaCommentDots, FaChevronDown } from "react-icons/fa";
+// import { jwtDecode } from "jwt-decode";
+import {
+  FaFlag,
+  FaThumbtack,
+  FaCommentDots,
+  FaChevronDown,
+} from "react-icons/fa";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -67,15 +72,21 @@ export default function MyTickets() {
 
   // Apply filters for active tab and status
   const filteredReports = reports.filter((r) => {
-    const isRightTab = activeTab === "post" ? r.targetType === "pin" : r.targetType === "comment";
-    const statusMatch = statusFilter === "All Reports" || r.status === statusFilter.toLowerCase();
+    const isRightTab =
+      activeTab === "post"
+        ? r.targetType === "pin"
+        : r.targetType === "comment";
+    const statusMatch =
+      statusFilter === "All Reports" || r.status === statusFilter.toLowerCase();
     return isRightTab && statusMatch;
   });
 
   // Sort reports by date
   const sortedReports = [...filteredReports].sort((a, b) => {
-    if (sortFilter === "Newest First") return new Date(b.createdAt) - new Date(a.createdAt);
-    if (sortFilter === "Oldest First") return new Date(a.createdAt) - new Date(b.createdAt);
+    if (sortFilter === "Newest First")
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    if (sortFilter === "Oldest First")
+      return new Date(a.createdAt) - new Date(b.createdAt);
     return 0;
   });
 
@@ -93,7 +104,7 @@ export default function MyTickets() {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-gradient-to-tr from-amber-50 to-amber-200  min-h-screen">
       {/* Page title and toast container for messages */}
       <h1 className="text-2xl font-bold mb-6 text-gray-800">My Tickets</h1>
       <ToastContainer />
@@ -104,7 +115,9 @@ export default function MyTickets() {
           <button
             onClick={() => setActiveTab("post")}
             className={`flex items-center gap-2 text-sm px-2 py-1 font-medium ${
-              activeTab === "post" ? "text-sky-600 border-b-2 border-sky-400" : "text-gray-500"
+              activeTab === "post"
+                ? "text-sky-600 border-b-2 border-sky-400"
+                : "text-gray-500"
             }`}
           >
             <FaThumbtack />
@@ -113,7 +126,9 @@ export default function MyTickets() {
           <button
             onClick={() => setActiveTab("comment")}
             className={`flex items-center gap-2 text-sm px-2 py-1 font-medium ${
-              activeTab === "comment" ? "text-sky-600 border-b-2 border-sky-400" : "text-gray-500"
+              activeTab === "comment"
+                ? "text-sky-600 border-b-2 border-sky-400"
+                : "text-gray-500"
             }`}
           >
             <FaCommentDots />
@@ -123,19 +138,33 @@ export default function MyTickets() {
 
         {/* Filter dropdowns for status and sorting */}
         <div className="flex flex-col sm:flex-row justify-between gap-4 sm:items-center mb-6">
-          <Dropdown value={statusFilter} onChange={setStatusFilter} options={["All Reports", "Pending", "Resolved", "Dismissed"]} />
+          <Dropdown
+            value={statusFilter}
+            onChange={setStatusFilter}
+            options={["All Reports", "Pending", "Resolved", "Dismissed"]}
+          />
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">Sort by:</span>
-            <Dropdown value={sortFilter} onChange={setSortFilter} options={["Newest First", "Oldest First"]} />
+            <Dropdown
+              value={sortFilter}
+              onChange={setSortFilter}
+              options={["Newest First", "Oldest First"]}
+            />
           </div>
         </div>
 
         {/* Report Cards */}
         <div className="space-y-6">
           {currentReports.map((r) => {
-            const target = r.targetType === "pin" ? pinsMap[r.targetId] : commentsMap[r.targetId];
+            const target =
+              r.targetType === "pin"
+                ? pinsMap[r.targetId]
+                : commentsMap[r.targetId];
             return (
-              <div key={r.id} className="border border-gray-300 bg-white rounded-md shadow overflow-hidden">
+              <div
+                key={r.id}
+                className="border border-gray-300 bg-white rounded-md shadow overflow-hidden"
+              >
                 {/* Header with flag icon, reason, date, and status */}
                 <div className="flex justify-between items-center px-4 py-2 bg-red-100">
                   <div className="flex items-center gap-2">
@@ -143,24 +172,40 @@ export default function MyTickets() {
                       <FaFlag />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-black">{r.reason}</p>
-                      <p className="text-xs text-gray-600">Reported {formatTimeAgo(r.createdAt)}</p>
+                      <p className="text-sm font-semibold text-black">
+                        {r.reason}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Reported {formatTimeAgo(r.createdAt)}
+                      </p>
                     </div>
                   </div>
-                  <span className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${getStatusColor(r.status)}`}>
+                  <span
+                    className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${getStatusColor(
+                      r.status
+                    )}`}
+                  >
                     {r.status}
                   </span>
                 </div>
 
                 {/* Report details and resolution if exists */}
                 <div className="px-4 pt-4 pb-2">
-                  <p className="text-xs font-medium text-gray-400 uppercase mb-1">Report Reason</p>
-                  <div className="bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-black rounded">{r.reason}</div>
+                  <p className="text-xs font-medium text-gray-400 uppercase mb-1">
+                    Report Reason
+                  </p>
+                  <div className="bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-black rounded">
+                    {r.reason}
+                  </div>
 
                   {r.resolutionReason && (
                     <div>
-                      <p className="text-xs font-medium text-gray-400 uppercase mb-1 mt-3">Resolution</p>
-                      <div className="bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-black rounded">{r.resolutionReason}</div>
+                      <p className="text-xs font-medium text-gray-400 uppercase mb-1 mt-3">
+                        Resolution
+                      </p>
+                      <div className="bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-black rounded">
+                        {r.resolutionReason}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -172,13 +217,19 @@ export default function MyTickets() {
         {/* Pagination controls */}
         <div className="flex justify-between items-center mt-6">
           <span className="text-sm text-gray-500">
-            Showing {indexOfFirst + 1}-{Math.min(indexOfLast, sortedReports.length)} of {sortedReports.length}
+            Showing {indexOfFirst + 1}-
+            {Math.min(indexOfLast, sortedReports.length)} of{" "}
+            {sortedReports.length}
           </span>
           <div className="flex gap-2">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
               <button
                 key={n}
-                className={`px-3 py-1 rounded-md border text-sm ${currentPage === n ? "bg-blue-400 text-white" : "bg-white text-black"}`}
+                className={`px-3 py-1 rounded-md border text-sm ${
+                  currentPage === n
+                    ? "bg-blue-400 text-white"
+                    : "bg-white text-black"
+                }`}
                 onClick={() => setCurrentPage(n)}
               >
                 {n}

@@ -15,3 +15,35 @@
     scrollbar-width: none;
   }
 } */
+/* ─── Override Leaflet z-index ───────────────────────────────────────────── */
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-overlay-pane,
+.leaflet-marker-pane,
+.leaflet-shadow-pane,
+.leaflet-popup-pane,
+.leaflet-container .leaflet-control-container,
+.leaflet-container .leaflet-control,
+.leaflet-container .leaflet-top,
+.leaflet-container .leaflet-bottom {
+  z-index: 0 !important;
+}
+.leaflet-control {
+  z-index: 0 !important;
+}
+.leaflet-pane {
+  z-index: 0 !important;
+}
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 0 !important;
+}
+
+/* Hide default scrollbars  ───────────────────────────────────────────── */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
