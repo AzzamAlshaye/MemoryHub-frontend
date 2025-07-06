@@ -5,10 +5,10 @@ import SignInPage from "../pages/Auth/SignInPage.jsx";
 import SignupPage from "../pages/Auth/SignupPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
 import MapPage from "../pages/user/MapPage.jsx";
-import GroupPage from "../pages/user/GroupPage.jsx";
+import GroupPage from "../pages/user/group/GroupPage.jsx";
 import Profile from "../pages/user/Profile.jsx";
-import Join from "../pages/user/JoinGroup.jsx";
-import GroupInfo from "../components/GroupInfo.jsx";
+import Join from "../components/group/JoinGroup.jsx";
+import GroupInfo from "../pages/user/group/GroupInfo.jsx";
 import MyTickets from "../pages/user/MyTickets.jsx";
 import AdminCrud from "../pages/admin/AdminCrud.jsx";
 import AdminTickets from "../pages/admin/AdminTickets.jsx";
@@ -17,8 +17,8 @@ import PageNotFound from "../pages/unauthorized/NotFound.jsx";
 import Footer from "../components/Footer.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import MobileNav from "../components/MobileNav.jsx";
-import GroupList from "../pages/user/GroupList.jsx";
-import EditPost from "../components/EditPost.jsx";
+import GroupList from "../pages/user/group/GroupList.jsx";
+import EditPost from "../components/map/EditPost.jsx";
 
 const LayoutWithNav = () => (
   <div className="flex flex-col min-h-screen">
