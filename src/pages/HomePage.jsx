@@ -5,16 +5,16 @@ function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-blue-50 py-16 px-4">
+      <section className="bg-gradient-to-r from-cyan-50  via-cyan-100  to-cyan-100 py-16 px-4">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="text-center md:text-left">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-snug">
+            <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-4 leading-snug">
               Save your memories where they happened
             </h1>
-            <p className="text-gray-700 text-sm sm:text-base mb-6 max-w-md mx-auto md:mx-0">
+            <p className="text-gray-500 text-sm sm:text-base mb-6 max-w-md mx-auto md:mx-0">
               Pin your favorite moments to real locations—videos, photos, voice notes, or personal notes—on an interactive map.
             </p>
-            <button className="bg-blue-500 text-white px-6 py-2 rounded-full shadow hover:bg-blue-600 transition">
+            <button className="bg-cyan-400 text-white px-6 py-2 rounded-full shadow hover:bg-cyan-300 cursor-pointer duration-300 delay-400 transition">
               Start your first memory
             </button>
           </div>
@@ -67,46 +67,7 @@ function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 px-4">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-10">What Our Users Say</h2>
-          <div className="grid gap-6 sm:grid-cols-2">
-            {/* Testimonial 1 */}
-            <div className="bg-gray-100 rounded-lg p-6 text-left flex gap-4 items-start">
-              <img
-                src="https://randomuser.me/api/portraits/women/44.jpg"
-                alt="Sarah Johnson"
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <div>
-                <div className="font-bold">Sarah Johnson</div>
-                <div className="text-sm text-gray-500 mb-2">Travel Blogger</div>
-                <p className="text-sm text-gray-600">
-                  Map Memory has transformed how I document my travels. Now I can revisit my adventures not just through photos,
-                  but by exactly where they happened. It's like having a personal travel diary mapped out!
-                </p>
-              </div>
-            </div>
-
-            {/* Testimonial 2 */}
-            <div className="bg-gray-100 rounded-lg p-6 text-left flex gap-4 items-start">
-              <img
-                src="https://randomuser.me/api/portraits/men/32.jpg"
-                alt="Michael Torres"
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <div>
-                <div className="font-bold">Michael Torres</div>
-                <div className="text-sm text-gray-500 mb-2">Photographer</div>
-                <p className="text-sm text-gray-600">
-                  As a photographer, I love being able to pin my photos to exact locations. It helps me remember the perfect spots
-                  for future shoots, and I've even connected with other photographers through shared locations.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    
     </>
   );
 }
