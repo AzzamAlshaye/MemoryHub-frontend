@@ -305,34 +305,8 @@ useEffect(() => {
     .catch((err) => console.error("Failed to fetch user", err));
 }, []);
 
-<<<<<<< HEAD
 
 
-=======
-  useEffect(() => {
-    let currentUserId = null
-
-    userService
-      .getCurrentUser()
-      .then((data) => {
-        setUser(data)
-        setName(data.name || "")
-        setEmail(data.email || "")
-        currentUserId = data.id
-
-        pinService
-          .list()
-          .then((pins) => {
-            const filteredPins = (pins || []).filter(
-              (pin) => pin.userId === currentUserId
-            )
-            setMemories(filteredPins)
-          })
-          .catch((err) => console.error("Failed to fetch memories", err))
-      })
-      .catch((err) => console.error("Failed to fetch user", err))
-  }, [])
->>>>>>> d66e25e841f51b570db9fd8e5184a436630abe50
 
   const handleSave = () => {
     const updateData = { name, email }
@@ -533,7 +507,6 @@ useEffect(() => {
                   <h4 className="text-lg font-bold text-gray-800 mb-2">
                     {memory.title}
                   </h4>
-<<<<<<< HEAD
     <p className="text-gray-500 text-xs mb-1 uppercase tracking-wide">
   {`${memory.location.lat.toFixed(4)}, ${memory.location.lng.toFixed(4)}`}
 </p>
@@ -543,13 +516,6 @@ useEffect(() => {
                   {/* <p className="text-gray-400 text-xs">{memory.date}</p> */}
                   <p className="text-gray-400 text-xs">{new Date(memory.createdAt).toLocaleDateString()}</p>
  </div>
-=======
-                  <p className="text-gray-500 text-xs mb-1 uppercase tracking-wide">
-                    {JSON.stringify(memory.location)}
-                  </p>
-                  <p className="text-gray-400 text-xs">{memory.date}</p>
-                </div>
->>>>>>> d66e25e841f51b570db9fd8e5184a436630abe50
               </div>
             ))}
           </div>
