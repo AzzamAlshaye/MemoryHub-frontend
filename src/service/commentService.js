@@ -5,11 +5,19 @@ import { commentEndpoints } from "../api/endpoints";
 export const commentService = {
   /**
    * POST /comments
-   * @param {Object} data - { pinId, text, ... }
+   * @param {{ pinId: string, text: string }} data
    * @returns {Promise<Object>}
    */
-  create(data) {
-    return primaryAPI.post(commentEndpoints.create, data).then((r) => r.data);
+  create({ pinId, text }) {
+    if (!pinId || !text) {
+      return Promise.reject(
+        new Error("pinId and text are required to create a comment")
+      );
+    }
+    // rename to match the Comment model: pin & content
+    return primaryAPI
+      .post(commentEndpoints.create, { pin: pinId, content: text })
+      .then((r) => r.data);
   },
 
   /**
@@ -18,6 +26,9 @@ export const commentService = {
    * @returns {Promise<Array>}
    */
   listByPin(pinId) {
+    if (!pinId) {
+      return Promise.reject(new Error("pinId is required to list comments"));
+    }
     return primaryAPI
       .get(commentEndpoints.listByPin(pinId))
       .then((r) => r.data);
@@ -25,9 +36,6 @@ export const commentService = {
 
   /**
    * PUT /comments/:id
-   * @param {string} id
-   * @param {Object} data
-   * @returns {Promise<Object>}
    */
   update(id, data) {
     return primaryAPI
@@ -37,8 +45,6 @@ export const commentService = {
 
   /**
    * DELETE /comments/:id
-   * @param {string} id
-   * @returns {Promise<void>}
    */
   remove(id) {
     return primaryAPI.delete(commentEndpoints.remove(id)).then((r) => r.data);

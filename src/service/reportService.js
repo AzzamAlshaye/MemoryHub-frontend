@@ -5,7 +5,7 @@ import { reportEndpoints } from "../api/endpoints";
 export const reportService = {
   /**
    * POST /reports
-   * @param {Object} data
+   * @param {{ targetType: string, targetId: string, reason?: string }} data
    * @returns {Promise<Object>}
    */
   create(data) {
