@@ -1,43 +1,76 @@
-// src/components/PinsMap.jsx
-import React from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+// src/components/map/PinsMap.jsx
+import React, { useRef, useEffect } from "react";
+import Map, { Marker, NavigationControl } from "react-map-gl/mapbox";
+import "mapbox-gl/dist/mapbox-gl.css";
 
-export default function PinsMap({ pins = [], onPinClick, onMapClick }) {
-  // Hook into map events and forward clicks
-  function ClickHandler() {
-    useMapEvents({
-      click: (e) => {
-        if (onMapClick) {
-          onMapClick(e); // forward the Leaflet click event
-        }
-      },
-    });
-    return null;
-  }
+export default function PinsMap({
+  pins = [],
+  onPinClick,
+  onMapClick,
+  userLocation,
+}) {
+  const mapRef = useRef(null);
+
+  // On mount and whenever window resizes, force Mapbox to re-tile to the container size
+  useEffect(() => {
+    const resize = () => {
+      const map = mapRef.current;
+      if (map) map.resize();
+    };
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, []);
 
   return (
-    <MapContainer
-      center={[24.7136, 46.6753]}
-      zoom={5}
-      className="w-full h-full"
+    <Map
+      ref={mapRef}
+      initialViewState={{
+        latitude: 24.7136,
+        longitude: 46.6753,
+        zoom: 5,
+      }}
+      style={{ width: "100%", height: "100%" }}
+      mapStyle="mapbox://styles/mapbox/streets-v11"
+      mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+      onLoad={(e) => {
+        // once style & container are ready, resize
+        e.target.resize();
+      }}
+      onClick={(e) => {
+        onMapClick?.({
+          lat: e.lngLat.lat,
+          lng: e.lngLat.lng,
+        });
+      }}
     >
-      <TileLayer
-        attribution="&copy; OpenStreetMap"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      {/* zoom & compass controls */}
+      <NavigationControl position="top-left" />
 
+      {/* existing pins */}
       {pins.map((pin) => (
         <Marker
           key={pin._id}
-          position={[pin.location.lat, pin.location.lng]}
-          eventHandlers={{
-            click: () => onPinClick(pin._id),
+          longitude={pin.location.lng}
+          latitude={pin.location.lat}
+          anchor="bottom"
+          onClick={(evt) => {
+            // prevent propagation to map onClick
+            evt.originalEvent.stopPropagation();
+            onPinClick(pin._id);
           }}
         />
       ))}
 
-      <ClickHandler />
-    </MapContainer>
+      {/* user’s current location */}
+      {userLocation && (
+        <Marker
+          longitude={userLocation.lng}
+          latitude={userLocation.lat}
+          anchor="center"
+        >
+          <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white" />
+        </Marker>
+      )}
+    </Map>
   );
 }
