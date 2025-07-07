@@ -9,6 +9,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
+import { FiSend } from "react-icons/fi";
 import ReportPopup from "./ReportPopup";
 
 import { pinService } from "../../service/pinService";
@@ -185,7 +186,7 @@ export default function ViewPin({
     setCurrentIdx((i) => (i + step + mediaItems.length) % mediaItems.length);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-30 p-4">
       <div className="relative bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
@@ -195,21 +196,22 @@ export default function ViewPin({
         </button>
 
         {/* Header */}
-        <header className="p-6 border-b">
-          <h2 className="text-2xl font-bold">{pin.title}</h2>
-          <div className="mt-4 flex items-center gap-3">
+        <header className="p-6">
+          <div className="flex items-center gap-4">
             <img
               src={pin.owner?.avatar || currentUser.avatar}
               alt={pin.owner?.name || currentUser.name}
               className="w-10 h-10 rounded-full object-cover"
             />
-            <div className="text-sm text-gray-500">
-              <p className="font-medium">
-                {pin.owner?.name || currentUser.name}
+            <div className="flex-1">
+              <h2 className="text-lg font-semibold text-gray-800">
+                {pin.title}
+              </h2>
+              <p className="text-xs text-gray-500">
+                {pin.owner?.name || currentUser.name} · {fmtDate(pin.createdAt)}
               </p>
-              <time dateTime={pin.createdAt}>{fmtDate(pin.createdAt)}</time>
             </div>
-            <div className="ml-auto flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
               <span className="px-3 py-1 text-xs bg-indigo-100 text-indigo-800 rounded-full">
                 {pin.privacy}
               </span>
@@ -243,15 +245,20 @@ export default function ViewPin({
                 />
               )}
             </div>
+            {pin.location?.name && (
+              <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                📍 {pin.location.name}
+              </div>
+            )}
             <button
               onClick={() => navigate(-1)}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white text-xl hover:scale-110 transition"
             >
               <FaChevronLeft />
             </button>
             <button
               onClick={() => navigate(1)}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white text-xl hover:scale-110 transition"
             >
               <FaChevronRight />
             </button>
@@ -261,14 +268,6 @@ export default function ViewPin({
         {/* Body */}
         <section className="p-6 space-y-6">
           <p className="text-gray-700">{pin.description}</p>
-
-          <div className="flex items-start gap-4 p-4 bg-white border rounded-lg">
-            <FaLocationDot className="text-red-500 text-2xl" />
-            <div>
-              <p className="font-medium">{pin.location.name}</p>
-              <p className="text-sm text-gray-500">{pin.location.address}</p>
-            </div>
-          </div>
 
           {/* Pin reactions */}
           <div className="flex items-center justify-between">
@@ -310,56 +309,40 @@ export default function ViewPin({
               Comments ({comments.length})
             </h3>
             <div className="max-h-64 overflow-y-auto space-y-4">
-              {comments.map((c) => (
-                <div key={c.id} className="flex items-start gap-3">
-                  <img
-                    src={c.author.avatar}
-                    alt={c.author.name}
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <p className="font-medium text-sm">{c.author.name}</p>
-                      <time
-                        className="text-xs text-gray-500"
-                        dateTime={c.createdAt}
-                      >
-                        {fmtDate(c.createdAt)}
-                      </time>
+              {comments.map((c, idx) => (
+                <div key={c.id} className="space-y-1">
+                  <div className="flex items-start gap-3">
+                    <img
+                      src={c.author.avatar}
+                      alt={c.author.name}
+                      className="w-8 h-8 rounded-full mt-1"
+                    />
+                    <div className="flex-1 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm">
+                      <div className="flex justify-between text-xs text-gray-600">
+                        <span>{c.author.name}</span>
+                        <span>{fmtDate(c.createdAt)}</span>
+                      </div>
+                      <p className="mt-1 text-gray-700 text-sm">{c.content}</p>
                     </div>
-                    <p className="mt-1 text-gray-700">{c.content}</p>
-                    <div className="mt-2 flex items-center gap-4">
-                      <button
-                        onClick={() => handleCommentReact(c.id, "like")}
-                        className={
-                          "flex items-center gap-1 " +
-                          (commentReactions[c.id] === "like"
-                            ? "text-blue-600"
-                            : "text-gray-500 hover:text-blue-600")
-                        }
-                      >
-                        <FaThumbsUp /> {c.likes}
-                      </button>
-                      <button
-                        onClick={() => handleCommentReact(c.id, "dislike")}
-                        className={
-                          "flex items-center gap-1 " +
-                          (commentReactions[c.id] === "dislike"
-                            ? "text-red-600"
-                            : "text-gray-500 hover:text-red-600")
-                        }
-                      >
-                        <FaThumbsDown /> {c.dislikes}
-                      </button>
-                      <button
-                        onClick={() =>
-                          setShowReport({ type: "comment", id: c.id })
-                        }
-                        className="flex items-center gap-1 hover:text-yellow-600"
-                      >
-                        <FaFlag /> Report
-                      </button>
-                    </div>
+                  </div>
+                  <div className="flex items-center gap-6 text-gray-500 text-sm pl-11">
+                    <button
+                      onClick={() => handleCommentReact(c.id, "like")}
+                      className="flex items-center gap-1 hover:text-blue-600"
+                    >
+                      <FaThumbsUp size={16} /> {c.likes}
+                    </button>
+                    <button
+                      onClick={() => handleCommentReact(c.id, "dislike")}
+                      className="flex items-center gap-1 hover:text-red-600"
+                    >
+                      <FaThumbsDown size={16} /> {c.dislikes}
+                    </button>
+                    <FaFlag
+                      onClick={() => setShowReport({ type: "comment", id: c.id })}
+                      className="cursor-pointer hover:text-red-500"
+                      size={14}
+                    />
                   </div>
                 </div>
               ))}
@@ -368,25 +351,26 @@ export default function ViewPin({
             {/* Add comment */}
             <form
               onSubmit={handleAddComment}
-              className="mt-6 flex gap-3 border-t pt-4"
+              className="flex items-start gap-3 mt-4"
             >
               <img
                 src={currentUser.avatar}
                 alt={currentUser.name}
-                className="w-8 h-8 rounded-full"
+                className="w-8 h-8 rounded-full mt-1"
               />
-              <textarea
-                name="comment"
-                rows={2}
-                placeholder="Add a comment..."
-                className="flex-1 border rounded-lg p-2"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-              >
-                Post
-              </button>
+              <div className="flex flex-1 items-center border border-gray-300 rounded-xl px-4 py-2 bg-white shadow-sm">
+                <input
+                  name="comment"
+                  placeholder="Add a comment…"
+                  className="flex-1 text-sm focus:outline-none bg-transparent"
+                />
+                <button
+                  type="submit"
+                  className="ms-2 text-blue-600 hover:text-blue-800"
+                >
+                  <FiSend size={18} />
+                </button>
+              </div>
             </form>
           </div>
         </section>
