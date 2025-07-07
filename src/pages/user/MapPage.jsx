@@ -1,14 +1,19 @@
 // src/pages/user/MapPage.jsx
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useCallback } from "react";
+import { FaRegBookmark, FaTimes } from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import PinsMap from "../../components/map/PinsMap";
 import ViewPin from "../../components/map/ViewPin";
 import CreatePost from "../../components/map/CreatePost";
 import { pinService } from "../../service/pinService";
-import { FaLocationDot } from "react-icons/fa6";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../../context/AuthContext";
 
 export default function MapPage() {
+  const { user } = useAuth();
   const [filter, setFilter] = useState("public");
   const [search, setSearch] = useState("");
   const [pins, setPins] = useState([]);
@@ -17,9 +22,9 @@ export default function MapPage() {
   const [selectedPinId, setSelectedPinId] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
   const [newPinLocation, setNewPinLocation] = useState(null);
-
-  // track user location
   const [userLocation, setUserLocation] = useState(null);
+
+  // 1) Get browser geolocation
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
       ({ coords }) =>
@@ -28,77 +33,91 @@ export default function MapPage() {
     );
   }, []);
 
-  // fetch pins whenever filter/search change
-  useEffect(() => {
-    setLoading(true);
-    pinService
-      .list(filter, search)
-      .then(setPins)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [filter, search]);
+  // 2) Normalize pin docs to include top-level latitude & longitude
+  const normalizePins = useCallback((list) => {
+    return list.map((pin) => ({
+      ...pin,
+      latitude: pin.location.lat,
+      longitude: pin.location.lng,
+    }));
+  }, []);
 
-  // fetch selected pin detail
+  // 3) Fetch all public pins, then client‐filter for private
+  const fetchPins = useCallback(async () => {
+    setLoading(true);
+    try {
+      const all = await pinService.list("public", search);
+      const filtered =
+        filter === "private"
+          ? all.filter(
+              (p) => p.privacy === "private" && p.owner?._id === user?._id
+            )
+          : all;
+      setPins(normalizePins(filtered));
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load pins");
+    } finally {
+      setLoading(false);
+    }
+  }, [filter, search, user, normalizePins]);
+
+  // Fetch on mount and whenever filter/search/user changes
+  useEffect(() => {
+    fetchPins();
+  }, [fetchPins]);
+
+  // 4) Fetch one pin for the Detail modal
   useEffect(() => {
     if (!selectedPinId) {
       setSelectedPin(null);
       return;
     }
-    pinService.get(selectedPinId).then(setSelectedPin).catch(console.error);
+    pinService
+      .get(selectedPinId)
+      .then((pin) => {
+        setSelectedPin({
+          ...pin,
+          latitude: pin.location.lat,
+          longitude: pin.location.lng,
+        });
+      })
+      .catch(console.error);
   }, [selectedPinId]);
 
+  // Handlers
   const openPin = (id) => setSelectedPinId(id);
   const handleMapClick = ({ lat, lng }) => setNewPinLocation({ lat, lng });
-
-  // use-my-location handler
   const handleUseMyLocation = () => {
-    if (!userLocation) {
-      toast.error("Unable to determine your location.");
-      return;
-    }
+    if (!userLocation) return toast.error("Unable to determine your location.");
     setNewPinLocation(userLocation);
   };
 
-  // sidebar now just shows pins
-  const renderSidebar = () => {
-    if (loading) return <p className="p-4 text-gray-500">Loading…</p>;
-    return pins.map((pin) => (
-      <li
-        key={pin._id}
-        className="flex items-center gap-3 p-2 cursor-pointer hover:bg-gray-100 rounded"
-        onClick={() => openPin(pin._id)}
-      >
-        <img
-          src={pin.owner?.avatar || "/default-avatar.png"}
-          alt={pin.owner?.name || "User"}
-          className="w-10 h-10 rounded-full object-cover"
-        />
-        <div>
-          <h4 className="font-medium">{pin.title}</h4>
-          <p className="text-sm text-gray-500 truncate">{pin.description}</p>
-        </div>
-      </li>
-    ));
-  };
-
   return (
-    <div className="flex flex-col min-h-screen bg-[#FDF7F0]">
+    <div className="flex flex-col min-h-screen bg-[#FEFCFB]">
       <ToastContainer position="top-center" autoClose={3000} />
 
-      <main className="flex-1 max-w-7xl mx-auto p-4">
+      <main className="flex-1 max-w-7xl mx-auto px-6 py-8 space-y-8">
+        {/* Welcome */}
+        <div className="mb-4">
+          <h2 className="text-3xl font-bold text-gray-900">
+            Welcome, {user?.name || "there"}!
+          </h2>
+        </div>
+
         {/* Search & Filter */}
-        <div className="bg-white p-4 rounded shadow mb-6 flex gap-4">
+        <div className="bg-white p-6 rounded-2xl shadow-lg flex flex-wrap gap-4 items-center">
           <input
             type="text"
             placeholder="Search…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 border rounded p-2"
+            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-amber-300 focus:border-amber-300 transition"
           />
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="border rounded p-2"
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-amber-300 focus:border-amber-300 transition"
           >
             <option value="public">Public</option>
             <option value="private">Private</option>
@@ -107,6 +126,7 @@ export default function MapPage() {
 
         {/* Map & Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Map */}
           <div className="lg:col-span-3 h-[70vh] rounded overflow-hidden shadow relative">
             <PinsMap
               pins={pins}
@@ -125,13 +145,51 @@ export default function MapPage() {
             )}
           </div>
 
-          <aside className="bg-white p-6 rounded shadow overflow-y-auto max-h-[70vh]">
-            <h3 className="text-xl font-semibold mb-4">My Memories</h3>
-            <ul className="space-y-2">{renderSidebar()}</ul>
+          {/* Sidebar */}
+          <aside className="bg-white p-6 rounded-xl shadow-lg overflow-y-auto max-h-[70vh] min-w-[20rem] hide-scrollbar">
+            <div className="flex items-center mb-6">
+              <FaRegBookmark className="text-amber-400 text-2xl mr-3" />
+              <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
+                {filter === "public" ? "Public Memories" : "Private Memories"}
+              </h3>
+              <span className="ml-auto bg-amber-100 text-amber-800 text-sm font-medium px-2 py-1 rounded-full">
+                {pins.length}
+              </span>
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center py-8">
+                <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              <ul className="space-y-4">
+                {pins.map((pin) => (
+                  <li
+                    key={pin._id}
+                    onClick={() => openPin(pin._id)}
+                    className="flex items-start gap-3 p-4 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+                  >
+                    <img
+                      src={pin.owner?.avatar || "/default-avatar.png"}
+                      alt={pin.owner?.name || "User"}
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-300"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-800">
+                        {pin.title}
+                      </h4>
+                      <p className="text-sm text-gray-500 truncate whitespace-nowrap">
+                        {pin.description}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </aside>
         </div>
 
-        {/* View existing pin */}
+        {/* ViewPin */}
         {selectedPin && (
           <ViewPin
             pinId={selectedPinId}
@@ -139,16 +197,32 @@ export default function MapPage() {
           />
         )}
 
-        {/* Create new pin */}
+        {/* CreatePost Modal */}
         {newPinLocation && (
-          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg overflow-auto max-h-full shadow-xl">
+          <div
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={() => setNewPinLocation(null)}
+          >
+            <div
+              className="relative bg-white rounded-2xl w-full max-w-lg p-8 shadow-2xl overflow-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setNewPinLocation(null)}
+                className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+              >
+                <FaTimes size={20} />
+              </button>
+
               <CreatePost
                 initialLocation={newPinLocation}
                 onSubmit={async ({
                   title,
                   description,
-                  selectedPrivacy,
+                  privacy,
+                  groupId,
+                  latitude,
+                  longitude,
                   mediaFiles,
                 }) => {
                   const images = mediaFiles.filter((f) =>
@@ -160,15 +234,16 @@ export default function MapPage() {
                     {
                       title,
                       description,
-                      privacy: selectedPrivacy,
-                      latitude: newPinLocation.lat,
-                      longitude: newPinLocation.lng,
+                      privacy,
+                      groupId,
+                      latitude,
+                      longitude,
                     },
                     images,
                     video
                   );
                   setNewPinLocation(null);
-                  setPins(await pinService.list(filter, search));
+                  await fetchPins();
                 }}
                 onCancel={() => setNewPinLocation(null)}
               />
