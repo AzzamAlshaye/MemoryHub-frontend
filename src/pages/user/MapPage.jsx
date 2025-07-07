@@ -42,27 +42,21 @@ export default function MapPage() {
     }));
   }, []);
 
-  // 3) Fetch all public pins, then client‐filter for private
+  // 3) Fetch pins with the correct filter passed to the service
   const fetchPins = useCallback(async () => {
     setLoading(true);
     try {
-      const all = await pinService.list("public", search);
-      const filtered =
-        filter === "private"
-          ? all.filter(
-              (p) => p.privacy === "private" && p.owner?._id === user?._id
-            )
-          : all;
-      setPins(normalizePins(filtered));
+      const pins = await pinService.list(filter, search);
+      setPins(normalizePins(pins));
     } catch (err) {
       console.error(err);
       toast.error("Failed to load pins");
     } finally {
       setLoading(false);
     }
-  }, [filter, search, user, normalizePins]);
+  }, [filter, search, normalizePins]);
 
-  // Fetch on mount and whenever filter/search/user changes
+  // Fetch on mount and whenever filter/search changes
   useEffect(() => {
     fetchPins();
   }, [fetchPins]);
@@ -150,7 +144,8 @@ export default function MapPage() {
             <div className="flex items-center mb-6">
               <FaRegBookmark className="text-amber-400 text-2xl mr-3" />
               <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
-                {filter === "public" ? "Public Memories" : "Private Memories"}
+                {filter === "public" && "Public Memories"}
+                {filter === "private" && "Private Memories"}
               </h3>
               <span className="ml-auto bg-amber-100 text-amber-800 text-sm font-medium px-2 py-1 rounded-full">
                 {pins.length}
@@ -220,7 +215,6 @@ export default function MapPage() {
                   title,
                   description,
                   privacy,
-                  groupId,
                   latitude,
                   longitude,
                   mediaFiles,
@@ -235,7 +229,6 @@ export default function MapPage() {
                       title,
                       description,
                       privacy,
-                      groupId,
                       latitude,
                       longitude,
                     },
