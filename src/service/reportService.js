@@ -19,9 +19,9 @@ export const reportService = {
     return primaryAPI.get(reportEndpoints.list).then((r) => r.data);
   },
 
-
-  listMy() {
-    return primaryAPI.get("/reports/my").then((res) => res.data);
+// // for test
+  listmy() {
+    return primaryAPI.get(reportEndpoints.listmy).then((res) => res.data);
   },
 
 

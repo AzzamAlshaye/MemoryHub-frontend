@@ -63,22 +63,10 @@ export const groupEndpoints = {
 export const reportEndpoints = {
   create: "/reports", // POST   /api/reports
   list: "/reports", // GET    /api/reports
+  listmy:"/reports/my",  //Get /api/reports/my
   updateStatus: (id) => `/reports/${id}/status`, // PATCH  /api/reports/:id/status
+  
 };
 
 
-// export const reportEndpoints = {
-//   create: "/reports",
-//   list: "/reports",            // Admin-only
-//   listMine: "/reports/me",     // ✅ Add this
-//   updateStatus: (id) => `/reports/${id}/status`,
-// };
 
-
-// // ─── Reports ─────────────────────────────────────────────────────────────
-// export const reportEndpoints = {
-//   create: "/reports", // POST   /api/reports
-//   list: "/reports", // GET    /api/reports (admin only)
-//   listMine: "/reports/me", // GET    /api/reports/me ←✅ add this
-//   updateStatus: (id) => `/reports/${id}/status`, // PATCH  /api/reports/:id/status
-// };

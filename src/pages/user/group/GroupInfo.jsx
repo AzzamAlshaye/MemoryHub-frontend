@@ -470,7 +470,7 @@ export default function GroupInfo() {
                             onClick={() => handlePromote(m.id)}
                             className="text-green-600 hover:text-green-800"
                             title="Promote to Admin"
-                          >
+>
                             <FaUserShield />
                           </button>
                           <button
