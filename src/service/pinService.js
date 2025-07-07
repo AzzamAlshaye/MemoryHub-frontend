@@ -69,10 +69,19 @@ export const pinService = {
       .then((res) => res.data);
   },
 
-  /** List pins visible to the current user. */
-  list(filter = "public", search = "") {
+  /**
+   * List pins visible to the current user.
+   * Now supports an optional `groupId` query parameter.
+   *
+   * @param {string} filter   – "public" | "private" | "group"
+   * @param {string} search
+   * @param {string} groupId  – optional when filter="group"
+   */
+  list(filter = "public", search = "", groupId) {
+    const params = { filter, search };
+    if (filter === "group" && groupId) params.groupId = groupId;
     return primaryAPI
-      .get(pinEndpoints.list, { params: { filter, search } })
+      .get(pinEndpoints.list, { params })
       .then((res) => res.data);
   },
 
