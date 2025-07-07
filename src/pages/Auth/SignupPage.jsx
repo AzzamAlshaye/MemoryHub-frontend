@@ -77,7 +77,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-amber-200 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-[#FDF7F0] p-6">
       <ToastContainer position="top-center" />
       <div className="w-full max-w-sm bg-white rounded-3xl shadow-xl px-8 py-4 sm:px-8 sm:py-8">
         {/* Logo */}
@@ -97,7 +97,11 @@ export default function SignupPage() {
           Start saving your memories today!
         </p>
 
-        <Formik initialValues={initialValues} validate={validate} onSubmit={onSubmit}>
+        <Formik
+          initialValues={initialValues}
+          validate={validate}
+          onSubmit={onSubmit}
+        >
           {({ isSubmitting }) => (
             <Form className="space-y-5">
               {/* Name */}
@@ -115,7 +119,11 @@ export default function SignupPage() {
                 >
                   Name
                 </label>
-                <ErrorMessage name="name" component="div" className="text-red-500 text-xs mt-1" />
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
               </div>
 
               {/* Email */}
@@ -133,7 +141,11 @@ export default function SignupPage() {
                 >
                   Email
                 </label>
-                <ErrorMessage name="email" component="div" className="text-red-500 text-xs mt-1" />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
               </div>
 
               {/* Password */}
@@ -151,7 +163,11 @@ export default function SignupPage() {
                 >
                   Password
                 </label>
-                <ErrorMessage name="password" component="div" className="text-red-500 text-xs mt-1" />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
               </div>
 
               {/* Confirm Password */}
@@ -169,7 +185,11 @@ export default function SignupPage() {
                 >
                   Confirm Password
                 </label>
-                <ErrorMessage name="confirmPassword" component="div" className="text-red-500 text-xs mt-1" />
+                <ErrorMessage
+                  name="confirmPassword"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
               </div>
 
               {/* Submit */}
@@ -183,7 +203,10 @@ export default function SignupPage() {
 
               <p className="text-center text-sm text-gray-600 mt-4">
                 Already have an account?{" "}
-                <Link to="/SignInPage" className="text-amber-600 hover:underline font-medium">
+                <Link
+                  to="/SignInPage"
+                  className="text-amber-600 hover:underline font-medium"
+                >
                   Log in
                 </Link>
               </p>

@@ -91,7 +91,12 @@ export default function MyTickets() {
   };
 
   return (
+<<<<<<< HEAD
     <div className="p-6 bg-gradient-to-tr from-amber-50 to-amber-200 min-h-screen">
+=======
+    <div className="p-6 bg-[#FDF7F0] min-h-screen">
+      {/* Page title and toast container for messages */}
+>>>>>>> 4542b485d96d4b2a2ede3827eea58a5d1306d77b
       <h1 className="text-2xl font-bold mb-6 text-gray-800">My Tickets</h1>
       <ToastContainer />
       <div className="bg-white border border-gray-300 rounded-xl p-4 shadow">

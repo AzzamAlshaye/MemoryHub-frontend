@@ -1,5 +1,4 @@
-// src/components/Sidebar.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import {
   FaHome,
@@ -8,55 +7,49 @@ import {
   FaTicketAlt,
   FaSignInAlt,
   FaSignOutAlt,
+  FaUserEdit,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
-
-function parseJWT(token) {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => `%${("00" + c.charCodeAt(0).toString(16)).slice(-2)}`)
-        .join("")
-    );
-    return JSON.parse(jsonPayload);
-  } catch {
-    return null;
-  }
-}
+import { userService } from "../service/userService";
+import { div } from "framer-motion/client";
 
 function Sidebar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
-  const userData = token ? parseJWT(token) : null;
+  const [user, setUser] = useState({
+    name: "Guest",
+    avatar: "https://www.wpar.net/wp-content/uploads/2021/05/gravater-icon.jpg",
+    isLoggedIn: false,
+  });
 
-  const user = userData
-    ? {
-        name: userData.name || "User",
-        avatar:
-          userData.avatar || "https://randomuser.me/api/portraits/men/32.jpg",
-        isLoggedIn: true,
-      }
-    : {
-        name: "Guest",
-        avatar:
-          "https://www.wpar.net/wp-content/uploads/2021/05/gravater-icon.jpg",
-        isLoggedIn: false,
-      };
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    userService
+      .getCurrentUser()
+      .then((data) => {
+        setUser({
+          name: data.name || "User",
+          avatar: data.avatar || "https://randomuser.me/api/portraits/men/32.jpg",
+          isLoggedIn: true,
+        });
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+      });
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/Profile");
+    navigate("/SignInPage");
   };
 
   const menuItems = [
     { to: "/", icon: <FaHome size={20} />, label: "Home" },
     { to: "/mapPage", icon: <FaMapMarkedAlt size={20} />, label: "Map" },
-    { to: "/GroupList", icon: <FaUsers size={20} />, label: "GroupList" },
+    { to: "/GroupList", icon: <FaUsers size={20} />, label: "Group List" },
     { to: "/Mytickets", icon: <FaTicketAlt size={20} />, label: "My Tickets" },
   ];
 
@@ -69,13 +62,12 @@ function Sidebar() {
     >
       {/* Logo */}
       <Link to="/" className="flex items-center gap-4 px-3 py-6">
-        <img src="/public/logoupdata.png" className="w-8 h-auto object-contain" />
-        <motion.span
-          initial={{ opacity: 1 }}
-          whileHover={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
-          className="text-xl font-bold text-black whitespace-nowrap"
-        >
+        <img
+          src="/public/logoupdata.png"
+          className="w-8 h-auto object-contain"
+          alt="Logo"
+        />
+        <motion.span className="text-xl font-bold text-black whitespace-nowrap">
           MapHub
         </motion.span>
       </Link>
@@ -94,19 +86,8 @@ function Sidebar() {
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              <motion.div
-                initial={{ opacity: 1 }}
-                whileHover={{ x: 5, opacity: 1 }}
-                className="flex-shrink-0"
-              >
-                {item.icon}
-              </motion.div>
-              <motion.span
-                initial={{ opacity: 1 }}
-                whileHover={{ opacity: 1 }}
-                transition={{ delay: 0 }}
-                className="whitespace-nowrap"
-              >
+              <motion.div className="flex-shrink-0">{item.icon}</motion.div>
+              <motion.span className="whitespace-nowrap">
                 {item.label}
               </motion.span>
             </Link>
@@ -114,7 +95,7 @@ function Sidebar() {
         })}
       </nav>
 
-      {/* Profile */}
+      {/* Profile Section */}
       <div className="px-3 py-6 border-t border-gray-200">
         <div className="flex items-center gap-4">
           <img
@@ -122,27 +103,44 @@ function Sidebar() {
             alt="User avatar"
             className="w-10 h-10 rounded-full object-cover"
           />
-          <div className="flex flex-col whitespace-nowrap">
-            <span className="font-semibold text-gray-800 text-sm">
-              {user.name}
-            </span>
-            {user.isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                className="text-xs text-[#fb8951] hover:underline flex items-center gap-1"
-              >
-                <FaSignOutAlt size={12} />
-                View Profile
-              </button>
-            ) : (
-              <Link
-                to="/SignInPage"
-                className="text-xs text-[#fb8951] hover:underline flex items-center gap-1"
-              >
-                <FaSignInAlt size={12} />
-                Sign In
-              </Link>
-            )}
+          <div className="flex justify-between items-start w-full">
+            {/* الاسم و View Profile */}
+            <div className="flex flex-col gap-2">
+              <p className="font-semibold text-gray-800 text-sm px-1">
+                {user.name}
+              </p>
+
+              {user.isLoggedIn ? (
+                <Link
+                  to="/Profile"
+                  className="flex items-center gap-1 text-xs text-[#fb8951] hover:underline"
+                >
+                  <FaUserEdit size={12} />
+                  View Profile
+                </Link>
+              ) : null}
+            </div>
+
+            {/* Logout أو Sign In */}
+            <div className="">
+              {user.isLoggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  className="p-1 rounded-full hover:bg-red-100 text-[#fb8951] hover:text-red-600 transition"
+                  title="Logout"
+                >
+                  <FaSignOutAlt size={16} />
+                </button>
+              ) : (
+                <Link
+                  to="/SignInPage"
+                  className="text-xs text-[#fb8951] hover:underline flex items-center gap-1 mt-1"
+                >
+                  <FaSignInAlt size={12} />
+                  Sign In
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
