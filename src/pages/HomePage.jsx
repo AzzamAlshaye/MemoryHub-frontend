@@ -51,19 +51,26 @@ export default function HomePage() {
   return (
     <main className="bg-[#FEFCFB] text-gray-800">
       {/* Hero */}
-      <section className="container mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
+      <section
+        className="
+    container mx-auto px-6
+    py-12 sm:py-16 lg:py-20
+    grid md:grid-cols-2 gap-12 items-center
+    h-auto lg:h-[100vh]
+  "
+      >
         <motion.div
           initial="hidden"
           whileInView="visible"
           variants={fadeIn}
-          className="space-y-6"
+          className="space-y-6 text-center md:text-left"
         >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
             Save Your <span className="text-amber-500">Memories</span>
             <br />
             Where They Happened
           </h1>
-          <p className="text-lg max-w-lg leading-relaxed">
+          <p className="text-base md:text-lg max-w-lg mx-auto md:mx-0 leading-relaxed">
             Pin photos, videos, voice notes & stories to exact map locations.
             Relive your adventures with pinpoint accuracy.
           </p>
@@ -73,18 +80,29 @@ export default function HomePage() {
             variants={fadeIn}
             transition={{ delay: 0.3 }}
             whileHover={{ scale: 1.05 }}
-            className="bg-amber-500 text-white px-8 py-3 rounded-full shadow-md hover:shadow-lg transition"
+            className="
+        bg-amber-500 text-white
+        px-6 py-3 rounded-full shadow-md hover:shadow-lg
+        transition block md:inline-block
+        w-full md:w-auto
+      "
           >
             {isLoggedIn ? "Create Your Memory" : "Start Your First Memory"}
           </motion.button>
         </motion.div>
+
         <motion.img
           src="/Logo-all.png"
           initial="hidden"
           whileInView="visible"
           variants={fadeIn}
           transition={{ delay: 0.5 }}
-          className="w-[32rem] mx-auto"
+          className="
+      hidden sm:block
+      w-full max-w-xs sm:max-w-md md:max-w-lg lg:w-[32rem]
+      mx-auto
+    "
+          alt="Map Memory Illustration"
         />
       </section>
 

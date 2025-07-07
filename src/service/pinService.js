@@ -4,7 +4,26 @@ import { pinEndpoints, userEndpoints } from "../api/endpoints";
 
 export const pinService = {
   /**
+   * POST /pins with a FormData payload (fields + images + optional video).
+   * Axios/browser will set the multipart Content-Type boundary for you.
+   *
+   * @param {FormData} formData
+   * @returns {Promise<Object>}  – the created pin
+   */
+  createWithFormData(formData) {
+    return primaryAPI
+      .post(pinEndpoints.create, formData)
+      .then((res) => res.data);
+  },
+
+  /**
    * Create a new pin with up to 10 images and one video.
+   * Builds FormData under the hood.
+   * POST /pins
+   * @param {Object} fields       – { title, description, privacy, latitude, longitude, groupId? }
+   * @param {File[]} images       – up to 10 image files
+   * @param {File|null} video     – optional single video file
+   * @returns {Promise<Object>}   – the created pin
    */
   createWithMedia(fields, images = [], video = null) {
     const form = new FormData();
@@ -17,20 +36,15 @@ export const pinService = {
     if (video) form.append("video", video);
     images.slice(0, 10).forEach((img) => form.append("images", img));
 
-    return primaryAPI
-      .post(pinEndpoints.create, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((res) => res.data);
+    return primaryAPI.post(pinEndpoints.create, form).then((res) => res.data);
   },
 
   /**
-   * Update a pin with optional media.
+   * Update an existing pin, optionally replacing or adding media.
+   * PUT /pins/:id
    */
   updateWithMedia(id, fields, images = [], video = null) {
     const form = new FormData();
-    // only append text fields that are not null or undefined
-
     Object.entries(fields).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
         form.append(key, String(value));
@@ -40,18 +54,23 @@ export const pinService = {
     images.slice(0, 10).forEach((img) => form.append("images", img));
 
     return primaryAPI
-      .put(pinEndpoints.update(id), form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
+      .put(pinEndpoints.update(id), form)
       .then((res) => res.data);
   },
 
   /**
-   * List all visible pins (with optional filter/search).
+   * List pins visible to the current user.
+   * Now supports an optional `groupId` query parameter.
+   *
+   * @param {string} filter   – "public" | "private" | "group"
+   * @param {string} search
+   * @param {string} groupId  – optional when filter="group"
    */
-  list(filter = "public", search = "") {
+  list(filter = "public", search = "", groupId) {
+    const params = { filter, search };
+    if (filter === "group" && groupId) params.groupId = groupId;
     return primaryAPI
-      .get(pinEndpoints.list, { params: { filter, search } })
+      .get(pinEndpoints.list, { params })
       .then((res) => res.data);
   },
 
@@ -80,9 +99,7 @@ export const pinService = {
     return primaryAPI.get(pinEndpoints.get(id)).then((res) => res.data);
   },
 
-  /**
-   * Delete a pin by ID.
-   */
+  /** Remove (delete) a pin. */
   remove(id) {
     return primaryAPI.delete(pinEndpoints.remove(id)).then((res) => res.data);
   },
