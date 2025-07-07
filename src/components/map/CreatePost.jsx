@@ -4,7 +4,13 @@ import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import { FaCloudUploadAlt, FaMapPin } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
-import { FaTrash, FaLock, FaGlobe, FaUsers, FaArrowRight } from "react-icons/fa";
+import {
+  FaTrash,
+  FaLock,
+  FaGlobe,
+  FaUsers,
+  FaArrowRight,
+} from "react-icons/fa";
 
 export default function CreatePost({ onSubmit }) {
   const [mediaFiles, setMediaFiles] = useState([]);
@@ -54,8 +60,12 @@ export default function CreatePost({ onSubmit }) {
         <>
           {/* Header */}
           <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-gray-800">Pin a New Memory</h2>
-            <p className="text-gray-500 mt-1">Share your special moment with the world</p>
+            <h2 className="text-2xl font-bold text-gray-800">
+              Pin a New Memory
+            </h2>
+            <p className="text-gray-500 mt-1">
+              Share your special moment with the world
+            </p>
           </div>
 
           <div className="space-y-6">
@@ -63,8 +73,8 @@ export default function CreatePost({ onSubmit }) {
             <div>
               <label className="block text-gray-700 font-semibold mb-2">
                 Title
-                  <span className="text-red-500 mr-1"> *</span>
-                </label>
+                <span className="text-red-500 mr-1"> *</span>
+              </label>
               <input
                 type="text"
                 value={title}
@@ -76,7 +86,9 @@ export default function CreatePost({ onSubmit }) {
 
             {/* Description */}
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Description</label>
+              <label className="block text-gray-700 font-semibold mb-2">
+                Description
+              </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -87,10 +99,14 @@ export default function CreatePost({ onSubmit }) {
 
             {/* Media Upload */}
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Upload Media</label>
+              <label className="block text-gray-700 font-semibold mb-2">
+                Upload Media
+              </label>
               <div className="border-2 border-dashed border-blue-300 rounded-lg p-6 text-center hover:border-blue-500 transition relative">
                 <FaCloudUploadAlt className="mx-auto text-4xl text-blue-400 mb-3" />
-                <p className="text-gray-500 mb-2">Drag & drop or click to browse</p>
+                <p className="text-gray-500 mb-2">
+                  Drag & drop or click to browse
+                </p>
                 <input
                   type="file"
                   multiple
@@ -110,14 +126,23 @@ export default function CreatePost({ onSubmit }) {
               {/* Uploaded Files Preview */}
               {mediaFiles.length > 0 && (
                 <div className="mt-4">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Uploaded Files</h4>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                    Uploaded Files
+                  </h4>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                     {mediaFiles.map((file, index) => {
                       const url = URL.createObjectURL(file);
                       return (
-                        <div key={index} className="relative group rounded-lg overflow-hidden border">
+                        <div
+                          key={index}
+                          className="relative group rounded-lg overflow-hidden border"
+                        >
                           {file.type.startsWith("image/") ? (
-                            <img src={url} alt={`media-${index}`} className="object-cover w-full h-24" />
+                            <img
+                              src={url}
+                              alt={`media-${index}`}
+                              className="object-cover w-full h-24"
+                            />
                           ) : (
                             <video className="object-cover w-full h-24">
                               <source src={url} type={file.type} />
@@ -125,7 +150,9 @@ export default function CreatePost({ onSubmit }) {
                           )}
                           <button
                             onClick={() =>
-                              setMediaFiles((prev) => prev.filter((_, i) => i !== index))
+                              setMediaFiles((prev) =>
+                                prev.filter((_, i) => i !== index)
+                              )
                             }
                             className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs opacity-0 group-hover:opacity-100 transition"
                             title="Delete"
@@ -142,7 +169,9 @@ export default function CreatePost({ onSubmit }) {
 
             {/* Privacy Settings */}
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Privacy Settings</label>
+              <label className="block text-gray-700 font-semibold mb-2">
+                Privacy Settings
+              </label>
               <div className="flex flex-wrap gap-3">
                 {[
                   { label: "Private", value: "Private", icon: <FaLock /> },
@@ -152,7 +181,9 @@ export default function CreatePost({ onSubmit }) {
                   <label
                     key={opt.value}
                     className={`flex items-center gap-2 border px-4 py-2 rounded-xl shadow-sm cursor-pointer ${
-                      selectedPrivacy === opt.value ? "border-blue-500 bg-blue-50" : "border-gray-200"
+                      selectedPrivacy === opt.value
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-200"
                     }`}
                   >
                     <input
@@ -187,13 +218,18 @@ export default function CreatePost({ onSubmit }) {
       {step === 2 && (
         <>
           <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-gray-800">Preview Your Memory</h2>
+            <h2 className="text-2xl font-bold text-gray-800">
+              Preview Your Memory
+            </h2>
             <p className="text-gray-500 mt-1">Review before submitting</p>
           </div>
 
           <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 shadow-sm space-y-4">
             {mediaFiles.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 overflow-auto scrollbar-hide" style={{ maxHeight: 200 }}>
+              <div
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 overflow-auto scrollbar-hide"
+                style={{ maxHeight: 200 }}
+              >
                 {mediaFiles.map((file, idx) => {
                   const url = URL.createObjectURL(file);
                   return (
@@ -202,7 +238,11 @@ export default function CreatePost({ onSubmit }) {
                       className="w-full aspect-square rounded-lg overflow-hidden border transition hover:scale-105 duration-200"
                     >
                       {file.type.startsWith("image/") ? (
-                        <img src={url} alt={file.name} className="object-cover w-full h-full" />
+                        <img
+                          src={url}
+                          alt={file.name}
+                          className="object-cover w-full h-full"
+                        />
                       ) : (
                         <video controls className="object-cover w-full h-full">
                           <source src={url} type={file.type} />

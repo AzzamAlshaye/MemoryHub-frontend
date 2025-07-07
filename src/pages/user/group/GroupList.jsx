@@ -1,14 +1,13 @@
-// src/pages/groups/GroupList.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
-import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import CreateGroup from "../../../components/group/CreateGroup";
 import JoinGroup from "../../../components/group/JoinGroup";
-import { FaSearch, FaPlus, FaSignInAlt } from "react-icons/fa";
+import { FaSearch, FaPlus, FaSignInAlt, FaUsers } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { groupService } from "../../../service/groupService";
+
 const MySwal = withReactContent(Swal);
 
 const containerVariants = {
@@ -81,7 +80,7 @@ export default function GroupList() {
     });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white text-gray-800">
+    <div className="min-h-screen bg-[#FEFCFB] text-gray-800">
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
@@ -121,7 +120,7 @@ export default function GroupList() {
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="h-80 bg-white rounded-2xl animate-pulse"
+                className="h-80 bg-white rounded-2xl animate-pulse shadow"
               />
             ))}
           </div>
@@ -147,7 +146,7 @@ export default function GroupList() {
                 className="cursor-pointer"
                 onClick={() => navigate(`/group/${g.id}`)}
               >
-                <div className="rounded-2xl overflow-hidden backdrop-blur-sm bg-white/40 border border-white/20">
+                <div className="rounded-2xl overflow-hidden bg-white shadow-lg border border-gray-200">
                   <div className="relative h-48">
                     <img
                       src={g.avatar || "/placeholder.png"}

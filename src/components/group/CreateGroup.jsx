@@ -1,4 +1,3 @@
-// src/components/CreateGroup.jsx
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { FaCamera } from "react-icons/fa";
@@ -58,91 +57,88 @@ export default function CreateGroup({ onClose }) {
   };
 
   return (
-    // الخلفية بدون تمويه
-   
-      <motion.form
-        onClick={(e) => e.stopPropagation()}
-        onSubmit={handleSubmit}
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="bg-white rounded-3xl p-6 w-full max-w-md mx-auto shadow-lg border border-gray-200"
+    <motion.form
+      onClick={(e) => e.stopPropagation()}
+      onSubmit={handleSubmit}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="bg-white rounded-3xl p-6 w-full max-w-md mx-auto shadow-lg border border-gray-200"
+    >
+      <motion.h2
+        variants={itemVariants}
+        className="text-2xl font-semibold text-gray-900 text-center mb-5"
       >
-        <motion.h2
-          variants={itemVariants}
-          className="text-2xl font-semibold text-gray-900 text-center mb-5"
-        >
-          Create New Group
-        </motion.h2>
+        Create New Group
+      </motion.h2>
 
-        <motion.div
-          variants={itemVariants}
-          className="w-24 h-24 mx-auto mb-5 rounded-full border-4 border-dashed border-amber-300 flex items-center justify-center cursor-pointer hover:border-amber-500 transition"
-          onClick={() => fileInputRef.current.click()}
-        >
-          {preview ? (
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-full h-full object-cover rounded-full"
-            />
-          ) : (
-            <FaCamera size={24} className="text-amber-500" />
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleFileChange}
+      <motion.div
+        variants={itemVariants}
+        className="w-24 h-24 mx-auto mb-5 rounded-full border-4 border-dashed border-amber-300 flex items-center justify-center cursor-pointer hover:border-amber-500 transition"
+        onClick={() => fileInputRef.current.click()}
+      >
+        {preview ? (
+          <img
+            src={preview}
+            alt="Preview"
+            className="w-full h-full object-cover rounded-full"
           />
-        </motion.div>
+        ) : (
+          <FaCamera size={24} className="text-amber-500" />
+        )}
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+        />
+      </motion.div>
 
-        <motion.p
-          variants={itemVariants}
-          className="text-center text-sm text-gray-500 mb-6"
-        >
-          Click to upload a group image
-        </motion.p>
+      <motion.p
+        variants={itemVariants}
+        className="text-center text-sm text-gray-500 mb-6"
+      >
+        Click to upload a group image
+      </motion.p>
 
-        <motion.div variants={itemVariants} className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Group Title
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter title"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
-          />
-        </motion.div>
+      <motion.div variants={itemVariants} className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Group Title
+        </label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Enter title"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:ring-amber-300 transition"
+        />
+      </motion.div>
 
-        <motion.div variants={itemVariants} className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter description"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm h-28 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
-          />
-        </motion.div>
+      <motion.div variants={itemVariants} className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Description
+        </label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter description"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm h-28 resize-none focus:outline-none focus:ring focus:ring-amber-300 transition"
+        />
+      </motion.div>
 
-        <motion.button
-          variants={itemVariants}
-          type="submit"
-          disabled={loading}
-          className={`w-full py-3 text-white font-semibold rounded-full transition-shadow ${
-            loading
-              ? "bg-amber-300 cursor-not-allowed"
-              : "bg-amber-500 hover:bg-amber-600 shadow-md"
-          }`}
-        >
-          {loading ? "Creating…" : "Create Group"}
-        </motion.button>
-      </motion.form>
-    
+      <motion.button
+        variants={itemVariants}
+        type="submit"
+        disabled={loading}
+        className={`w-full py-3 text-white font-semibold rounded-full transition-shadow ${
+          loading
+            ? "bg-amber-300 cursor-not-allowed"
+            : "bg-amber-500 hover:bg-amber-600 shadow-md"
+        }`}
+      >
+        {loading ? "Creating…" : "Create Group"}
+      </motion.button>
+    </motion.form>
   );
 }

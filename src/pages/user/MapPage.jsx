@@ -1,13 +1,15 @@
-// src/pages/user/MapPage.jsx
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { FaRegBookmark } from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import PinsMap from "../../components/map/PinsMap";
 import ViewPin from "../../components/map/ViewPin";
 import CreatePost from "../../components/map/CreatePost";
 import { pinService } from "../../service/pinService";
-import { FaLocationDot } from "react-icons/fa6";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../../context/AuthContext";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -19,6 +21,7 @@ const fadeIn = {
 };
 
 export default function MapPage() {
+  const { user } = useAuth();
   const [filter, setFilter] = useState("public");
   const [search, setSearch] = useState("");
   const [pins, setPins] = useState([]);
@@ -28,7 +31,6 @@ export default function MapPage() {
   const [selectedPin, setSelectedPin] = useState(null);
   const [newPinLocation, setNewPinLocation] = useState(null);
 
-  // track user location
   const [userLocation, setUserLocation] = useState(null);
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
@@ -37,8 +39,6 @@ export default function MapPage() {
       (err) => console.warn("Geolocation error:", err)
     );
   }, []);
-
-  // fetch pins whenever filter/search change
 
   useEffect(() => {
     setLoading(true);
@@ -49,24 +49,17 @@ export default function MapPage() {
       .finally(() => setLoading(false));
   }, [filter, search]);
 
-  // Fetch groups once
-  useEffect(() => {
-    groupService.list().then(setGroups).catch(console.error);
-  }, []);
-
-  // Fetch selected pin details
   useEffect(() => {
     if (!selectedPinId) {
       setSelectedPin(null);
-    } else {
-      pinService.get(selectedPinId).then(setSelectedPin).catch(console.error);
+      return;
     }
+    pinService.get(selectedPinId).then(setSelectedPin).catch(console.error);
   }, [selectedPinId]);
 
   const openPin = (id) => setSelectedPinId(id);
   const handleMapClick = ({ lat, lng }) => setNewPinLocation({ lat, lng });
 
-  // use-my-location handler
   const handleUseMyLocation = () => {
     if (!userLocation) {
       toast.error("Unable to determine your location.");
@@ -75,7 +68,6 @@ export default function MapPage() {
     setNewPinLocation(userLocation);
   };
 
-  // sidebar now just shows pins
   const renderSidebar = () => {
     if (loading) {
       return (
@@ -84,74 +76,47 @@ export default function MapPage() {
         </div>
       );
     }
-    if (filter !== "group") {
-      return pins.map((pin, idx) => (
-        <motion.li
-          key={pin._id}
-          custom={idx}
-          initial="hidden"
-          whileInView="visible"
-          variants={fadeIn}
-          onClick={() => openPin(pin._id)}
-          className="flex items-start gap-3 p-4 rounded-lg hover:bg-gray-100 transition cursor-pointer min-w-0"
-        >
-          <img
-            src={pin.owner?.avatar || "/default-avatar.png"}
-            alt={pin.owner?.name || "User"}
-            className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-300"
-          />
-          <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-gray-800">{pin.title}</h4>
-            <p className="text-sm text-gray-500 truncate whitespace-nowrap">
-              {pin.description}
-            </p>
-          </div>
-        </motion.li>
-      ));
-    }
-    return groups.map((g, gi) => (
-      <div key={g._id} className="mb-8">
-        <motion.h4
-          custom={gi + 1}
-          initial="hidden"
-          whileInView="visible"
-          variants={fadeIn}
-          className="text-xl font-bold text-gray-800 mb-3 border-b border-gray-200 pb-1"
-        >
-          {g.name}
-        </motion.h4>
-        <ul className="space-y-4">
-          {(pinsByGroup[g._id] || []).map((pin, pi) => (
-            <motion.li
-              key={pin._id}
-              custom={gi + pi + 2}
-              initial="hidden"
-              whileInView="visible"
-              variants={fadeIn}
-              onClick={() => openPin(pin._id)}
-              className="flex items-start gap-3 p-4 rounded-lg hover:bg-gray-100 transition cursor-pointer min-w-0"
-            >
-              <img
-                src={pin.owner?.avatar || "/default-avatar.png"}
-                alt={pin.owner?.name || "User"}
-                className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-300"
-              />
-              <div className="flex-1 min-w-0">
-                <h5 className="font-medium text-gray-800">{pin.title}</h5>
-                <p className="text-sm text-gray-500 truncate whitespace-nowrap">
-                  {pin.description}
-                </p>
-              </div>
-            </motion.li>
-          ))}
-        </ul>
-      </div>
+    return pins.map((pin, idx) => (
+      <motion.li
+        key={pin._id}
+        custom={idx}
+        initial="hidden"
+        whileInView="visible"
+        variants={fadeIn}
+        onClick={() => openPin(pin._id)}
+        className="flex items-start gap-3 p-4 rounded-lg hover:bg-gray-100 transition cursor-pointer min-w-0"
+      >
+        <img
+          src={pin.owner?.avatar || "/default-avatar.png"}
+          alt={pin.owner?.name || "User"}
+          className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-300"
+        />
+        <div className="flex-1 min-w-0">
+          <h4 className="font-semibold text-gray-800">{pin.title}</h4>
+          <p className="text-sm text-gray-500 truncate whitespace-nowrap">
+            {pin.description}
+          </p>
+        </div>
+      </motion.li>
     ));
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FDF7F0]">
+    <div className="flex flex-col min-h-screen bg-[#FEFCFB]">
+      <ToastContainer position="top-center" autoClose={3000} />
       <main className="flex-1 max-w-7xl mx-auto px-6 py-8 space-y-8">
+        {/* Welcome message */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-4"
+        >
+          <h2 className="text-3xl font-bold text-gray-900">
+            Welcome, {user?.name || "there"}!
+          </h2>
+        </motion.div>
+
         {/* Search & Filter */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -196,7 +161,7 @@ export default function MapPage() {
             )}
           </div>
 
-          <aside className="bg-white p-6 rounded-xl shadow-lg overflow-y-auto max-h-[70vh] hide-scrollbar">
+          <aside className="bg-white p-6 rounded-xl shadow-lg overflow-y-auto max-h-[70vh]  min-w-[20rem] hide-scrollbar">
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -215,7 +180,6 @@ export default function MapPage() {
           </aside>
         </div>
 
-        {/* View existing pin */}
         {selectedPin && (
           <ViewPin
             pinId={selectedPinId}
@@ -223,7 +187,6 @@ export default function MapPage() {
           />
         )}
 
-        {/* Create new pin */}
         {newPinLocation && (
           <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
             <motion.div
