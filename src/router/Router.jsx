@@ -20,6 +20,7 @@ import MobileNav from "../components/MobileNav.jsx";
 import GroupList from "../pages/user/GroupList.jsx";
 import EditPost from "../components/EditPost.jsx";
 
+
 const LayoutWithNav = () => (
   <div className="flex flex-col min-h-screen">
     {/* Mobile Navbar */}
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
       { path: "Join", element: <Join /> },
       { path: "GroupInfo", element: <GroupInfo /> },
       { path: "MyTickets", element: <MyTickets /> },
-      { path: "admin/crud", element: <AdminCrud /> },
+ { path: "admin/crud", element: <AdminCrud /> },
       { path: "admin/tickets", element: <AdminTickets /> },
     ],
   },

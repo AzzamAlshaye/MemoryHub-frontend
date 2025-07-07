@@ -68,11 +68,7 @@ useEffect(() => {
     })
     .catch((err) => console.error("Failed to fetch user", err));
 }, []);
-
-
-
-
-  const handleSave = () => {
+const handleSave = () => {
     const updateData = { name, email }
     if (password.trim()) {
       updateData.password = password

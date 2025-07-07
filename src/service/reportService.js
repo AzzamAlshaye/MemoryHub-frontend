@@ -1,4 +1,3 @@
-// src/services/reportService.js
 import { primaryAPI } from "../api/client";
 import { reportEndpoints } from "../api/endpoints";
 
@@ -13,12 +12,18 @@ export const reportService = {
   },
 
   /**
-   * GET /reports
+   * GET /reports — returns all reports (you filter client-side)
    * @returns {Promise<Array>}
    */
   list() {
     return primaryAPI.get(reportEndpoints.list).then((r) => r.data);
   },
+
+
+  listMy() {
+    return primaryAPI.get("/reports/my").then((res) => res.data);
+  },
+
 
   /**
    * PATCH /reports/:id/status
