@@ -58,6 +58,11 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
     });
     if (!isConfirmed) return;
 
+// test to store
+ const key = `reportDesc_${target.type}_${target.id}`;
+  localStorage.setItem(key, description.trim());
+
+
     // success toast
     await fireAlert({
       icon: "success",
