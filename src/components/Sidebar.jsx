@@ -11,7 +11,6 @@ import {
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { userService } from "../service/userService";
-import { div } from "framer-motion/client";
 
 function Sidebar() {
   const { pathname } = useLocation();
