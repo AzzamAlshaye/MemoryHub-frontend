@@ -125,7 +125,7 @@ export default function MapPage() {
             )}
           </div>
 
-          <aside className="bg-white p-6 rounded shadow overflow-y-auto max-h-[70vh]">
+          <aside className="bg-white p-6 rounded shadow overflow-y-auto max-h-[70vh] min-w-[20rem]">
             <h3 className="text-xl font-semibold mb-4">My Memories</h3>
             <ul className="space-y-2">{renderSidebar()}</ul>
           </aside>
