@@ -17,6 +17,8 @@ export const userEndpoints = {
   get: (id) => `/users/${id}`, // GET    /api/users/:id
   update: (id) => `/users/${id}`, // PUT    /api/users/:id
   remove: (id) => `/users/${id}`, // DELETE /api/users/:id
+  // for test
+   listMine: "/pins/me",
 };
 
 // ─── Pins ────────────────────────────────────────────────────────────────

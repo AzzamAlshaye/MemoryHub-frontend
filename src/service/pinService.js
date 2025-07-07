@@ -75,7 +75,21 @@ export const pinService = {
       .then((res) => res.data);
   },
 
-  /**
+// listMyPins() {
+//   return primaryAPI.get(pinEndpoints.listMine).then((res) => res.data);
+// }
+
+// testt
+/**
+ * List pins created by the currently authenticated user.
+ * GET /pins/me
+ * @returns {Promise<Array>}
+ */
+listMyPins() {
+  return primaryAPI.get(pinEndpoints.listMine).then((res) => res.data);
+}
+
+/**
    * Get a single pin by ID.
    * GET /pins/:id
    * @param {string} id
