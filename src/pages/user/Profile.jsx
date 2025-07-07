@@ -1,19 +1,38 @@
-// src/components/Profile.jsx
+
+// src/pages/user/Profile.jsx
 import React, { useEffect, useState } from "react";
-import { FaCamera, FaEdit, FaTrash, FaEye, FaEyeSlash } from "react-icons/fa";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { motion } from "framer-motion";
+import {
+  FaEnvelope,
+  FaCamera,
+  FaEllipsisV,
+  FaEdit,
+  FaTrash,
+  FaEye,
+  FaEyeSlash,
+} from "react-icons/fa";
 import { userService } from "../../service/userService";
 import { pinService } from "../../service/pinService";
 import ViewPin from "../../components/map/ViewPin.jsx";
 
+
+const container = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
+};
+const item = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
 export default function Profile() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [memories, setMemories] = useState([]);
+
 
   const [selectedPinId, setSelectedPinId] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
@@ -112,44 +131,134 @@ useEffect(() => {
                 src={user?.avatar || "https://randomuser.me/api/portraits/women/45.jpg"}
                 alt="Profile"
                 className="w-20 h-20 rounded-full border-4 border-blue-500 object-cover"
+
+  const [editingPin, setEditingPin] = useState(null);
+  const [editForm, setEditForm] = useState({ title: "", description: "", privacy: "" });
+  const [avatarFile, setAvatarFile] = useState(null);
+
+  useEffect(() => {
+    let userId;
+    userService.getCurrentUser().then((u) => {
+      setUser(u);
+      setName(u.name);
+      setEmail(u.email);
+      userId = u.id;
+      pinService.list("", "").then((pins) => {
+        setMemories(pins.filter((p) => String(p.owner?._id || p.owner) === String(userId)));
+      });
+    });
+  }, []);
+
+  const handleSaveProfile = () => {
+    const update = { name, email };
+    if (password) update.password = password;
+    userService.updateSelf(update).then((u) => {
+      setUser(u);
+      setPassword("");
+      alert("Profile updated!");
+    });
+  };
+
+  const handleAvatar = (e) => {
+    const f = e.target.files[0];
+    if (f) {
+      setAvatarFile(f);
+      const reader = new FileReader();
+      reader.onload = () => setUser((prev) => ({ ...prev, avatar: reader.result }));
+      reader.readAsDataURL(f);
+    }
+  };
+
+  const openEdit = (pin) => {
+    setEditingPin(pin);
+    setEditForm({ title: pin.title, description: pin.description, privacy: pin.privacy });
+  };
+  const saveEdit = () => {
+    pinService.update(editingPin.id, editForm).then((updated) => {
+      setMemories((m) => m.map((p) => (p.id === updated.id ? updated : p)));
+      setEditingPin(null);
+    });
+  };
+  const deletePin = (id) => {
+    if (confirm("Delete this memory?")) {
+      pinService.remove(id).then(() => setMemories((m) => m.filter((p) => p.id !== id)));
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white p-8">
+      <motion.main
+        variants={container}
+        initial="hidden"
+        animate="visible"
+        className="max-w-5xl mx-auto space-y-12"
+      >
+        {/* Profile Header */}
+        <motion.section variants={item} className="bg-white backdrop-blur-sm bg-opacity-80 rounded-3xl p-8 shadow-xl">
+          <div className="flex items-center gap-6 mb-8">
+            <div className="relative">
+              <img
+                src={user.avatar || "/default-avatar.png"}
+                alt="avatar"
+                className="w-24 h-24 rounded-full border-4 border-amber-300 object-cover"
+
               />
-              <label className="absolute bottom-0 right-0 bg-blue-500 p-1 rounded-full border-2 border-white shadow-lg cursor-pointer">
+              <label className="absolute bottom-0 right-0 bg-amber-500 p-2 rounded-full shadow-lg cursor-pointer">
                 <FaCamera className="text-white" />
-                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+
+                <input type="file" accept="image/*" className="hidden" onChange={handleAvatar} />
               </label>
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">{user?.name || "Loading..."}</h2>
-              <p className="text-sm text-gray-500">{user?.email}</p>
+              <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
+              <p className="text-gray-600"><FaEnvelope className="inline mr-1" /> {user.email}</p>
+
             </div>
-            <button
-              onClick={handleSave}
-              className="ml-auto bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg shadow transition"
-            >
-              Save Changes
-            </button>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="flex flex-col">
-              <label className="text-xs text-gray-500 mb-1 uppercase">Name</label>
-              <input type="text" value={name} onChange={e => setName(e.target.value)}
-                className="border border-gray-200 bg-gray-100 rounded-lg px-4 py-2" />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-xs text-gray-500 mb-1 uppercase">Email</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                className="border border-gray-200 bg-gray-100 rounded-lg px-4 py-2" />
-            </div>
-            <div className="flex flex-col relative">
-              <label className="text-xs text-gray-500 mb-1 uppercase">Password</label>
-              <input type={showPassword ? "text" : "password"} placeholder="New password"
-                value={password} onChange={e => setPassword(e.target.value)}
-                className="border border-gray-200 bg-gray-100 rounded-lg px-4 py-2 pr-10" />
-              <button type="button" onClick={() => setShowPassword(p => !p)}
-                className="absolute top-[38px] right-3 text-gray-500">
+
+            <motion.div variants={item} className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <input
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-300"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </motion.div>
+            <motion.div variants={item} className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <input
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-300"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </motion.div>
+            <motion.div variants={item} className="space-y-1 relative">
+              <label className="block text-sm font-medium text-gray-700">Password</label>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="New password"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-300 pr-10"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute top-9 right-3 text-gray-500"
+                onClick={() => setShowPassword((s) => !s)}
+              >
+
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
-            </div>
+            </motion.div>
+            <motion.div variants={item} className="flex items-end">
+              <button
+                onClick={handleSaveProfile}
+                className="ml-auto bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg shadow-md transition"
+              >
+                Save Changes
+              </button>
+            </motion.div>
           </div>
         </section>
 {/* memories setions */}
@@ -205,6 +314,7 @@ useEffect(() => {
           <ViewPin pinId={selectedPinId} onClose={() => setSelectedPinId(null)} />
         )}
       </main>
+
     </div>
   );
 }

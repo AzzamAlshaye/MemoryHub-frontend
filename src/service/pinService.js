@@ -1,3 +1,4 @@
+// src/services/pinService.js
 import { primaryAPI } from "../api/client";
 import { pinEndpoints, userEndpoints } from "../api/endpoints";
 
@@ -7,8 +8,11 @@ export const pinService = {
    */
   createWithMedia(fields, images = [], video = null) {
     const form = new FormData();
+    // only append text fields that are not null or undefined
     Object.entries(fields).forEach(([key, value]) => {
-      form.append(key, String(value));
+      if (value !== null && value !== undefined) {
+        form.append(key, String(value));
+      }
     });
     if (video) form.append("video", video);
     images.slice(0, 10).forEach((img) => form.append("images", img));
@@ -25,8 +29,12 @@ export const pinService = {
    */
   updateWithMedia(id, fields, images = [], video = null) {
     const form = new FormData();
+    // only append text fields that are not null or undefined
+
     Object.entries(fields).forEach(([key, value]) => {
-      form.append(key, String(value));
+      if (value !== null && value !== undefined) {
+        form.append(key, String(value));
+      }
     });
     if (video) form.append("video", video);
     images.slice(0, 10).forEach((img) => form.append("images", img));
