@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   FaFlag,
   FaThumbtack,
@@ -27,28 +27,34 @@ export default function MyTickets() {
     async function fetchData() {
       try {
         const user = await userService.getCurrentUser();
+        if (!user) throw new Error("User not found");
         setCurrentUserId(user.id);
 
-        // const result = await reportService.list();
         const result = await reportService.listMy();
+        const allReports = Array.isArray(result)
+          ? result
+          : Array.isArray(result?.data)
+          ? result.data
+          : [];
 
-        const allReports = Array.isArray(result) ? result : result?.data || [];
-
-        const pinsData = await pinService.list();
-        const pins = Array.isArray(pinsData) ? pinsData : [];
+        const pins = await pinService.list();
         const pinMap = Object.fromEntries(pins.map((p) => [p.id, p]));
         setPinsMap(pinMap);
 
         const commentArrays = await Promise.all(
-          pins.map((pin) => commentService.listByPin(pin.id).catch(() => []))
+          pins.map((pin) =>
+            commentService.listByPin(pin.id).catch(() => [])
+          )
         );
         const allComments = commentArrays.flat();
-        const commentMap = Object.fromEntries(allComments.map((c) => [c.id, c]));
+        const commentMap = Object.fromEntries(
+          allComments.map((c) => [c.id, c])
+        );
         setCommentsMap(commentMap);
 
         const myReports = allReports.filter((r) => r.reporter === user.id);
         setReports(myReports);
-} catch (err) {
+      } catch (err) {
         console.error("Failed to fetch data", err);
       }
     }
@@ -58,26 +64,30 @@ export default function MyTickets() {
 
   const statusMap = {
     "All Reports": null,
-    "Pending": "open",
-    "Resolved": "resolved",
-    "Dismissed": "dismissed",
+    Pending: "open",
+    Resolved: "resolved",
+    Dismissed: "dismissed",
   };
 
-  const filteredReports = reports.filter((r) => {
-    const isCorrectTab =
-      activeTab === "post" ? r.targetType === "pin" : r.targetType === "comment";
-    const statusMatch =
-      !statusMap[statusFilter] || r.status === statusMap[statusFilter];
-    return isCorrectTab && statusMatch;
-  });
+  const filteredReports = useMemo(() => {
+    return reports.filter((r) => {
+      const isCorrectTab =
+        activeTab === "post" ? r.targetType === "pin" : r.targetType === "comment";
+      const statusMatch =
+        !statusMap[statusFilter] || r.status === statusMap[statusFilter];
+      return isCorrectTab && statusMatch;
+    });
+  }, [reports, activeTab, statusFilter]);
 
-  const sortedReports = [...filteredReports].sort((a, b) => {
-    if (sortFilter === "Newest First")
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    if (sortFilter === "Oldest First")
-      return new Date(a.createdAt) - new Date(b.createdAt);
-    return 0;
-  });
+  const sortedReports = useMemo(() => {
+    return [...filteredReports].sort((a, b) => {
+      if (sortFilter === "Newest First")
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sortFilter === "Oldest First")
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      return 0;
+    });
+  }, [filteredReports, sortFilter]);
 
   const indexOfLast = currentPage * reportsPerPage;
   const indexOfFirst = indexOfLast - reportsPerPage;
@@ -91,12 +101,7 @@ export default function MyTickets() {
   };
 
   return (
-<<<<<<< HEAD
     <div className="p-6 bg-gradient-to-tr from-amber-50 to-amber-200 min-h-screen">
-=======
-    <div className="p-6 bg-[#FDF7F0] min-h-screen">
-      {/* Page title and toast container for messages */}
->>>>>>> 4542b485d96d4b2a2ede3827eea58a5d1306d77b
       <h1 className="text-2xl font-bold mb-6 text-gray-800">My Tickets</h1>
       <ToastContainer />
       <div className="bg-white border border-gray-300 rounded-xl p-4 shadow">
@@ -106,13 +111,19 @@ export default function MyTickets() {
             label="Post Reports"
             icon={FaThumbtack}
             active={activeTab === "post"}
-            onClick={() => setActiveTab("post")}
+            onClick={() => {
+              setActiveTab("post");
+              setCurrentPage(1);
+            }}
           />
           <TabButton
             label="Comment Reports"
             icon={FaCommentDots}
             active={activeTab === "comment"}
-            onClick={() => setActiveTab("comment")}
+            onClick={() => {
+              setActiveTab("comment");
+              setCurrentPage(1);
+            }}
           />
         </div>
 
@@ -120,14 +131,20 @@ export default function MyTickets() {
         <div className="flex flex-col sm:flex-row justify-between gap-4 sm:items-center mb-6">
           <Dropdown
             value={statusFilter}
-            onChange={setStatusFilter}
+            onChange={(val) => {
+              setStatusFilter(val);
+              setCurrentPage(1);
+            }}
             options={["All Reports", "Pending", "Resolved", "Dismissed"]}
           />
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">Sort by:</span>
             <Dropdown
               value={sortFilter}
-              onChange={setSortFilter}
+              onChange={(val) => {
+                setSortFilter(val);
+                setCurrentPage(1);
+              }}
               options={["Newest First", "Oldest First"]}
             />
           </div>
@@ -137,7 +154,9 @@ export default function MyTickets() {
         <div className="space-y-6">
           {currentReports.map((r) => {
             const target =
-              r.targetType === "pin" ? pinsMap[r.targetId] : commentsMap[r.targetId];
+              r.targetType === "pin"
+                ? pinsMap[r.targetId]
+                : commentsMap[r.targetId];
 
             if (!target) {
               return (
@@ -145,7 +164,9 @@ export default function MyTickets() {
                   key={r.id}
                   className="p-4 border border-red-300 rounded bg-red-50 text-red-700"
                 >
-                  <p>Target not found (ID: {r.targetId}, type: {r.targetType})</p>
+                  <p>
+                    Target not found (ID: {r.targetId}, type: {r.targetType})
+                  </p>
                 </div>
               );
             }
@@ -203,15 +224,21 @@ export default function MyTickets() {
         {/* Pagination */}
         <div className="flex justify-between items-center mt-6">
           <span className="text-sm text-gray-500">
-            Showing {indexOfFirst + 1}-{Math.min(indexOfLast, sortedReports.length)} of{" "}
-            {sortedReports.length}
+            {sortedReports.length > 0
+              ? `Showing ${indexOfFirst + 1}-${Math.min(
+                  indexOfLast,
+                  sortedReports.length
+                )} of ${sortedReports.length}`
+              : "No reports to show"}
           </span>
           <div className="flex gap-2">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
               <button
                 key={n}
                 className={`px-3 py-1 rounded-md border text-sm ${
-                  currentPage === n ? "bg-blue-400 text-white" : "bg-white text-black"
+                  currentPage === n
+                    ? "bg-blue-400 text-white"
+                    : "bg-white text-black"
                 }`}
                 onClick={() => setCurrentPage(n)}
               >
@@ -239,7 +266,7 @@ function Dropdown({ value, onChange, options }) {
           </option>
         ))}
       </select>
-      <div className="pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-700">
+      <div className="pointer-events-none absolute right-2 top-[10px] text-gray-700">
         <FaChevronDown />
       </div>
     </div>
