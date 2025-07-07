@@ -1,7 +1,6 @@
 // src/services/pinService.js
-
 import { primaryAPI } from "../api/client";
-import { pinEndpoints } from "../api/endpoints";
+import { pinEndpoints, userEndpoints } from "../api/endpoints";
 
 export const pinService = {
   /**
@@ -34,14 +33,8 @@ export const pinService = {
         form.append(key, String(value));
       }
     });
-    // append video if present
-    if (video) {
-      form.append("video", video);
-    }
-    // append images (max 10)
-    images.slice(0, 10).forEach((img) => {
-      form.append("images", img);
-    });
+    if (video) form.append("video", video);
+    images.slice(0, 10).forEach((img) => form.append("images", img));
 
     return primaryAPI.post(pinEndpoints.create, form).then((res) => res.data);
   },
@@ -57,12 +50,8 @@ export const pinService = {
         form.append(key, String(value));
       }
     });
-    if (video) {
-      form.append("video", video);
-    }
-    images.slice(0, 10).forEach((img) => {
-      form.append("images", img);
-    });
+    if (video) form.append("video", video);
+    images.slice(0, 10).forEach((img) => form.append("images", img));
 
     return primaryAPI
       .put(pinEndpoints.update(id), form)
@@ -85,7 +74,27 @@ export const pinService = {
       .then((res) => res.data);
   },
 
-  /** Get a single pin by ID. */
+  /**
+   * List only the pins created by the authenticated user.
+   */
+  async listMyPins() {
+    try {
+      const res = await primaryAPI.get(userEndpoints.listMine);
+      if (!Array.isArray(res.data)) {
+        console.error("Invalid response from /pins/me:", res.data);
+        throw new Error("Expected an array of pins");
+      }
+      console.log("listMyPins:", res.data); // Debug print
+      return res.data;
+    } catch (err) {
+      console.error("Error fetching my pins:", err);
+      throw err;
+    }
+  },
+
+  /**
+   * Get single pin by ID.
+   */
   get(id) {
     return primaryAPI.get(pinEndpoints.get(id)).then((res) => res.data);
   },
