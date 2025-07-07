@@ -174,7 +174,6 @@ export default function MapPage() {
 
         {/* Map & Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* خريطة بنفس التصميم الأصلي */}
           <div className="lg:col-span-3 h-[70vh] rounded overflow-hidden shadow">
             <PinsMap
               pins={pins}
@@ -183,7 +182,6 @@ export default function MapPage() {
             />
           </div>
 
-          {/* Sidebar بمظهر احترافي */}
           <aside className="bg-white p-6 rounded-xl shadow-lg overflow-y-auto max-h-[70vh] hide-scrollbar">
             <motion.div
               initial={{ opacity: 0, y: -10 }}

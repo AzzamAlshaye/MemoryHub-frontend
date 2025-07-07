@@ -135,7 +135,7 @@ export default function HomePage() {
               exploring the world.”
             </p>
             <cite className="block text-right font-semibold mt-4 text-gray-900">
-              — The Map Memory Team
+              The Map Memory Team
             </cite>
           </motion.blockquote>
         </div>
