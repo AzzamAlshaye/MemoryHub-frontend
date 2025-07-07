@@ -1,7 +1,8 @@
+// src/components/CreatePost.jsx
+
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import {
-  FaTimes,
   FaCloudUploadAlt,
   FaTrash,
   FaLock,
@@ -21,13 +22,16 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
   const [groups, setGroups] = useState([]);
   const [selectedGroupId, setSelectedGroupId] = useState("");
 
-  // fetch user's groups on mount
+  // Fetch user's groups (API returns { id, name, … })
   useEffect(() => {
     groupService
       .list()
-      .then(setGroups)
+      .then((apiGroups) => {
+        console.log("groups from API:", apiGroups);
+        setGroups(apiGroups);
+      })
       .catch((err) => {
-        console.error(err);
+        console.error("Failed to load groups:", err);
         toast.error("Failed to load groups");
       });
   }, []);
@@ -60,29 +64,40 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
 
   const handleSubmit = () => {
     const { lat, lng } = initialLocation;
-    onSubmit({
+    const payload = {
       title,
       description,
       privacy: selectedPrivacy,
-      groupId: selectedPrivacy === "group" ? selectedGroupId : null,
       latitude: lat,
       longitude: lng,
-      mediaFiles,
+      ...(selectedPrivacy === "group" && selectedGroupId
+        ? { groupId: selectedGroupId }
+        : {}),
+    };
+
+    console.group("CreatePost ▶ payload");
+    console.log(payload);
+    console.groupEnd();
+
+    const form = new FormData();
+    Object.entries(payload).forEach(([k, v]) => {
+      if (v != null) form.append(k, String(v));
     });
-    toast.success("✅ Memory pinned!");
-    // reset form
-    setTitle("");
-    setDescription("");
-    setMediaFiles([]);
-    setSelectedPrivacy("");
-    setSelectedGroupId("");
-    setStep(1);
+    mediaFiles.forEach((file) => form.append("images", file));
+
+    onSubmit(form);
   };
+
+  // Preview Group Name
+  const groupName =
+    selectedPrivacy === "group"
+      ? groups.find((g) => g.id === selectedGroupId)?.name || "(none)"
+      : null;
 
   return (
     <div className="relative w-full space-y-6">
       {/* Header */}
-      <div className="text-center mb-4">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
           {step === 1
             ? "Step 1 of 3: Title & Description"
@@ -90,6 +105,15 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
             ? "Step 2 of 3: Media & Privacy"
             : "Step 3 of 3: Preview"}
         </h2>
+        {onCancel && (
+          <button
+            onClick={onCancel}
+            className="text-gray-500 hover:text-gray-800"
+            title="Cancel"
+          >
+            ✕
+          </button>
+        )}
       </div>
 
       {/* STEP 1 */}
@@ -132,7 +156,7 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
       {/* STEP 2 */}
       {step === 2 && (
         <div className="space-y-4">
-          {/* Upload Media */}
+          {/* Media Upload */}
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Upload Media
@@ -228,9 +252,7 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
                     checked={selectedPrivacy === opt.value}
                     onChange={() => {
                       setSelectedPrivacy(opt.value);
-                      if (opt.value !== "group") {
-                        setSelectedGroupId("");
-                      }
+                      if (opt.value !== "group") setSelectedGroupId("");
                     }}
                     className="hidden"
                   />
@@ -254,7 +276,7 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
               >
                 <option value="">-- choose your group --</option>
                 {groups.map((g) => (
-                  <option key={g._id} value={g._id}>
+                  <option key={g.id} value={g.id}>
                     {g.name}
                   </option>
                 ))}
@@ -305,13 +327,12 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
 
           <h4 className="text-lg font-semibold">{title}</h4>
           {description && <p>{description}</p>}
+
           {selectedPrivacy && (
             <span className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full">
-              {selectedPrivacy === "group"
-                ? `Group: ${
-                    groups.find((g) => g._id === selectedGroupId)?.name
-                  }`
-                : selectedPrivacy}
+              {selectedPrivacy !== "group"
+                ? selectedPrivacy
+                : `Group: ${groupName}`}
             </span>
           )}
 

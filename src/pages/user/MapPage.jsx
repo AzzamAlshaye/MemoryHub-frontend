@@ -33,35 +33,36 @@ export default function MapPage() {
     );
   }, []);
 
-  // 2) Normalize pin docs to include top-level latitude & longitude
-  const normalizePins = useCallback((list) => {
-    return list.map((pin) => ({
-      ...pin,
-      latitude: pin.location.lat,
-      longitude: pin.location.lng,
-    }));
-  }, []);
+  // 2) Normalize pin docs
+  const normalizePins = useCallback(
+    (list) =>
+      list.map((pin) => ({
+        ...pin,
+        latitude: pin.location.lat,
+        longitude: pin.location.lng,
+      })),
+    []
+  );
 
-  // 3) Fetch pins with the correct filter passed to the service
+  // 3) Fetch pins
   const fetchPins = useCallback(async () => {
     setLoading(true);
     try {
-      const pins = await pinService.list(filter, search);
-      setPins(normalizePins(pins));
+      const list = await pinService.list(filter, search);
+      setPins(normalizePins(list));
     } catch (err) {
-      console.error(err);
+      console.error("Failed to load pins:", err);
       toast.error("Failed to load pins");
     } finally {
       setLoading(false);
     }
   }, [filter, search, normalizePins]);
 
-  // Fetch on mount and whenever filter/search changes
   useEffect(() => {
     fetchPins();
   }, [fetchPins]);
 
-  // 4) Fetch one pin for the Detail modal
+  // 4) Fetch a single pin for the detail modal
   useEffect(() => {
     if (!selectedPinId) {
       setSelectedPin(null);
@@ -69,21 +70,26 @@ export default function MapPage() {
     }
     pinService
       .get(selectedPinId)
-      .then((pin) => {
+      .then((pin) =>
         setSelectedPin({
           ...pin,
           latitude: pin.location.lat,
           longitude: pin.location.lng,
-        });
-      })
-      .catch(console.error);
+        })
+      )
+      .catch((err) => {
+        console.error("Failed to load pin detail:", err);
+      });
   }, [selectedPinId]);
 
   // Handlers
   const openPin = (id) => setSelectedPinId(id);
   const handleMapClick = ({ lat, lng }) => setNewPinLocation({ lat, lng });
   const handleUseMyLocation = () => {
-    if (!userLocation) return toast.error("Unable to determine your location.");
+    if (!userLocation) {
+      toast.error("Unable to determine your location.");
+      return;
+    }
     setNewPinLocation(userLocation);
   };
 
@@ -93,11 +99,9 @@ export default function MapPage() {
 
       <main className="flex-1 max-w-7xl mx-auto px-6 py-8 space-y-8">
         {/* Welcome */}
-        <div className="mb-4">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Welcome, {user?.name || "there"}!
-          </h2>
-        </div>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          Welcome, {user?.name || "there"}!
+        </h2>
 
         {/* Search & Filter */}
         <div className="bg-white p-6 rounded-2xl shadow-lg flex flex-wrap gap-4 items-center">
@@ -144,8 +148,7 @@ export default function MapPage() {
             <div className="flex items-center mb-6">
               <FaRegBookmark className="text-amber-400 text-2xl mr-3" />
               <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
-                {filter === "public" && "Public Memories"}
-                {filter === "private" && "Private Memories"}
+                {filter === "public" ? "Public Memories" : "Private Memories"}
               </h3>
               <span className="ml-auto bg-amber-100 text-amber-800 text-sm font-medium px-2 py-1 rounded-full">
                 {pins.length}
@@ -158,9 +161,9 @@ export default function MapPage() {
               </div>
             ) : (
               <ul className="space-y-4">
-                {pins.map((pin) => (
+                {pins.map((pin, idx) => (
                   <li
-                    key={pin._id}
+                    key={pin._id ?? idx}
                     onClick={() => openPin(pin._id)}
                     className="flex items-start gap-3 p-4 rounded-lg hover:bg-gray-100 transition cursor-pointer"
                   >
@@ -173,7 +176,7 @@ export default function MapPage() {
                       <h4 className="font-semibold text-gray-800">
                         {pin.title}
                       </h4>
-                      <p className="text-sm text-gray-500 truncate whitespace-nowrap">
+                      <p className="text-sm text-gray-500 truncate">
                         {pin.description}
                       </p>
                     </div>
@@ -184,7 +187,7 @@ export default function MapPage() {
           </aside>
         </div>
 
-        {/* ViewPin */}
+        {/* ViewPin Modal */}
         {selectedPin && (
           <ViewPin
             pinId={selectedPinId}
@@ -211,32 +214,24 @@ export default function MapPage() {
 
               <CreatePost
                 initialLocation={newPinLocation}
-                onSubmit={async ({
-                  title,
-                  description,
-                  privacy,
-                  latitude,
-                  longitude,
-                  mediaFiles,
-                }) => {
-                  const images = mediaFiles.filter((f) =>
-                    f.type.startsWith("image/")
-                  );
-                  const video =
-                    mediaFiles.find((f) => f.type.startsWith("video/")) || null;
-                  await pinService.createWithMedia(
-                    {
-                      title,
-                      description,
-                      privacy,
-                      latitude,
-                      longitude,
-                    },
-                    images,
-                    video
-                  );
-                  setNewPinLocation(null);
-                  await fetchPins();
+                onSubmit={async (formData) => {
+                  // — Verify exactly what goes out —
+                  console.group("MapPage: FormData to submit");
+                  for (let [k, v] of formData.entries()) {
+                    console.log(`${k}:`, v);
+                  }
+                  console.groupEnd();
+
+                  try {
+                    // Make sure you have implemented createWithFormData()
+                    await pinService.createWithFormData(formData);
+                    toast.success("🎉 Pin created!");
+                    setNewPinLocation(null);
+                    await fetchPins();
+                  } catch (err) {
+                    console.error("Failed to create pin:", err);
+                    toast.error("Failed to create pin");
+                  }
                 }}
                 onCancel={() => setNewPinLocation(null)}
               />
