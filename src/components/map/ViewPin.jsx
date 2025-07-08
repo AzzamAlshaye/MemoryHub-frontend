@@ -185,7 +185,7 @@ export default function ViewPin({
     setCurrentIdx((i) => (i + step + mediaItems.length) % mediaItems.length);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="relative bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
