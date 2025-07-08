@@ -20,6 +20,7 @@ import Sidebar from "../components/Sidebar.jsx";
 import MobileNav from "../components/MobileNav.jsx";
 import EditPost from "../components/map/EditPost.jsx";
 
+
 const LayoutWithNav = () => (
   <div className="flex flex-col min-h-screen">
     {/* Mobile Navbar */}
@@ -68,8 +69,7 @@ const router = createBrowserRouter([
       // profile, posts, tickets, admin
       { path: "Profile", element: <Profile /> },
       { path: "MyTickets", element: <MyTickets /> },
-      { path: "/edit/:postId", element: <EditPost /> },
-      { path: "admin/crud", element: <AdminCrud /> },
+ { path: "admin/crud", element: <AdminCrud /> },
       { path: "admin/tickets", element: <AdminTickets /> },
     ],
   },

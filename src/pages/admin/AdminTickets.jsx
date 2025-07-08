@@ -1,4 +1,3 @@
-// AdminTicketsPage.jsx
 import React, { useEffect, useState } from "react";
 import {
   FaCheck,
@@ -35,9 +34,11 @@ export default function AdminTicketsPage() {
 
   const postCount = reports.filter(r => r.targetType === "pin").length;
   const commentCount = reports.filter(r => r.targetType === "comment").length;
-  const resolvedCount = reports.filter(r => r.status === "resolved").length;
-  const dismissedCount = reports.filter(r => r.status === "dismissed").length;
+  const acceptedCount = reports.filter(r => r.status === "accepted").length;
+  const rejectedCount = reports.filter(r => r.status === "rejected").length;
   const pendingCount = reports.filter(r => r.status === "open").length;
+
+  const statusOptions = ["All Reports", "Open", "Accepted", "Rejected"];
 
   useEffect(() => {
     async function loadAllData() {
@@ -73,7 +74,7 @@ export default function AdminTicketsPage() {
   const filteredReports = reports.filter(r => {
     const tabOk = activeTab === "post" ? r.targetType === "pin" : r.targetType === "comment";
     const statusOk = statusFilter === "All Reports" || r.status === statusFilter.toLowerCase();
-    return tabOk && statusOk
+    return tabOk && statusOk;
   });
 
   const sortedReports = [...filteredReports].sort((a, b) => {
@@ -88,9 +89,9 @@ export default function AdminTicketsPage() {
   const totalPages = Math.ceil(sortedReports.length / reportsPerPage);
 
   const getStatusColor = (status) => {
-    if (status === "resolved") return "bg-green-200 text-green-800";
-    if (status === "dismissed") return "bg-gray-200 text-gray-800";
-    return "bg-yellow-200 text-yellow-800";
+    if (status === "accepted") return "bg-green-200 text-green-800";
+    if (status === "rejected") return "bg-gray-200 text-gray-800";
+    return "bg-yellow-200 text-yellow-800"; 
   };
 
   const updateReportStatus = async (id, status) => {
@@ -109,11 +110,11 @@ export default function AdminTicketsPage() {
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Admin Tickets</h1>
       <ToastContainer />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         <StatCard label="Total Reports" value={reports.length} icon={<FaFlag />} color="bg-blue-100 text-blue-500" />
         <StatCard label="Pending" value={pendingCount} icon={<FaClock />} color="bg-yellow-100 text-yellow-500" />
-        <StatCard label="Resolved" value={resolvedCount} icon={<FaCheckCircle />} color="bg-green-100 text-green-500" />
-        <StatCard label="Dismissed" value={dismissedCount} icon={<FaBan />} color="bg-gray-100 text-gray-500" />
+        <StatCard label="Accepted" value={acceptedCount} icon={<FaCheckCircle />} color="bg-green-100 text-green-500" />
+        <StatCard label="Rejected" value={rejectedCount} icon={<FaBan />} color="bg-gray-100 text-gray-500" />
       </div>
 
       <div className="bg-white border border-gray-300 rounded-xl p-4 shadow">
@@ -124,7 +125,7 @@ export default function AdminTicketsPage() {
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div className="flex flex-wrap gap-3">
-            <Dropdown value={statusFilter} onChange={setStatusFilter} options={["All Reports", "Open", "Resolved", "Dismissed"]} />
+            <Dropdown value={statusFilter} onChange={setStatusFilter} options={statusOptions} />
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">Sort by:</span>
@@ -190,8 +191,8 @@ export default function AdminTicketsPage() {
                 {(r.status === "open") && (
                   <div className="flex flex-wrap justify-end gap-3 items-center px-4 py-3 bg-white border-t border-gray-200">
                     <ActionButton icon={<FaInfoCircle />} label="Details" />
-                    <ActionButton icon={<FaCheck />} label="Resolve" onClick={() => updateReportStatus(r.id, "resolved")} />
-                    <ActionButton icon={<FaTimes />} label="Dismiss" onClick={() => updateReportStatus(r.id, "dismissed")} />
+                    <ActionButton icon={<FaCheck />} label="Accept" onClick={() => updateReportStatus(r.id, "accepted")} />
+                    <ActionButton icon={<FaTimes />} label="Reject" onClick={() => updateReportStatus(r.id, "rejected")} />
                   </div>
                 )}
               </div>
@@ -200,7 +201,9 @@ export default function AdminTicketsPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-6 gap-3">
-          <span className="text-sm text-gray-500">Showing {indexOfFirst + 1}-{Math.min(indexOfLast, sortedReports.length)} of {sortedReports.length} reports</span>
+          <span className="text-sm text-gray-500">
+            Showing {indexOfFirst + 1}-{Math.min(indexOfLast, sortedReports.length)} of {sortedReports.length} reports
+          </span>
           <div className="flex gap-2 flex-wrap">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
               <button
@@ -218,7 +221,7 @@ export default function AdminTicketsPage() {
   );
 }
 
-function TabButton({ label, icon: Icon, active, onClick, count }) {
+function TabButton({ label, icon, active, onClick, count }) {
   return (
     <button
       onClick={onClick}
@@ -254,8 +257,8 @@ function ActionButton({ icon, label, onClick }) {
   const base = "flex items-center gap-2 text-sm px-3 py-1 border border-gray-300 rounded font-medium transition-colors duration-150";
   const colors = {
     "Details": "text-gray-700 hover:text-white hover:bg-gray-400",
-    "Resolve": "text-green-600 hover:text-white hover:bg-green-500",
-    "Dismiss": "text-red-600 hover:text-white hover:bg-red-500"
+    "Accept": "text-green-600 hover:text-white hover:bg-green-500",
+    "Reject": "text-red-600 hover:text-white hover:bg-red-500"
   };
   return (
     <button className={`${base} ${colors[label]}`} onClick={onClick}>
@@ -285,23 +288,25 @@ function Dropdown({ value, onChange, options }) {
 
 function StatCard({ label, value, icon, color }) {
   return (
-    <div className="bg-white p-4 rounded shadow flex items-center justify-between">
+    <div className={`flex items-center gap-3 p-4 rounded-xl shadow-sm ${color}`}>
+      <div className="text-2xl">{icon}</div>
       <div>
-        <p className="text-sm text-gray-500 mb-1">{label}</p>
-        <p className="text-2xl font-bold text-black">{value}</p>
+        <p className="text-xs font-semibold text-gray-400 uppercase">{label}</p>
+        <p className="text-xl font-bold">{value}</p>
       </div>
-      <div className={`w-10 h-10 flex items-center justify-center rounded-full ${color}`}>{icon}</div>
     </div>
-  );
+);
 }
 
 function formatTimeAgo(dateString) {
   const date = new Date(dateString);
   const now = new Date();
   const diffMs = now - date;
-  const hours = Math.floor(diffMs / 1000 / 60 / 60);
-  const days = Math.floor(hours / 24);
-  if (hours < 1) return "Just now";
-  if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-  return `${days} day${days > 1 ? "s" : ""} ago`;
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return "just now";
+  if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
 }

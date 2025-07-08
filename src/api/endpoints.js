@@ -17,6 +17,10 @@ export const userEndpoints = {
   get: (id) => `/users/${id}`, // GET    /api/users/:id
   update: (id) => `/users/${id}`, // PUT    /api/users/:id
   remove: (id) => `/users/${id}`, // DELETE /api/users/:id
+  // for test
+  listMine: "/pins/me",
+  // keep the admin version if you want:
+  uploadAvatar: (id) => `/users/${id}/avatar`,
 };
 
 // ─── Pins ────────────────────────────────────────────────────────────────
@@ -61,5 +65,6 @@ export const groupEndpoints = {
 export const reportEndpoints = {
   create: "/reports", // POST   /api/reports
   list: "/reports", // GET    /api/reports
+  listmy: "/reports/my", //Get /api/reports/my
   updateStatus: (id) => `/reports/${id}/status`, // PATCH  /api/reports/:id/status
 };
