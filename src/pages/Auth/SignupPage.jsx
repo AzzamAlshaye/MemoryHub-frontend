@@ -1,3 +1,4 @@
+// src/pages/user/SignupPage.jsx
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useNavigate, Link } from "react-router";
@@ -9,7 +10,7 @@ import { userService } from "../../service/userService";
 
 export default function SignupPage() {
   const navigate = useNavigate();
-  useTitle("Register | Map Memory");
+  useTitle("Sign up | Map Memory");
 
   const initialValues = {
     name: "",
@@ -26,7 +27,6 @@ export default function SignupPage() {
     } else if (nameLetters.length < 3) {
       errors.name = "Must be at least 3 letters";
     }
-
     if (!values.email) {
       errors.email = "Required";
     } else if (/\s/.test(values.email)) {
@@ -34,7 +34,6 @@ export default function SignupPage() {
     } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
       errors.email = "Invalid email address";
     }
-
     if (!values.password) {
       errors.password = "Required";
     } else if (/\s/.test(values.password)) {
@@ -42,13 +41,11 @@ export default function SignupPage() {
     } else if (values.password.length < 8) {
       errors.password = "Must be at least 8 characters";
     }
-
     if (!values.confirmPassword) {
       errors.confirmPassword = "Required";
     } else if (values.confirmPassword !== values.password) {
       errors.confirmPassword = "Passwords must match";
     }
-
     return errors;
   };
 
@@ -64,11 +61,7 @@ export default function SignupPage() {
       const me = await userService.getCurrentUser();
       toast.success("Sign-up successful! Redirecting…");
       resetForm();
-      if (me.role === "admin") {
-        navigate("/admin/crud");
-      } else {
-        navigate("/mapPage");
-      }
+      navigate(me.role === "admin" ? "/admin/crud" : "/mapPage");
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
     } finally {
@@ -77,19 +70,14 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FDF7F0] p-6">
+    <div className="min-h-screen flex items-center justify-center bg-white-theme p-6">
       <ToastContainer position="top-center" />
-      <div className="w-full max-w-sm bg-white rounded-3xl shadow-xl px-8 py-4 sm:px-8 sm:py-8">
-        {/* Logo */}
-        <div className="flex justify-center mb-4">
-          <img
-            src="/public/Logo-all.png"
-            alt="Map Memory"
-            className="w-32 hover:scale-105 transition-transform duration-300"
-          />
+
+      <div className="w-full max-w-sm bg-white rounded-3xl shadow-xl px-8 py-8">
+        <div className="flex justify-center mb-6">
+          <img src="/m-logo.webp" alt="Map Memory" className="w-24" />
         </div>
 
-        {/* Title */}
         <h2 className="text-2xl font-extrabold text-center text-gray-800 mb-2">
           Join Map Memory
         </h2>
@@ -104,110 +92,85 @@ export default function SignupPage() {
         >
           {({ isSubmitting }) => (
             <Form className="space-y-5">
-              {/* Name */}
-              <div className="relative">
-                <Field
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder=" "
-                  className="peer w-full px-3 pt-5 pb-2 border border-gray-300 rounded-md placeholder-transparent text-gray-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-                />
-                <label
-                  htmlFor="name"
-                  className="absolute left-3 top-2 text-sm text-gray-500 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-amber-400"
-                >
-                  Name
-                </label>
-                <ErrorMessage
-                  name="name"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
-              </div>
+              {[
+                { id: "name", label: "Name", type: "text" },
+                { id: "email", label: "Email", type: "email" },
+                { id: "password", label: "Password", type: "password" },
+                {
+                  id: "confirmPassword",
+                  label: "Confirm Password",
+                  type: "password",
+                },
+              ].map(({ id, label, type }) => (
+                <div key={id} className="relative">
+                  <Field
+                    id={id}
+                    name={id}
+                    type={type}
+                    placeholder=" "
+                    className="
+                      peer w-full h-12
+                      px-4 pt-4 pb-2
+                      border border-gray-300 rounded-md
+                      placeholder-transparent text-gray-900
+                      focus:outline-none focus:ring-1 focus:ring-main-theme
+                      focus:border-main-theme transition
+                    "
+                  />
+                  <label
+                    htmlFor={id}
+                    className="
+                      absolute left-3
+                      -top-2
+                      px-1 
+                      text-sm text-gray-500 transition-all
+                      peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:bg-transparent peer-placeholder-shown:px-0
+                      peer-focus:-top-2 peer-focus:text-sm peer-focus:bg-white-theme peer-focus:px-1
+                    "
+                  >
+                    {label}
+                  </label>
+                  <ErrorMessage
+                    name={id}
+                    component="div"
+                    className="text-red-500 text-xs mt-1"
+                  />
+                </div>
+              ))}
 
-              {/* Email */}
-              <div className="relative">
-                <Field
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder=" "
-                  className="peer w-full px-3 pt-5 pb-2 border border-gray-300 rounded-md placeholder-transparent text-gray-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-                />
-                <label
-                  htmlFor="email"
-                  className="absolute left-3 top-2 text-sm text-gray-500 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-amber-400"
-                >
-                  Email
-                </label>
-                <ErrorMessage
-                  name="email"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
-              </div>
-
-              {/* Password */}
-              <div className="relative">
-                <Field
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder=" "
-                  className="peer w-full px-3 pt-5 pb-2 border border-gray-300 rounded-md placeholder-transparent text-gray-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-                />
-                <label
-                  htmlFor="password"
-                  className="absolute left-3 top-2 text-sm text-gray-500 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-amber-400"
-                >
-                  Password
-                </label>
-                <ErrorMessage
-                  name="password"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
-              </div>
-
-              {/* Confirm Password */}
-              <div className="relative">
-                <Field
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder=" "
-                  className="peer w-full px-3 pt-5 pb-2 border border-gray-300 rounded-md placeholder-transparent text-gray-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-                />
-                <label
-                  htmlFor="confirmPassword"
-                  className="absolute left-3 top-2 text-sm text-gray-500 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-amber-400"
-                >
-                  Confirm Password
-                </label>
-                <ErrorMessage
-                  name="confirmPassword"
-                  component="div"
-                  className="text-red-500 text-xs mt-1"
-                />
-              </div>
-
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-2 bg-amber-500 text-white font-semibold rounded-full hover:opacity-90 transition"
+                className={`
+                  w-full h-12 flex items-center justify-center
+                  text-white font-semibold rounded-2xl transition
+                  ${
+                    isSubmitting
+                      ? "bg-lighter-theme cursor-not-allowed"
+                      : "bg-main-theme hover:bg-dark-theme"
+                  }
+                `}
               >
-                {isSubmitting ? "Registering..." : "Register"}
+                {isSubmitting ? "Signing up..." : "Sign up"}
               </button>
+
+              {/* Home button */}
+              <div className="text-center">
+                <button
+                  onClick={() => navigate("/")}
+                  className=" w-full h-12 border-2 border-main-theme bg-white-theme text-main-theme font-semibold rounded-2xl transition hover:bg-main-theme hover:text-white"
+                >
+                  Home
+                </button>
+              </div>
 
               <p className="text-center text-sm text-gray-600 mt-4">
                 Already have an account?{" "}
                 <Link
                   to="/SignInPage"
-                  className="text-amber-600 hover:underline font-medium"
+                  className="text-main-theme hover:underline font-medium"
                 >
-                  Log in
+                  Sign in
                 </Link>
               </p>
             </Form>
@@ -215,7 +178,7 @@ export default function SignupPage() {
         </Formik>
 
         <div className="mt-6 text-center text-xs text-gray-400">
-          © {new Date().getFullYear()} Map Memory
+          © {new Date().getFullYear()} MemoryHub
         </div>
       </div>
     </div>

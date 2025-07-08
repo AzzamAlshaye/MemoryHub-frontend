@@ -1,8 +1,14 @@
 // src/components/MyTickets.jsx
 import React, { useEffect, useState, useMemo } from "react";
-import { FaFlag, FaThumbtack, FaCommentDots, FaChevronDown } from "react-icons/fa";
+import {
+  FaFlag,
+  FaThumbtack,
+  FaCommentDots,
+  FaChevronDown,
+} from "react-icons/fa";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useTitle } from "../../hooks/useTitle";
 import { reportService } from "../../service/reportService";
 import { pinService } from "../../service/pinService";
 import { commentService } from "../../service/commentService";
@@ -18,6 +24,7 @@ export default function MyTickets() {
   const [statusFilter, setStatusFilter] = useState("All Reports");
   const [sortFilter, setSortFilter] = useState("Newest First");
   const reportsPerPage = 3;
+  useTitle("Tickets | MemoryHub");
 
   useEffect(() => {
     async function fetchData() {
@@ -41,7 +48,9 @@ export default function MyTickets() {
           pins.map((pin) => commentService.listByPin(pin.id).catch(() => []))
         );
         const allComments = commentArrays.flat();
-        const commentMap = Object.fromEntries(allComments.map((c) => [c.id, c]));
+        const commentMap = Object.fromEntries(
+          allComments.map((c) => [c.id, c])
+        );
         setCommentsMap(commentMap);
 
         const myReports = allReports.filter((r) => r.reporter === user.id);
@@ -64,7 +73,9 @@ export default function MyTickets() {
     () =>
       reports.filter((r) => {
         const isCorrectTab =
-          activeTab === "post" ? r.targetType === "pin" : r.targetType === "comment";
+          activeTab === "post"
+            ? r.targetType === "pin"
+            : r.targetType === "comment";
         const statusMatch =
           !statusMap[statusFilter] || r.status === statusMap[statusFilter];
         return isCorrectTab && statusMatch;
@@ -95,10 +106,7 @@ export default function MyTickets() {
     return "bg-yellow-200 text-yellow-800";
   };
 
-
-
   return (
-
     <div className="p-6 bg-[#FEFCFB] min-h-screen">
       {/* Page title and toast container for messages */}
       <h1 className="text-2xl font-bold mb-6 text-gray-800">My Tickets</h1>
@@ -159,7 +167,8 @@ export default function MyTickets() {
                 : commentsMap[r.targetId];
 
             return (
-<div key={r.id}
+              <div
+                key={r.id}
                 className="border border-gray-300 bg-white rounded-md shadow overflow-hidden"
               >
                 <div className="flex justify-between items-center px-4 py-2 bg-red-100">
@@ -168,7 +177,9 @@ export default function MyTickets() {
                       <FaFlag />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-black">{r.reason}</p>
+                      <p className="text-sm font-semibold text-black">
+                        {r.reason}
+                      </p>
                       <p className="text-xs text-gray-600">
                         Reported {formatTimeAgo(r.createdAt)}
                       </p>
@@ -183,42 +194,39 @@ export default function MyTickets() {
                   </span>
                 </div>
 
-<div className="px-4 pt-4 pb-2">
+                <div className="px-4 pt-4 pb-2">
+                  {/* Description */}
+                  {(() => {
+                    const key = `reportDesc_${r.targetType}_${r.targetId}`;
+                    const storedDescription = localStorage.getItem(key);
 
-{/* Description */}
-{(() => {
-  const key = `reportDesc_${r.targetType}_${r.targetId}`;
-  const storedDescription = localStorage.getItem(key);
+                    return (
+                      <div>
+                        <p className="text-xs font-medium text-gray-400 uppercase mb-1 mt-3">
+                          Report Reason
+                        </p>
+                        <div className="bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-black rounded">
+                          {storedDescription || "There is no description."}
+                        </div>
+                      </div>
+                    );
+                  })()}
 
-  return (
-    <div>
-      <p className="text-xs font-medium text-gray-400 uppercase mb-1 mt-3">
-          Report Reason
-      </p>
-      <div className="bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-black rounded">
-        {storedDescription || "There is no description."}
-      </div>
-    </div>
-  );
-})()}
-
-{/* Resolution */}
-  {r.resolutionReason && (
-    <div>
-      <p className="text-xs font-medium text-gray-400 uppercase mb-1 mt-3">
-        Resolution
-      </p>
-      <div className="bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-black rounded">
-        {r.resolutionReason}
-      </div>
-    </div>
-)}
-
-</div>
-
-</div>
-);
-})}
+                  {/* Resolution */}
+                  {r.resolutionReason && (
+                    <div>
+                      <p className="text-xs font-medium text-gray-400 uppercase mb-1 mt-3">
+                        Resolution
+                      </p>
+                      <div className="bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-black rounded">
+                        {r.resolutionReason}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Pagination */}

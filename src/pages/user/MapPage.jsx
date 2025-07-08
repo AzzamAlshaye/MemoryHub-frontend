@@ -5,7 +5,7 @@ import { FaRegBookmark, FaTimes } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { useTitle } from "../../hooks/useTitle";
 import PinsMap from "../../components/map/PinsMap";
 import ViewPin from "../../components/map/ViewPin";
 import CreatePost from "../../components/map/CreatePost";
@@ -18,11 +18,11 @@ export default function MapPage() {
   const [search, setSearch] = useState("");
   const [pins, setPins] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [selectedPinId, setSelectedPinId] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
   const [newPinLocation, setNewPinLocation] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  useTitle("Map | MemoryHub");
 
   // 1) Get browser geolocation
   useEffect(() => {
