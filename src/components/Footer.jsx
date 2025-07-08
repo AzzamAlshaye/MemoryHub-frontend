@@ -30,13 +30,15 @@ export default function Footer() {
         {/* Branding */}
         <div className="space-y-4">
           <div className="flex items-center justify-center lg:justify-start gap-2">
-            <FaMapMarkedAlt className="text-3xl text-[#fb8951]" />
-            <span className="text-2xl font-bold">MapHub</span>
+            <img src="/m-logo.webp" className=" h-10 w-10" alt="logo" />
+
+            <span className="text-2xl font-bold">MemoryHub</span>
           </div>
           <p className="text-sm max-w-xs mx-auto lg:mx-0">
-            MapHub helps you capture and revisit your favorite spots around the world.
+            MemoryHub helps you capture and revisit your favorite spots around
+            the world.
           </p>
-          <p className="text-xs text-gray-500">© {year} MapHub</p>
+          <p className="text-xs text-gray-500">© {year} MemoryHub</p>
         </div>
 
         {/* Contact Info */}
@@ -44,16 +46,16 @@ export default function Footer() {
           <h4 className="font-semibold text-lg">Contact Us</h4>
           <ul className="space-y-2 text-sm text-gray-600">
             <li className="flex items-center justify-center lg:justify-start gap-2">
-              <FaMapMarkerAlt className="text-[#fb8951]" />
-              <span>123 Atlas Ave, Suite 5, Riyadh, SA</span>
+              <FaMapMarkerAlt className="text-main-theme" />
+              <span>Riyadh, SA</span>
             </li>
             <li className="flex items-center justify-center lg:justify-start gap-2">
-              <FaPhoneAlt className="text-[#fb8951]" />
-              <span>+966 5 1234 5678</span>
+              <FaPhoneAlt className="text-main-theme" />
+              <span>+966-55-301-4227</span>
             </li>
             <li className="flex items-center justify-center lg:justify-start gap-2">
-              <FaEnvelope className="text-[#fb8951]" />
-              <span>support@maphub.com</span>
+              <FaEnvelope className="text-main-theme" />
+              <span>support@MemoryHub.com</span>
             </li>
           </ul>
         </div>
@@ -85,10 +87,8 @@ export default function Footer() {
                 href={href}
                 aria-label={label}
                 className="p-3 bg-white rounded-full shadow hover:bg-[#f4e9e4] hover:shadow-lg transition transform hover:-translate-y-1"
-              >  
+              >
                 <span className="text-xl text-gray-700 hover:text-[#fb8951] block">
-                  
-                 
                   {icon}
                 </span>
               </a>

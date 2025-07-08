@@ -2,21 +2,16 @@
 
 @import "tailwindcss";
 
-/* @theme {
+@theme {
   --font-main: Montserrat, "sans-serif";
-} */
+  --color-main-theme: #fd8950;
+  --color-lighter-theme: #fda073;
+  --color-dark-theme: #ca6e40;
+  --color-white-theme: #fefcfb;
+}
 
-/* @layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-} */
 /* ─── Override Leaflet z-index ───────────────────────────────────────────── */
-.leaflet-pane,
+/* .leaflet-pane,
 .leaflet-tile,
 .leaflet-overlay-pane,
 .leaflet-marker-pane,
@@ -37,7 +32,7 @@
 .leaflet-top,
 .leaflet-bottom {
   z-index: 0 !important;
-}
+} */
 
 /* Hide default scrollbars  ───────────────────────────────────────────── */
 .hide-scrollbar::-webkit-scrollbar {
@@ -53,7 +48,7 @@
     display: none;
   }
   .hide-scrollbar {
-    -ms-overflow-style: none;   /* IE 10+ */
-    scrollbar-width: none;      /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+    scrollbar-width: none; /* Firefox */
   }
 }
