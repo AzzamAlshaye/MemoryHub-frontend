@@ -125,6 +125,10 @@ export default function GroupInfo() {
     (`${m.name}${m.email}`).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if (loading || !group) {
+    return <div className="p-6 text-center">Loading group info…</div>;
+  }
+
   return (
     <div className="flex min-h-screen bg-[#FDF7F0]">
       <main className="flex-1 p-6 space-y-6">
@@ -146,12 +150,10 @@ export default function GroupInfo() {
                     confirmButtonText: "Upload",
                     showCancelButton: true,
                   });
+
                   if (file) {
                     try {
-                      const { avatarUrl } = await groupService.uploadAvatar(
-                        groupId,
-                        file
-                      );
+                      const { avatarUrl } = await groupService.uploadAvatar(groupId, file);
                       setGroup((g) => ({ ...g, avatar: avatarUrl }));
                       Swal.fire("Success", "Avatar updated!", "success");
                     } catch {
@@ -159,7 +161,7 @@ export default function GroupInfo() {
                     }
                   }
                 }}
-                className="absolute top-0 right-0 bg-white p-1 rounded-full shadow text-amber-600 hover:bg-amber-100 transition"
+                className="absolute top-0 right-0 bg-white p-1 rounded-full shadow text-amber-600 hover:bg-amber-100"
               >
                 <FaUserEdit className="w-4 h-4" />
               </button>
