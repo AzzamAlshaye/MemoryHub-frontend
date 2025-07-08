@@ -1,3 +1,4 @@
+// src/components/group/JoinGroup.jsx
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
@@ -23,8 +24,7 @@ const parseInvite = (url) => {
   try {
     const u = new URL(url);
     const segments = u.pathname.split("/");
-    // Assumes path like "/group/:id"
-    const id = segments[2] || null;
+    const id = segments[2] || null;              // expects "/group/:id"
     const token = u.searchParams.get("token");
     return { id, token };
   } catch {
@@ -32,7 +32,7 @@ const parseInvite = (url) => {
   }
 };
 
-export default function JoinGroup() {
+export default function JoinGroup({ onJoined }) {
   const [inviteLink, setInviteLink] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +46,7 @@ export default function JoinGroup() {
     if (!id || !token) {
       MySwal.fire(
         "Invalid link",
-        "Please paste a full invitation link (including ?token=…)",
+        "Please paste a full invitation link including ?token=…",
         "error"
       );
       return;
@@ -54,9 +54,10 @@ export default function JoinGroup() {
 
     setLoading(true);
     try {
-      await groupService.join(id, token);
-      toast.success("Joined the group successfully!");
-      MySwal.close();
+      // Attempt to join; expects the created/updated group object returned
+      const joinedGroup = await groupService.join(id, token);
+      toast.success("Joined group successfully!");
+      onJoined?.(joinedGroup);
     } catch (err) {
       console.error(err);
       const message =
@@ -79,6 +80,7 @@ export default function JoinGroup() {
       initial="hidden"
       animate="visible"
       className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl"
+      onClick={(e) => e.stopPropagation()}
     >
       <motion.h1
         variants={itemVariants}

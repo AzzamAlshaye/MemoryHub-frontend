@@ -1,7 +1,9 @@
+// src/components/group/CreateGroup.jsx
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { FaCamera } from "react-icons/fa";
 import { groupService } from "../../service/groupService";
+import { toast } from "react-toastify";
 
 const containerVariants = {
   hidden: {},
@@ -13,7 +15,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
-export default function CreateGroup({ onClose }) {
+export default function CreateGroup({ onCreated }) {
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState("");
@@ -33,7 +35,7 @@ export default function CreateGroup({ onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) {
-      alert("Please enter a group title");
+      toast.warn("Please enter a group title");
       return;
     }
     setLoading(true);
@@ -42,15 +44,11 @@ export default function CreateGroup({ onClose }) {
       if (file) {
         await groupService.uploadAvatar(newGroup.id, file);
       }
-      setTitle("");
-      setDescription("");
-      setFile(null);
-      setPreview(null);
-      alert("Group created successfully!");
-      onClose?.();
+      toast.success("Group created successfully!");
+      onCreated?.(newGroup); // pass back to GroupList.jsx to close popup and update UI
     } catch (err) {
       console.error("Failed to create group:", err);
-      alert("There was an error creating your group.");
+      toast.error("Error creating group");
     } finally {
       setLoading(false);
     }
