@@ -1,5 +1,3 @@
-// src/components/CreatePost.jsx
-
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import {
@@ -27,7 +25,6 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
     groupService
       .list()
       .then((apiGroups) => {
-        console.log("groups from API:", apiGroups);
         setGroups(apiGroups);
       })
       .catch((err) => {
@@ -63,6 +60,8 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
   };
 
   const handleSubmit = () => {
+    if (!validateStep1() || !validateStep2()) return;
+
     const { lat, lng } = initialLocation;
     const payload = {
       title,
@@ -75,15 +74,25 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
         : {}),
     };
 
-    console.group("CreatePost ▶ payload");
-    console.log(payload);
-    console.groupEnd();
-
+    // build form data
     const form = new FormData();
     Object.entries(payload).forEach(([k, v]) => {
       if (v != null) form.append(k, String(v));
     });
-    mediaFiles.forEach((file) => form.append("images", file));
+
+    // separate images and video
+    const imageFiles = mediaFiles.filter((f) => f.type.startsWith("image/"));
+    const videoFiles = mediaFiles.filter((f) => f.type.startsWith("video/"));
+
+    // append up to 1 video
+    if (videoFiles.length > 0) {
+      form.append("video", videoFiles[0]);
+    }
+
+    // append images
+    imageFiles.forEach((file) => {
+      form.append("images", file);
+    });
 
     onSubmit(form);
   };
@@ -289,7 +298,7 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
               Back
             </button>
             <button
-              onClick={() => validateStep2() && next()}
+              onClick={next}
               className="inline-flex items-center gap-2 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition"
             >
               Next <FaArrowRight />

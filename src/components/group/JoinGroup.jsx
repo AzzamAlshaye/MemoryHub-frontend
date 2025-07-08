@@ -24,7 +24,7 @@ const parseInvite = (url) => {
   try {
     const u = new URL(url);
     const segments = u.pathname.split("/");
-    const id = segments[2] || null;              // expects "/group/:id"
+    const id = segments[2] || null; // expects "/group/:id"
     const token = u.searchParams.get("token");
     return { id, token };
   } catch {
@@ -54,7 +54,6 @@ export default function JoinGroup({ onJoined }) {
 
     setLoading(true);
     try {
-      // Attempt to join; expects the created/updated group object returned
       const joinedGroup = await groupService.join(id, token);
       toast.success("Joined group successfully!");
       onJoined?.(joinedGroup);
@@ -79,19 +78,19 @@ export default function JoinGroup({ onJoined }) {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl"
+      className="w-full max-w-md p-8 rounded-2xl text-center"
       onClick={(e) => e.stopPropagation()}
     >
       <motion.h1
         variants={itemVariants}
-        className="text-2xl font-bold text-gray-800 text-center mb-6"
+        className="text-2xl font-bold text-gray-800 mb-6"
       >
         Join a Group
       </motion.h1>
 
       <motion.label
         variants={itemVariants}
-        className="block text-sm font-medium text-gray-700 mb-2"
+        className="block text-sm font-medium text-gray-700 mb-2 text-center"
       >
         Invitation Link
       </motion.label>
@@ -101,12 +100,12 @@ export default function JoinGroup({ onJoined }) {
         value={inviteLink}
         onChange={(e) => setInviteLink(e.target.value)}
         placeholder="Paste invitation link here"
-        className="w-full px-4 py-3 mb-6 border border-gray-300 rounded-lg bg-gray-50 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+        className="w-full px-4 py-3 mb-6 border border-gray-300 rounded-lg bg-gray-50 placeholder-gray-400 text-sm text-center focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
       />
 
       <motion.div
         variants={itemVariants}
-        className="flex flex-col sm:flex-row gap-4"
+        className="flex flex-col sm:flex-row gap-4 justify-center"
       >
         <button
           onClick={handleJoin}

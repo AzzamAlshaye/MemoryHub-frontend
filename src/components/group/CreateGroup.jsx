@@ -3,7 +3,6 @@ import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { FaCamera } from "react-icons/fa";
 import { groupService } from "../../service/groupService";
-import { toast } from "react-toastify";
 
 const containerVariants = {
   hidden: {},
@@ -35,20 +34,20 @@ export default function CreateGroup({ onCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) {
-      toast.warn("Please enter a group title");
+      alert("Please enter a group title.");
       return;
     }
+
     setLoading(true);
     try {
       const newGroup = await groupService.create({ name: title, description });
-      if (file) {
-        await groupService.uploadAvatar(newGroup.id, file);
-      }
-      toast.success("Group created successfully!");
-      onCreated?.(newGroup); // pass back to GroupList.jsx to close popup and update UI
+      if (file) await groupService.uploadAvatar(newGroup.id, file);
+
+      alert("Group created successfully!");
+      onCreated?.(newGroup);
     } catch (err) {
-      console.error("Failed to create group:", err);
-      toast.error("Error creating group");
+      console.error(err);
+      alert("Failed to create the group. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -61,7 +60,7 @@ export default function CreateGroup({ onCreated }) {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="bg-white rounded-3xl p-6 w-full max-w-md mx-auto shadow-lg border border-gray-200"
+      className="bg-white rounded-3xl p-6 w-full max-w-md mx-auto"
     >
       <motion.h2
         variants={itemVariants}
@@ -72,14 +71,14 @@ export default function CreateGroup({ onCreated }) {
 
       <motion.div
         variants={itemVariants}
-        className="w-24 h-24 mx-auto mb-5 rounded-full border-4 border-dashed border-amber-300 flex items-center justify-center cursor-pointer hover:border-amber-500 transition"
         onClick={() => fileInputRef.current.click()}
+        className="w-24 h-24 mx-auto mb-5 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer transition"
       >
         {preview ? (
           <img
             src={preview}
             alt="Preview"
-            className="w-full h-full object-cover rounded-full"
+            className="w-full h-full rounded-full object-cover"
           />
         ) : (
           <FaCamera size={24} className="text-amber-500" />
@@ -129,10 +128,8 @@ export default function CreateGroup({ onCreated }) {
         variants={itemVariants}
         type="submit"
         disabled={loading}
-        className={`w-full py-3 text-white font-semibold rounded-full transition-shadow ${
-          loading
-            ? "bg-amber-300 cursor-not-allowed"
-            : "bg-amber-500 hover:bg-amber-600 shadow-md"
+        className={`w-full py-3 text-white font-semibold rounded-full transition-colors ${
+          loading ? "bg-amber-300 cursor-not-allowed" : "bg-amber-500 hover:bg-amber-600"
         }`}
       >
         {loading ? "Creating…" : "Create Group"}

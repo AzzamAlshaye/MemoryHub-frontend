@@ -2,9 +2,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import { createRoot } from "react-dom/client";
 import withReactContent from "sweetalert2-react-content";
 import CreateGroup from "../../../components/group/CreateGroup";
 import JoinGroup from "../../../components/group/JoinGroup";
+import { useTitle } from "../../../hooks/useTitle";
 import { FaSearch, FaPlus, FaSignInAlt, FaUsers } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { groupService } from "../../../service/groupService";
@@ -33,6 +35,7 @@ export default function GroupList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  useTitle("Group List | MemoryHub");
 
   useEffect(() => {
     setLoading(true);
@@ -75,21 +78,33 @@ export default function GroupList() {
 
   const openCreate = () =>
     MySwal.fire({
-      html: <CreateGroup onCreated={handleGroupCreated} />,
+      didRender: () => {
+        const popup = Swal.getPopup();
+        const mountPoint = document.createElement("div");
+        popup.appendChild(mountPoint);
+        createRoot(mountPoint).render(
+          <CreateGroup onCreated={handleGroupCreated} />
+        );
+      },
       showConfirmButton: false,
-      background: "transparent",
       customClass: {
-        popup: "rounded-3xl backdrop-blur-lg bg-white/30 p-0 shadow-2xl",
+        popup: "rounded-3xl bg-white p-8 shadow-2xl border border-gray-100",
       },
     });
 
   const openJoin = () =>
     MySwal.fire({
-      html: <JoinGroup onJoined={handleGroupJoined} />,
+      didRender: () => {
+        const popup = Swal.getPopup();
+        const mountPoint = document.createElement("div");
+        popup.appendChild(mountPoint);
+        createRoot(mountPoint).render(
+          <JoinGroup onJoined={handleGroupJoined} />
+        );
+      },
       showConfirmButton: false,
-      background: "transparent",
       customClass: {
-        popup: "rounded-3xl backdrop-blur-lg bg-white/30 p-0 shadow-2xl",
+        popup: "rounded-3xl bg-white p-8 shadow-2xl border border-gray-100",
       },
     });
 
