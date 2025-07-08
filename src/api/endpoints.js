@@ -13,6 +13,7 @@ export const userEndpoints = {
   me: "/users/me", // GET    /api/users/me
   updateSelf: "/users/me", // PUT    /api/users/me
   deleteSelf: "/users/me", // DELETE /api/users/me
+  uploadSelfAvatar: "/users/me/avatar",
   list: "/users", // GET    /api/users
   get: (id) => `/users/${id}`, // GET    /api/users/:id
   update: (id) => `/users/${id}`, // PUT    /api/users/:id
