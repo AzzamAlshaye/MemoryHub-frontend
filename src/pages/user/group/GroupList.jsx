@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import CreateGroup from "../../../components/group/CreateGroup";
 import JoinGroup from "../../../components/group/JoinGroup";
+import { useTitle } from "../../../hooks/useTitle";
 import { FaSearch, FaPlus, FaSignInAlt, FaUsers } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { groupService } from "../../../service/groupService";
@@ -32,7 +33,7 @@ export default function GroupList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-
+  useTitle("Group List | MemoryHub");
   useEffect(() => {
     setLoading(true);
     groupService

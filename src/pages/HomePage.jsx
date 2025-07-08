@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useTitle } from "../hooks/useTitle";
 import { FaMapMarkerAlt, FaUsers, FaGlobe, FaQuoteLeft } from "react-icons/fa";
 import { useNavigate } from "react-router";
 
@@ -44,13 +45,13 @@ export default function HomePage() {
 
   const testimonials = [
     {
-      img: "https://randomuser.me/api/portraits/women/44.jpg",
-      name: "Sarah Johnson",
+      img: "/default-avatar.jpg",
+      name: "Sarah Ahmad",
       role: "Travel Blogger",
       text: "Map Memory turned my trips into an interactive storybook!",
     },
     {
-      img: "https://randomuser.me/api/portraits/men/32.jpg",
+      img: "/user2.png",
       name: "Michael Torres",
       role: "Photographer",
       text: "Pinning spots helps me rediscover perfect shooting locations.",
@@ -74,8 +75,21 @@ export default function HomePage() {
           variants={fadeIn}
           className="space-y-6 text-center md:text-left"
         >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
-            Save Your <span className="text-amber-500">Memories</span>
+          <motion.img
+            src="/m-logo.webp"
+            initial="hidden"
+            whileInView="visible"
+            variants={fadeIn}
+            transition={{ delay: 0.5 }}
+            className="
+     block md:hidden h-40
+      w-40
+      mx-auto
+    "
+            alt="Map Memory Illustration"
+          />
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-neutral-800">
+            Save Your <span className="text-main-theme">Memories</span>
             <br />
             Where They Happened
           </h1>
@@ -93,8 +107,9 @@ export default function HomePage() {
             className="
               bg-amber-500 text-white
               px-6 py-3 rounded-full shadow-md hover:shadow-lg
-              transition block md:inline-block
+              delay-300 duration-500 block md:inline-block
               w-full md:w-auto
+              hover:cursor-pointer hover:bg-amber-600
             "
           >
             {isLoggedIn ? "Create Your Memory" : "Start Your First Memory"}
@@ -102,7 +117,7 @@ export default function HomePage() {
         </motion.div>
 
         <motion.img
-          src="/Logo-all.png"
+          src="/m-logo.webp"
           initial="hidden"
           whileInView="visible"
           variants={fadeIn}
@@ -125,7 +140,9 @@ export default function HomePage() {
             variants={fadeIn}
             className="text-3xl md:text-4xl font-semibold mb-12"
           >
-            How <span className="text-amber-500">Map Memory</span> Works
+            <p className="text-neutral-800 ">
+              How <span className="text-main-theme">Map Memory</span> Works
+            </p>
           </motion.h2>
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
             {features.map((f, i) => (
@@ -137,7 +154,7 @@ export default function HomePage() {
                 transition={{ delay: i * 0.2 }}
                 className="bg-gray-50 p-8 rounded-2xl shadow hover:shadow-lg transition transform hover:-translate-y-1"
               >
-                <div className="w-14 h-14 mx-auto mb-4 flex items-center justify-center bg-amber-100 rounded-full text-amber-500 text-2xl">
+                <div className="w-14 h-14 mx-auto mb-4 flex items-center justify-center bg-amber-100 rounded-full text-main-theme text-2xl">
                   {f.icon}
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
@@ -155,9 +172,9 @@ export default function HomePage() {
             initial="hidden"
             whileInView="visible"
             variants={fadeIn}
-            className="bg-amber-50 p-8 rounded-2xl shadow-lg border-l-4 border-amber-500 italic text-gray-700"
+            className="bg-amber-50 p-8 rounded-2xl shadow-lg border-l-4 border-main-theme italic text-gray-700"
           >
-            <FaQuoteLeft className="text-amber-500 text-2xl mb-4" />
+            <FaQuoteLeft className="text-main-theme text-2xl mb-4" />
             <p className="leading-relaxed">
               “Every memory tells a story—and every story can inspire a journey.
               Share your moments, and let your posts guide others exploring the

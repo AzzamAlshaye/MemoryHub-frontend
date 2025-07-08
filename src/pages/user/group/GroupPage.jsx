@@ -167,7 +167,7 @@ export default function GroupPage() {
   if (!group) return null;
 
   return (
-    <div className="bg-[#FDF7F0] min-h-screen py-6 px-4 md:px-8 lg:px-16 space-y-8">
+    <div className="bg-[#FEFCFB] min-h-screen py-6 px-4 md:px-8 lg:px-16 space-y-8">
       {/* Header */}
       <div className="max-w-4xl mx-auto flex items-center gap-4">
         <button

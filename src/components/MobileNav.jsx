@@ -26,7 +26,7 @@ export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState({
     name: "Guest",
-    avatar: "https://www.wpar.net/wp-content/uploads/2021/05/gravater-icon.jpg",
+    avatar: "/default-avatar.jpg",
     isLoggedIn: false,
   });
   const navigate = useNavigate();
@@ -39,10 +39,8 @@ export default function MobileNav() {
       .getCurrentUser()
       .then((data) => {
         setUser({
-          name: data.name || "User",
-          avatar:
-            data.avatar ||
-            "https://randomuser.me/api/portraits/men/32.jpg",
+          name: data.name,
+          avatar: data.avatar,
           isLoggedIn: true,
         });
       })
@@ -62,15 +60,11 @@ export default function MobileNav() {
     <header className="lg:hidden">
       <div className="flex items-center justify-between bg-white px-4 py-3 shadow-md">
         <Link to="/" className="flex items-center gap-2">
-          <img
-            src="/public/logoupdata.png"
-            alt="Logo"
-            className="w-8 h-8"
-          />
-          <span className="font-bold text-black text-lg">MapHub</span>
+          <img src="/m-logo.webp" alt="Logo" className="w-8 h-8" />
+          <span className="font-bold text-black text-lg">MemoryHub</span>
         </Link>
         <button onClick={() => setIsOpen(true)}>
-          <FaBars className="text-[#fb8951]" size={24} />
+          <FaBars className="text-main-theme" size={24} />
         </button>
       </div>
 
@@ -100,15 +94,11 @@ export default function MobileNav() {
                   className="flex items-center gap-2"
                   onClick={() => setIsOpen(false)}
                 >
-                  <img
-                    src="/public/logoupdata.png"
-                    alt="Logo"
-                    className="w-8 h-8"
-                  />
-                  <span className="font-bold text-black">MapHub</span>
+                  <img src="/m-logo.webp" alt="Logo" className="w-8 h-8" />
+                  <span className="font-bold text-black">MemoryHub</span>
                 </Link>
                 <button onClick={() => setIsOpen(false)}>
-                  <FaTimes className="text-[#fb8951]" size={24} />
+                  <FaTimes className="text-main-theme" size={24} />
                 </button>
               </div>
 
@@ -138,14 +128,12 @@ export default function MobileNav() {
                     className="w-10 h-10 rounded-full object-cover"
                   />
                   <div className="flex-1">
-                    <p className="text-gray-800 font-semibold">
-                      {user.name}
-                    </p>
+                    <p className="text-gray-800 font-semibold">{user.name}</p>
                     {user.isLoggedIn ? (
                       <Link
                         to="/Profile"
                         onClick={() => setIsOpen(false)}
-                        className="flex items-center gap-1 text-xs text-[#fb8951] hover:underline"
+                        className="flex items-center gap-1 text-xs text-main-theme hover:underline"
                       >
                         <FaUserEdit size={12} /> View Profile
                       </Link>
@@ -153,7 +141,7 @@ export default function MobileNav() {
                       <Link
                         to="/SignInPage"
                         onClick={() => setIsOpen(false)}
-                        className="flex items-center gap-1 text-xs text-[#fb8951] hover:underline"
+                        className="flex items-center gap-1 text-xs text-main-theme hover:underline"
                       >
                         <FaSignInAlt size={12} /> Sign In
                       </Link>
@@ -162,7 +150,7 @@ export default function MobileNav() {
                   {user.isLoggedIn && (
                     <button
                       onClick={handleLogout}
-                      className="p-1 rounded-full hover:bg-red-100 text-[#fb8951] hover:text-red-600 transition"
+                      className="p-1 rounded-full hover:bg-red-100 text-main-theme hover:text-red-600 transition"
                       title="Logout"
                     >
                       <FaSignOutAlt size={16} />

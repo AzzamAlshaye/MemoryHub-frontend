@@ -8,7 +8,7 @@ import MapPage from "../pages/user/MapPage.jsx";
 import GroupPage from "../pages/user/group/GroupPage.jsx";
 import GroupList from "../pages/user/group/GroupList.jsx";
 import GroupInfo from "../pages/user/group/GroupInfo.jsx";
-import ConfirmJoinGroup from "../components/group/ConfirmJoinGroup.jsx"; // ← import this
+import ConfirmJoinGroup from "../components/group/ConfirmJoinGroup.jsx"; 
 import Profile from "../pages/user/Profile.jsx";
 import MyTickets from "../pages/user/MyTickets.jsx";
 import AdminCrud from "../pages/admin/AdminCrud.jsx";
@@ -19,7 +19,7 @@ import Footer from "../components/Footer.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import MobileNav from "../components/MobileNav.jsx";
 import EditPost from "../components/map/EditPost.jsx";
-
+import AdminDashoard from '../pages/admin/AdminDashboard.jsx'
 
 const LayoutWithNav = () => (
   <div className="flex flex-col min-h-screen">
@@ -71,6 +71,9 @@ const router = createBrowserRouter([
       { path: "MyTickets", element: <MyTickets /> },
  { path: "admin/crud", element: <AdminCrud /> },
       { path: "admin/tickets", element: <AdminTickets /> },
+     {
+      path:"admin/dashboard",element:<AdminDashoard></AdminDashoard>
+     }
     ],
   },
   // auth & misc
