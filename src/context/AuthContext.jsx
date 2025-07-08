@@ -56,7 +56,6 @@ export function AuthProvider({ children }) {
       setAxiosToken(token);
       const me = await userService.getCurrentUser();
       setUser(me);
-      // ← removed navigate("/") here
     } finally {
       setLoading(false);
     }
@@ -69,7 +68,6 @@ export function AuthProvider({ children }) {
       setAxiosToken(token);
       const me = await userService.getCurrentUser();
       setUser(me);
-      // ← removed navigate("/") here as well
     } finally {
       setLoading(false);
     }
