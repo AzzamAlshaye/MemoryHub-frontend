@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import {
   FaEnvelope,
   FaCamera,
-  FaEllipsisV,
   FaEdit,
   FaTrash,
   FaEye,
@@ -53,6 +52,7 @@ export default function Profile() {
         setName(u.name || "");
         setEmail(u.email || "");
         currentUserId = u.id || u._id;
+        localStorage.setItem("currentUserName", u.name || "");
         return pinService.listMyPins();
       })
       .then((pins) => {
@@ -261,69 +261,85 @@ export default function Profile() {
             {memories.length === 0 && (
               <p className="text-gray-500">No memories to display.</p>
             )}
-            {memories.map((m, i) => (
-              <motion.div
-                key={m._id || m.id || i}
-                variants={item}
-                whileHover={{ scale: 1.03 }}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden group relative cursor-pointer"
-              >
-                {m.video ||
-                  (m.image?.startsWith("data:video") && (
-                    <video
-                      src={m.video || m.image}
-                      controls
-                      className="w-full h-48 object-cover"
-                    />
-                  )) || (
-                    <img
-                      src={m.image}
-                      alt={m.title}
-                      className="w-full h-48 object-cover"
-                    />
-                  )}
+         {memories.map((m, i) => {
+  const images = m.media?.images || [];
+  const firstImage = images.length > 0 ? images[0] : null;
+  const video = m.media?.video;
 
-                <div className="p-4 space-y-2">
-                  <h4 className="font-bold text-gray-900">{m.title}</h4>
-                  <p className="text-gray-600 text-sm line-clamp-2">
-                    {m.description}
-                  </p>
-                  <p className="text-gray-400 text-xs">
-                    {new Date(m.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
+  // حدد مصدر الفيديو أو الصورة مع فحص صلاحية وجود الفيديو
+  const videoSrc = video && video.trim() !== "" ? video : (firstImage && firstImage.includes(".mp4") ? firstImage : null);
+  const isVideo = !!videoSrc;
 
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition flex gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openEdit(m);
-                    }}
-                    className="p-2 bg-white rounded-full shadow"
-                  >
-                    <FaEdit className="text-gray-700" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeletePin(m._id || m.id);
-                    }}
-                    className="p-2 bg-white rounded-full shadow"
-                  >
-                    <FaTrash className="text-red-500" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPinId(m._id || m.id);
-                    }}
-                    className="p-2 bg-white rounded-full shadow"
-                  >
-                    <FaEye className="text-blue-500" />
-                  </button>
-                </div>
-              </motion.div>
-            ))}
+  return (
+    <motion.div
+      key={m._id || m.id || i}
+      variants={item}
+      whileHover={{ scale: 1.03 }}
+      className="bg-white rounded-2xl shadow-lg overflow-hidden group relative cursor-pointer"
+    >
+      {isVideo ? (
+        <video
+          src={videoSrc}
+          controls
+          className="w-full h-48 object-cover"
+        />
+      ) : firstImage ? (
+        <img
+          src={firstImage}
+          alt={m.title}
+          className="w-full h-48 object-cover"
+        />
+      ) : (
+        <img
+          src="/default-image.png"
+          alt="default"
+          className="w-full h-48 object-cover"
+        />
+      )}
+
+      <div className="p-4 space-y-2">
+        <h4 className="font-bold text-gray-900">{m.title}</h4>
+        <p className="text-gray-600 text-sm line-clamp-2">
+          {m.description}
+        </p>
+        <p className="text-gray-400 text-xs">
+          {new Date(m.createdAt).toLocaleDateString()}
+        </p>
+      </div>
+
+      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition flex gap-2">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            openEdit(m);
+          }}
+          className="p-2 bg-white rounded-full shadow"
+        >
+          <FaEdit className="text-gray-700" />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeletePin(m._id || m.id);
+          }}
+          className="p-2 bg-white rounded-full shadow"
+        >
+          <FaTrash className="text-red-500" />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedPinId(m._id || m.id);
+          }}
+          className="p-2 bg-white rounded-full shadow"
+        >
+          <FaEye className="text-blue-500" />
+        </button>
+      </div>
+    </motion.div>
+  );
+})}
+
           </div>
         </motion.section>
 
@@ -398,6 +414,7 @@ export default function Profile() {
           <ViewPin
             pinId={selectedPinId}
             onClose={() => setSelectedPinId(null)}
+            pin={selectedPin}
           />
         )}
       </motion.main>

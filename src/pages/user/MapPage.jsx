@@ -104,7 +104,7 @@ export default function MapPage() {
         </h2>
 
         {/* Search & Filter */}
-        <div className="bg-white p-6 rounded-2xl shadow-lg flex flex-wrap gap-4 items-center">
+        <div className="bg-gray-50 p-6 rounded-2xl flex flex-wrap gap-4 items-center">
           <input
             type="text"
             placeholder="Search…"

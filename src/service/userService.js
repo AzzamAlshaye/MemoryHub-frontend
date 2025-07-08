@@ -68,7 +68,8 @@ export const userService = {
       })
       .then((res) => res.data);
   },
-  /**
+
+ /**
    * DELETE /users/:id
    * @param {string} id
    * @returns {Promise<void>}

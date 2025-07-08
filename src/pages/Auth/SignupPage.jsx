@@ -52,29 +52,31 @@ export default function SignupPage() {
     return errors;
   };
 
-  const onSubmit = async (values, { setSubmitting, resetForm }) => {
-    try {
-      const { token } = await authService.signup({
-        name: values.name.trim(),
-        email: values.email.trim(),
-        password: values.password,
-        role: "user",
-      });
-      localStorage.setItem("token", token);
-      const me = await userService.getCurrentUser();
-      toast.success("Sign-up successful! Redirecting…");
-      resetForm();
-      if (me.role === "admin") {
-        navigate("/admin/crud");
-      } else {
-        navigate("/mapPage");
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Registration failed");
-    } finally {
-      setSubmitting(false);
+const onSubmit = async (values, { setSubmitting, resetForm }) => {
+  try {
+    const { token } = await authService.signup({
+      name: values.name.trim(),
+      email: values.email.trim(),
+      password: values.password,
+      role: "user",
+    });
+    localStorage.setItem("token", token);
+    const me = await userService.getCurrentUser();
+    localStorage.setItem("currentUserName", me.name); 
+    toast.success("Sign-up successful! Redirecting…");
+    resetForm();
+    if (me.role === "admin") {
+      navigate("/admin/crud");
+    } else {
+      navigate("/mapPage");
     }
-  };
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Registration failed");
+  } finally {
+    setSubmitting(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FDF7F0] p-6">

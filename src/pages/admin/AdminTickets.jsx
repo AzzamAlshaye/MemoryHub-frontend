@@ -221,7 +221,7 @@ export default function AdminTicketsPage() {
   );
 }
 
-function TabButton({ label, icon, active, onClick, count }) {
+function TabButton({ label, icon: Icon, active, onClick, count }) {
   return (
     <button
       onClick={onClick}
