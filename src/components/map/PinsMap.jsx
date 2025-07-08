@@ -31,14 +31,21 @@ export default function PinsMap({
       {pins.map((pin) => (
         <Marker
           key={pin._id}
-          longitude={pin.longitude} // ← use the normalized values
+          longitude={pin.longitude}
           latitude={pin.latitude}
           anchor="bottom"
           onClick={(evt) => {
             evt.originalEvent.stopPropagation();
             onPinClick(pin._id);
           }}
-        />
+        >
+          {/* Use your custom logo as the marker */}
+          <img
+            src="/m-logo.webp"
+            alt="Pin"
+            className="w-8 h-8 cursor-pointer"
+          />
+        </Marker>
       ))}
 
       {userLocation && (

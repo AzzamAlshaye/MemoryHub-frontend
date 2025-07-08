@@ -1,4 +1,5 @@
 // src/components/ViewPin.jsx
+
 import React, { useState, useEffect } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import {
@@ -20,29 +21,18 @@ export default function ViewPin({
   pinId,
   onClose,
   currentUser = { name: "You", avatar: "https://via.placeholder.com/40" },
-  icons = {},
 }) {
   const [pin, setPin] = useState(null);
-  const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
-  const [myReaction, setMyReaction] = useState(null); // "like" or "dislike" or null
-  const [commentReactions, setCommentReactions] = useState({}); // { [commentId]: "like"|"dislike"|null }
+  const [myReaction, setMyReaction] = useState(null); // {id,type} or null
+  const [comments, setComments] = useState([]); // array of { ...c, likes, dislikes }
+  const [commentReactions, setCommentReactions] = useState({}); // { [cid]: {id,type} | null }
   const [currentIdx, setCurrentIdx] = useState(0);
   const [showReport, setShowReport] = useState(null);
 
-  useEffect(() => {
-    if (!pinId) return;
-
-    // 1) Load pin details
-    pinService.get(pinId).then((data) => {
-      setPin(data);
-      setLikes(data.likes || 0);
-      setDislikes(data.dislikes || 0);
-      setCurrentIdx(0);
-    });
-
-    // 2) Load aggregate counts
+  // helper to fetch pin counts
+  const refreshPinCounts = () =>
     likeService
       .list("pin", pinId)
       .then(({ likes: l, dislikes: d }) => {
@@ -51,43 +41,84 @@ export default function ViewPin({
       })
       .catch(console.error);
 
-    // 3) Load my reaction on pin
+  // helper to fetch one comment’s counts
+  const refreshCommentCounts = (cid) =>
     likeService
-      .getMyReaction("pin", pinId)
-      .then((r) => setMyReaction(r?.type || null))
-      .catch(() => setMyReaction(null));
-
-    // 4) Load comments and then load my reactions on each comment
-    commentService
-      .listByPin(pinId)
-      .then((cs) =>
-        cs.map((c) => ({
-          ...c,
-          likes: c.likes || 0,
-          dislikes: c.dislikes || 0,
-        }))
-      )
-      .then((loadedComments) => {
-        setComments(loadedComments);
-        // for each comment, fetch my reaction
-        loadedComments.forEach((c) => {
-          likeService
-            .getMyReaction("comment", c.id)
-            .then((r) =>
-              setCommentReactions((cr) => ({
-                ...cr,
-                [c.id]: r?.type || null,
-              }))
-            )
-            .catch(() => {});
-        });
+      .list("comment", cid)
+      .then(({ likes: l, dislikes: d }) => {
+        setComments((cs) =>
+          cs.map((c) => (c.id === cid ? { ...c, likes: l, dislikes: d } : c))
+        );
       })
       .catch(console.error);
+
+  useEffect(() => {
+    if (!pinId) return;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        // 1) load pin details
+        const data = await pinService.get(pinId);
+        if (cancelled) return;
+        setPin(data);
+
+        // 2) load my pin reaction
+        const me = await likeService
+          .getMyReaction("pin", pinId)
+          .catch(() => null);
+        if (cancelled) return;
+        setMyReaction(me);
+
+        // 3) now load true pin counts
+        const { likes: l, dislikes: d } = await likeService.list("pin", pinId);
+        if (cancelled) return;
+        setLikes(l);
+        setDislikes(d);
+
+        // 4) load comments (with whatever counts the server returns initially)
+        const cs = await commentService.listByPin(pinId);
+        if (cancelled) return;
+        const loaded = cs.map((c) => ({
+          ...c,
+          likes: c.likes ?? 0,
+          dislikes: c.dislikes ?? 0,
+        }));
+        setComments(loaded);
+
+        // 5) for each comment, load my reaction then its true counts
+        for (const c of loaded) {
+          const r = await likeService
+            .getMyReaction("comment", c.id)
+            .catch(() => null);
+          if (cancelled) return;
+          setCommentReactions((prev) => ({ ...prev, [c.id]: r }));
+
+          // then fetch that comment’s true like/dislike counts
+          const { likes: cl, dislikes: cd } = await likeService.list(
+            "comment",
+            c.id
+          );
+          if (cancelled) return;
+          setComments((cs2) =>
+            cs2.map((x) =>
+              x.id === c.id ? { ...x, likes: cl, dislikes: cd } : x
+            )
+          );
+        }
+      } catch (err) {
+        console.error("ViewPin load error:", err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [pinId]);
 
   if (!pin) return null;
 
-  // Build media carousel items
+  // carousel data
   const images = Array.isArray(pin.media?.images)
     ? pin.media.images.map((i) => (typeof i === "string" ? i : i.url))
     : [];
@@ -105,50 +136,59 @@ export default function ViewPin({
       day: "numeric",
     });
 
-  // Helper to refresh aggregate counts
-  const refreshPin = () =>
-    likeService
-      .list("pin", pinId)
-      .then(({ likes: l, dislikes: d }) => {
-        setLikes(l);
-        setDislikes(d);
-      })
-      .catch(console.error);
-
-  // Handle pin like/dislike toggle
+  // PIN like/dislike toggle
   const handlePinReact = (type) => {
-    const newType = myReaction === type ? null : type;
-    likeService
-      .create({ targetType: "pin", targetId: pinId, type: newType || type })
-      .then(() => {
-        setMyReaction(newType);
-        refreshPin();
-      })
-      .catch(console.error);
+    if (myReaction?.type === type) {
+      // remove
+      likeService.remove(myReaction.id).catch(console.error);
+      setMyReaction(null);
+      refreshPinCounts();
+      return;
+    }
+    const create = () =>
+      likeService
+        .create({ targetType: "pin", targetId: pinId, type })
+        .then((nr) => {
+          setMyReaction(nr);
+          refreshPinCounts();
+        })
+        .catch(console.error);
+
+    if (myReaction) {
+      // switch
+      likeService.remove(myReaction.id).then(create).catch(console.error);
+      return;
+    }
+    // brand-new
+    create();
   };
 
-  // Handle comment like/dislike toggle
+  // COMMENT like/dislike toggle
   const handleCommentReact = (cid, type) => {
     const prev = commentReactions[cid];
-    const newType = prev === type ? null : type;
-    likeService
-      .create({
-        targetType: "comment",
-        targetId: cid,
-        type: newType || type,
-      })
-      .then(() =>
-        likeService.list("comment", cid).then(({ likes, dislikes }) => {
-          setComments((cs) =>
-            cs.map((c) => (c.id === cid ? { ...c, likes, dislikes } : c))
-          );
-          setCommentReactions((cr) => ({
-            ...cr,
-            [cid]: newType,
-          }));
+    if (prev?.type === type) {
+      // remove
+      likeService.remove(prev.id).catch(console.error);
+      setCommentReactions((cr) => ({ ...cr, [cid]: null }));
+      refreshCommentCounts(cid);
+      return;
+    }
+    const create = () =>
+      likeService
+        .create({ targetType: "comment", targetId: cid, type })
+        .then((nr) => {
+          setCommentReactions((cr) => ({ ...cr, [cid]: nr }));
+          refreshCommentCounts(cid);
         })
-      )
-      .catch(console.error);
+        .catch(console.error);
+
+    if (prev) {
+      // switch
+      likeService.remove(prev.id).then(create).catch(console.error);
+      return;
+    }
+    // brand-new
+    create();
   };
 
   // Add a new comment
@@ -165,7 +205,7 @@ export default function ViewPin({
       .catch(console.error);
   };
 
-  // Submit report
+  // Report
   const handleReport = ({ reason, description }) => {
     if (!showReport || !reason.trim()) return;
     const { type: tType, id: tId } = showReport;
@@ -180,8 +220,7 @@ export default function ViewPin({
       .catch(console.error);
   };
 
-  // Carousel navigation
-  const navigate = (step) =>
+  const navigateCarousel = (step) =>
     setCurrentIdx((i) => (i + step + mediaItems.length) % mediaItems.length);
 
   return (
@@ -244,13 +283,13 @@ export default function ViewPin({
               )}
             </div>
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => navigateCarousel(-1)}
               className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full"
             >
               <FaChevronLeft />
             </button>
             <button
-              onClick={() => navigate(1)}
+              onClick={() => navigateCarousel(1)}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full"
             >
               <FaChevronRight />
@@ -277,7 +316,7 @@ export default function ViewPin({
                 onClick={() => handlePinReact("like")}
                 className={
                   "flex items-center gap-1 " +
-                  (myReaction === "like"
+                  (myReaction?.type === "like"
                     ? "text-blue-600"
                     : "text-gray-500 hover:text-blue-600")
                 }
@@ -288,7 +327,7 @@ export default function ViewPin({
                 onClick={() => handlePinReact("dislike")}
                 className={
                   "flex items-center gap-1 " +
-                  (myReaction === "dislike"
+                  (myReaction?.type === "dislike"
                     ? "text-red-600"
                     : "text-gray-500 hover:text-red-600")
                 }
@@ -333,7 +372,7 @@ export default function ViewPin({
                         onClick={() => handleCommentReact(c.id, "like")}
                         className={
                           "flex items-center gap-1 " +
-                          (commentReactions[c.id] === "like"
+                          (commentReactions[c.id]?.type === "like"
                             ? "text-blue-600"
                             : "text-gray-500 hover:text-blue-600")
                         }
@@ -344,7 +383,7 @@ export default function ViewPin({
                         onClick={() => handleCommentReact(c.id, "dislike")}
                         className={
                           "flex items-center gap-1 " +
-                          (commentReactions[c.id] === "dislike"
+                          (commentReactions[c.id]?.type === "dislike"
                             ? "text-red-600"
                             : "text-gray-500 hover:text-red-600")
                         }
