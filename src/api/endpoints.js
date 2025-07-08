@@ -57,6 +57,7 @@ export const groupEndpoints = {
   remove: (id) => `/groups/${id}`, // DELETE /api/groups/:id
   invite: (id) => `/groups/${id}/invite`, // POST   /api/groups/:id/invite
   join: (id) => `/groups/${id}/join`, // POST   /api/groups/:id/join
+  uploadAvatar: (id) => `/groups/${id}/avatar`, // PATCH  /api/groups/:id/avatar
   kickMember: (id, m) => `/groups/${id}/kick/${m}`, // POST /api/groups/:id/kick/:memberId
   leave: (id) => `/groups/${id}/leave`, // POST /groups/${id}/leave
   promote: (id, m) => `/groups/${id}/promote/${m}`, // POST /api/groups/:id/promote/:memberId

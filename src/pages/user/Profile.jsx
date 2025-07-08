@@ -165,7 +165,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white p-8">
+    <div className="min-h-screen bg-[#FEFCFB] p-8">
       <ToastContainer position="top-center" />
       <motion.main
         variants={container}
