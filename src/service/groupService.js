@@ -1,5 +1,3 @@
-// src/services/groupService.js
-
 import { primaryAPI } from "../api/client";
 import { groupEndpoints } from "../api/endpoints";
 
@@ -84,5 +82,12 @@ export const groupService = {
     return primaryAPI
       .post(groupEndpoints.promote(id, memberId))
       .then((r) => r.data);
+  },
+
+  /**
+   * POST /groups/:id/leave
+   */
+  leaveGroup(id) {
+    return primaryAPI.post(groupEndpoints.leave(id)).then((r) => r.data);
   },
 };
