@@ -18,6 +18,20 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
+// Utility to parse invite link and extract group ID and token
+const parseInvite = (url) => {
+  try {
+    const u = new URL(url);
+    const segments = u.pathname.split("/");
+    // Assumes path like "/group/:id"
+    const id = segments[2] || null;
+    const token = u.searchParams.get("token");
+    return { id, token };
+  } catch {
+    return { id: null, token: null };
+  }
+};
+
 export default function JoinGroup() {
   const [inviteLink, setInviteLink] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,14 +41,29 @@ export default function JoinGroup() {
       toast.error("Please enter a valid invitation link");
       return;
     }
+
+    const { id, token } = parseInvite(inviteLink.trim());
+    if (!id || !token) {
+      MySwal.fire(
+        "Invalid link",
+        "Please paste a full invitation link (including ?token=…)",
+        "error"
+      );
+      return;
+    }
+
     setLoading(true);
     try {
-      await groupService.join(inviteLink.trim());
+      await groupService.join(id, token);
       toast.success("Joined the group successfully!");
       MySwal.close();
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "Failed to join the group");
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to join the group";
+      toast.error(message);
     } finally {
       setLoading(false);
     }

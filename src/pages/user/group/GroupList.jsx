@@ -1,13 +1,12 @@
-// src/pages/groups/GroupList.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
-import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import CreateGroup from "../../../components/group/CreateGroup";
+import JoinGroup from "../../../components/group/JoinGroup";
 import { FaSearch, FaPlus, FaSignInAlt, FaUsers } from "react-icons/fa";
-import CreateGroup from "./CreateGroup";
-import JoinGroup from "./JoinGroup";
-import { groupService } from "../../service/groupService";
+import { motion } from "framer-motion";
+import { groupService } from "../../../service/groupService";
 
 const MySwal = withReactContent(Swal);
 
@@ -18,7 +17,12 @@ const containerVariants = {
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 120 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: "spring", stiffness: 120 },
+  },
   hover: { scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.1)" },
 };
 
@@ -47,7 +51,10 @@ export default function GroupList() {
   const filtered = useMemo(
     () =>
       groups.filter((g) =>
-        [g.name, g.description].join(" ").toLowerCase().includes(search.toLowerCase())
+        [g.name, g.description]
+          .join(" ")
+          .toLowerCase()
+          .includes(search.toLowerCase())
       ),
     [groups, search]
   );
@@ -57,7 +64,9 @@ export default function GroupList() {
       html: <CreateGroup />,
       showConfirmButton: false,
       background: "transparent",
-      customClass: { popup: "rounded-3xl backdrop-blur-lg bg-white/30 p-0 shadow-2xl" },
+      customClass: {
+        popup: "rounded-3xl backdrop-blur-lg bg-white/30 p-0 shadow-2xl",
+      },
     });
 
   const openJoin = () =>
@@ -65,11 +74,13 @@ export default function GroupList() {
       html: <JoinGroup />,
       showConfirmButton: false,
       background: "transparent",
-      customClass: { popup: "rounded-3xl backdrop-blur-lg bg-white/30 p-0 shadow-2xl" },
+      customClass: {
+        popup: "rounded-3xl backdrop-blur-lg bg-white/30 p-0 shadow-2xl",
+      },
     });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white text-gray-800">
+    <div className="min-h-screen bg-[#FEFCFB] text-gray-800">
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
@@ -109,7 +120,7 @@ export default function GroupList() {
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="h-80 bg-white rounded-2xl animate-pulse"
+                className="h-80 bg-white rounded-2xl animate-pulse shadow"
               />
             ))}
           </div>
@@ -135,7 +146,7 @@ export default function GroupList() {
                 className="cursor-pointer"
                 onClick={() => navigate(`/group/${g.id}`)}
               >
-                <div className="rounded-2xl overflow-hidden backdrop-blur-sm bg-white/40 border border-white/20">
+                <div className="rounded-2xl overflow-hidden bg-white shadow-lg border border-gray-200">
                   <div className="relative h-48">
                     <img
                       src={g.avatar || "/placeholder.png"}

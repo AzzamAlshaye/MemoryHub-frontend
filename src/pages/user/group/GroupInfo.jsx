@@ -12,7 +12,7 @@ import {
   FaTrash,
   FaUserShield,
 } from "react-icons/fa";
-import { groupService } from "../service/groupService";
+import { groupService } from "../../../service/groupService";
 
 export default function GroupInfo() {
   const { groupId } = useParams();

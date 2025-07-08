@@ -49,7 +49,7 @@ export default function HomePage() {
   ];
 
   return (
-    <main className="bg-gray-50 text-gray-800">
+    <main className="bg-[#FEFCFB] text-gray-800">
       {/* Hero */}
       <section className="container mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
         <motion.div
@@ -59,7 +59,8 @@ export default function HomePage() {
           className="space-y-6"
         >
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
-            Save Your <span className="text-amber-500">Memories</span><br />
+            Save Your <span className="text-amber-500">Memories</span>
+            <br />
             Where They Happened
           </h1>
           <p className="text-lg max-w-lg leading-relaxed">
@@ -130,9 +131,9 @@ export default function HomePage() {
           >
             <FaQuoteLeft className="text-amber-500 text-2xl mb-4" />
             <p className="leading-relaxed">
-              “Every memory tells a story—and every story can inspire a 
-              journey. Share your moments, and let your posts guide others 
-              exploring the world.”
+              “Every memory tells a story—and every story can inspire a journey.
+              Share your moments, and let your posts guide others exploring the
+              world.”
             </p>
             <cite className="block text-right font-semibold mt-4 text-gray-900">
               The Map Memory Team
@@ -167,8 +168,12 @@ export default function HomePage() {
                   alt={t.name}
                   className="w-16 h-16 rounded-full mx-auto mb-4 border-2 border-amber-100"
                 />
-                <h4 className="text-lg font-semibold mb-1 text-center">{t.name}</h4>
-                <p className="text-sm text-gray-500 mb-4 text-center">{t.role}</p>
+                <h4 className="text-lg font-semibold mb-1 text-center">
+                  {t.name}
+                </h4>
+                <p className="text-sm text-gray-500 mb-4 text-center">
+                  {t.role}
+                </p>
                 <p className="text-gray-600 text-base text-center leading-relaxed">
                   {t.text}
                 </p>

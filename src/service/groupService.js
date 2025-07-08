@@ -1,12 +1,11 @@
 // src/services/groupService.js
+
 import { primaryAPI } from "../api/client";
 import { groupEndpoints } from "../api/endpoints";
 
 export const groupService = {
   /**
    * POST /groups
-   * @param {Object} data
-   * @returns {Promise<Object>}
    */
   create(data) {
     return primaryAPI.post(groupEndpoints.create, data).then((r) => r.data);
@@ -14,7 +13,6 @@ export const groupService = {
 
   /**
    * GET /groups
-   * @returns {Promise<Array>}
    */
   list() {
     return primaryAPI.get(groupEndpoints.list).then((r) => r.data);
@@ -22,8 +20,6 @@ export const groupService = {
 
   /**
    * GET /groups/:id
-   * @param {string} id
-   * @returns {Promise<Object>}
    */
   get(id) {
     return primaryAPI.get(groupEndpoints.get(id)).then((r) => r.data);
@@ -31,33 +27,26 @@ export const groupService = {
 
   /**
    * PUT /groups/:id
-   * @param {string} id
-   * @param {Object} data
-   * @returns {Promise<Object>}
    */
   update(id, data) {
     return primaryAPI.put(groupEndpoints.update(id), data).then((r) => r.data);
   },
+
   /**
    * PATCH /groups/:id/avatar
-   * @param {string} id
-   * @param {File} file
-   * @returns {Promise<Object>}
    */
   uploadAvatar(id, file) {
     const form = new FormData();
     form.append("groupAvatar", file);
     return primaryAPI
-      .patch(groupEndpoints.update(id), form, {
+      .patch(groupEndpoints.uploadAvatar(id), form, {
         headers: { "Content-Type": "multipart/form-data" },
       })
-      .then((res) => res.data);
+      .then((r) => r.data);
   },
 
   /**
    * DELETE /groups/:id
-   * @param {string} id
-   * @returns {Promise<void>}
    */
   remove(id) {
     return primaryAPI.delete(groupEndpoints.remove(id)).then((r) => r.data);
@@ -65,30 +54,22 @@ export const groupService = {
 
   /**
    * POST /groups/:id/invite
-   * @param {string} id
-   * @param {string} email
-   * @returns {Promise<Object>}
    */
-  invite(id, email) {
+  invite(id) {
+    return primaryAPI.post(groupEndpoints.invite(id)).then((r) => r.data);
+  },
+
+  /**
+   * POST /groups/:id/join?token=…
+   */
+  join(id, token) {
     return primaryAPI
-      .post(groupEndpoints.invite(id), { email })
+      .post(groupEndpoints.join(id), null, { params: { token } })
       .then((r) => r.data);
   },
 
   /**
-   * POST /groups/:id/join
-   * @param {string} id
-   * @returns {Promise<Object>}
-   */
-  join(id) {
-    return primaryAPI.post(groupEndpoints.join(id)).then((r) => r.data);
-  },
-
-  /**
    * POST /groups/:id/kick/:memberId
-   * @param {string} id
-   * @param {string} memberId
-   * @returns {Promise<Object>}
    */
   kickMember(id, memberId) {
     return primaryAPI
@@ -98,9 +79,6 @@ export const groupService = {
 
   /**
    * POST /groups/:id/promote/:memberId
-   * @param {string} id
-   * @param {string} memberId
-   * @returns {Promise<Object>}
    */
   promote(id, memberId) {
     return primaryAPI
