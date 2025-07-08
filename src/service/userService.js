@@ -4,28 +4,17 @@ import { userEndpoints } from "../api/endpoints";
 
 export const userService = {
   /**
-   * PUT /users/me
+   * GET /users/:id/public
+   * @param {string} id
+   * @returns {Promise<{id:string,name:string,avatar:string}>}
    */
-  updateSelf(data) {
-    return primaryAPI.put(userEndpoints.updateSelf, data).then((r) => r.data);
-  },
-
-  /**
-   * DELETE /users/me
-   */
-  deleteSelf() {
-    return primaryAPI.delete(userEndpoints.deleteSelf).then((r) => r.data);
-  },
-
-  /**
-   * GET /users
-   */
-  list() {
-    return primaryAPI.get(userEndpoints.list).then((r) => r.data);
+  getPublic(id) {
+    return primaryAPI.get(userEndpoints.getPublic(id)).then((r) => r.data);
   },
 
   /**
    * GET /users/:id
+   * (admin only)
    */
   get(id) {
     return primaryAPI.get(userEndpoints.get(id)).then((r) => r.data);
@@ -39,10 +28,25 @@ export const userService = {
   },
 
   /**
-   * PUT /users/:id
+   * GET /users
+   * (admin only)
    */
-  update(id, data) {
-    return primaryAPI.put(userEndpoints.update(id), data).then((r) => r.data);
+  list() {
+    return primaryAPI.get(userEndpoints.list).then((r) => r.data);
+  },
+
+  /**
+   * PUT /users/me
+   */
+  updateSelf(data) {
+    return primaryAPI.put(userEndpoints.updateSelf, data).then((r) => r.data);
+  },
+
+  /**
+   * DELETE /users/me
+   */
+  deleteSelf() {
+    return primaryAPI.delete(userEndpoints.deleteSelf).then((r) => r.data);
   },
 
   /**
@@ -59,7 +63,24 @@ export const userService = {
   },
 
   /**
-   * PATCH /users/:id/avatar  (admin only)
+   * PUT /users/:id
+   * (admin only)
+   */
+  update(id, data) {
+    return primaryAPI.put(userEndpoints.update(id), data).then((r) => r.data);
+  },
+
+  /**
+   * DELETE /users/:id
+   * (admin only)
+   */
+  remove(id) {
+    return primaryAPI.delete(userEndpoints.remove(id)).then((r) => r.data);
+  },
+
+  /**
+   * PATCH /users/:id/avatar
+   * (admin only)
    */
   uploadAvatar(id, file) {
     const form = new FormData();
@@ -69,12 +90,5 @@ export const userService = {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((r) => r.data);
-  },
-
-  /**
-   * DELETE /users/:id
-   */
-  remove(id) {
-    return primaryAPI.delete(userEndpoints.remove(id)).then((r) => r.data);
   },
 };

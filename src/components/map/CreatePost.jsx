@@ -119,9 +119,7 @@ export default function CreatePost({ onSubmit, onCancel, initialLocation }) {
             onClick={onCancel}
             className="text-gray-500 hover:text-gray-800"
             title="Cancel"
-          >
-            ✕
-          </button>
+          ></button>
         )}
       </div>
 
