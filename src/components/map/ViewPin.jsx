@@ -16,22 +16,34 @@ import { pinService } from "../../service/pinService";
 import { commentService } from "../../service/commentService";
 import { likeService } from "../../service/likeService";
 import { reportService } from "../../service/reportService";
+import { userService } from "../../service/userService";
 
-export default function ViewPin({
-  pinId,
-  onClose,
-  currentUser = { name: "You", avatar: "https://via.placeholder.com/40" },
-}) {
+export default function ViewPin({ pinId, onClose }) {
   const [pin, setPin] = useState(null);
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
   const [myReaction, setMyReaction] = useState(null); // {id,type} or null
-  const [comments, setComments] = useState([]); // array of { ...c, likes, dislikes }
-  const [commentReactions, setCommentReactions] = useState({}); // { [cid]: {id,type} | null }
+  const [comments, setComments] = useState([]); // each: { …, author:{id,name,avatar}, likes, dislikes }
+  const [commentReactions, setCommentReactions] = useState({}); // { [cid]: {id,type}|null }
   const [currentIdx, setCurrentIdx] = useState(0);
   const [showReport, setShowReport] = useState(null);
 
-  // helper to fetch pin counts
+  // load current user profile for avatar/name in the comment form
+  const [currentUser, setCurrentUser] = useState({
+    id: "",
+    name: "You",
+    avatar: "https://via.placeholder.com/40",
+  });
+  useEffect(() => {
+    userService
+      .getCurrentUser()
+      .then((u) => setCurrentUser(u))
+      .catch(() => {
+        /* keep placeholder */
+      });
+  }, []);
+
+  // helper to refresh pin counts
   const refreshPinCounts = () =>
     likeService
       .list("pin", pinId)
@@ -41,7 +53,7 @@ export default function ViewPin({
       })
       .catch(console.error);
 
-  // helper to fetch one comment’s counts
+  // helper to refresh one comment's counts
   const refreshCommentCounts = (cid) =>
     likeService
       .list("comment", cid)
@@ -52,41 +64,64 @@ export default function ViewPin({
       })
       .catch(console.error);
 
+  // main data-loading effect
   useEffect(() => {
     if (!pinId) return;
     let cancelled = false;
 
     (async () => {
       try {
-        // 1) load pin details
+        // 1) Pin details
         const data = await pinService.get(pinId);
         if (cancelled) return;
         setPin(data);
 
-        // 2) load my pin reaction
+        // 2) My pin reaction
         const me = await likeService
           .getMyReaction("pin", pinId)
           .catch(() => null);
         if (cancelled) return;
         setMyReaction(me);
 
-        // 3) now load true pin counts
+        // 3) True pin counts
         const { likes: l, dislikes: d } = await likeService.list("pin", pinId);
         if (cancelled) return;
         setLikes(l);
         setDislikes(d);
 
-        // 4) load comments (with whatever counts the server returns initially)
+        // 4) Load comments and fetch commenter public profiles
         const cs = await commentService.listByPin(pinId);
         if (cancelled) return;
-        const loaded = cs.map((c) => ({
+        let loaded = cs.map((c) => {
+          const authorId =
+            typeof c.author === "string" ? c.author : c.author?.id;
+          return {
+            ...c,
+            likes: c.likes ?? 0,
+            dislikes: c.dislikes ?? 0,
+            author: { id: authorId, name: "", avatar: "" },
+          };
+        });
+
+        // fetch all unique authors
+        const authorIds = Array.from(new Set(loaded.map((c) => c.author.id)));
+        const users = await Promise.all(
+          authorIds.map((uid) => userService.getPublic(uid).catch(() => null))
+        );
+        const userMap = users.reduce((acc, u) => {
+          if (u) acc[u.id] = u;
+          return acc;
+        }, {});
+
+        // merge author info
+        loaded = loaded.map((c) => ({
           ...c,
-          likes: c.likes ?? 0,
-          dislikes: c.dislikes ?? 0,
+          author: userMap[c.author.id] || c.author,
         }));
+        if (cancelled) return;
         setComments(loaded);
 
-        // 5) for each comment, load my reaction then its true counts
+        // 5) For each comment, load my reaction + true counts
         for (const c of loaded) {
           const r = await likeService
             .getMyReaction("comment", c.id)
@@ -94,7 +129,6 @@ export default function ViewPin({
           if (cancelled) return;
           setCommentReactions((prev) => ({ ...prev, [c.id]: r }));
 
-          // then fetch that comment’s true like/dislike counts
           const { likes: cl, dislikes: cd } = await likeService.list(
             "comment",
             c.id
@@ -118,7 +152,7 @@ export default function ViewPin({
 
   if (!pin) return null;
 
-  // carousel data
+  // build media carousel array
   const images = Array.isArray(pin.media?.images)
     ? pin.media.images.map((i) => (typeof i === "string" ? i : i.url))
     : [];
@@ -136,10 +170,9 @@ export default function ViewPin({
       day: "numeric",
     });
 
-  // PIN like/dislike toggle
+  // pin like/dislike handler
   const handlePinReact = (type) => {
     if (myReaction?.type === type) {
-      // remove
       likeService.remove(myReaction.id).catch(console.error);
       setMyReaction(null);
       refreshPinCounts();
@@ -153,21 +186,17 @@ export default function ViewPin({
           refreshPinCounts();
         })
         .catch(console.error);
-
     if (myReaction) {
-      // switch
       likeService.remove(myReaction.id).then(create).catch(console.error);
       return;
     }
-    // brand-new
     create();
   };
 
-  // COMMENT like/dislike toggle
+  // comment like/dislike handler
   const handleCommentReact = (cid, type) => {
     const prev = commentReactions[cid];
     if (prev?.type === type) {
-      // remove
       likeService.remove(prev.id).catch(console.error);
       setCommentReactions((cr) => ({ ...cr, [cid]: null }));
       refreshCommentCounts(cid);
@@ -181,17 +210,14 @@ export default function ViewPin({
           refreshCommentCounts(cid);
         })
         .catch(console.error);
-
     if (prev) {
-      // switch
       likeService.remove(prev.id).then(create).catch(console.error);
       return;
     }
-    // brand-new
     create();
   };
 
-  // Add a new comment
+  // add new comment
   const handleAddComment = (e) => {
     e.preventDefault();
     const text = e.target.elements.comment.value.trim();
@@ -199,13 +225,25 @@ export default function ViewPin({
     commentService
       .create({ pinId, text })
       .then((nc) => {
-        setComments((cs) => [{ ...nc, likes: 0, dislikes: 0 }, ...cs]);
+        setComments((cs) => [
+          {
+            ...nc,
+            likes: 0,
+            dislikes: 0,
+            author: {
+              id: currentUser.id,
+              name: currentUser.name,
+              avatar: currentUser.avatar,
+            },
+          },
+          ...cs,
+        ]);
         e.target.reset();
       })
       .catch(console.error);
   };
 
-  // Report
+  // report handler
   const handleReport = ({ reason, description }) => {
     if (!showReport || !reason.trim()) return;
     const { type: tType, id: tId } = showReport;
@@ -220,6 +258,7 @@ export default function ViewPin({
       .catch(console.error);
   };
 
+  // carousel navigation
   const navigateCarousel = (step) =>
     setCurrentIdx((i) => (i + step + mediaItems.length) % mediaItems.length);
 
@@ -233,7 +272,7 @@ export default function ViewPin({
           <FaTimes size={24} />
         </button>
 
-        {/* Header */}
+        {/* HEADER */}
         <header className="p-6 border-b">
           <h2 className="text-2xl font-bold">{pin.title}</h2>
           <div className="mt-4 flex items-center gap-3">
@@ -264,7 +303,7 @@ export default function ViewPin({
           </div>
         </header>
 
-        {/* Carousel */}
+        {/* MEDIA CAROUSEL */}
         {mediaItems.length > 0 && (
           <div className="relative bg-gray-100">
             <div className="w-full aspect-video">
@@ -297,7 +336,7 @@ export default function ViewPin({
           </div>
         )}
 
-        {/* Body */}
+        {/* BODY */}
         <section className="p-6 space-y-6">
           <p className="text-gray-700">{pin.description}</p>
 
@@ -309,7 +348,7 @@ export default function ViewPin({
             </div>
           </div>
 
-          {/* Pin reactions */}
+          {/* PIN REACTIONS */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <button
@@ -343,7 +382,7 @@ export default function ViewPin({
             </button>
           </div>
 
-          {/* Comments */}
+          {/* COMMENTS */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">
               Comments ({comments.length})
@@ -354,7 +393,7 @@ export default function ViewPin({
                   <img
                     src={c.author.avatar}
                     alt={c.author.name}
-                    className="w-8 h-8 rounded-full"
+                    className="w-8 h-8 rounded-full object-cover"
                   />
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
@@ -404,7 +443,7 @@ export default function ViewPin({
               ))}
             </div>
 
-            {/* Add comment */}
+            {/* ADD COMMENT */}
             <form
               onSubmit={handleAddComment}
               className="mt-6 flex gap-3 border-t pt-4"
@@ -412,7 +451,7 @@ export default function ViewPin({
               <img
                 src={currentUser.avatar}
                 alt={currentUser.name}
-                className="w-8 h-8 rounded-full"
+                className="w-8 h-8 rounded-full object-cover"
               />
               <textarea
                 name="comment"
@@ -430,7 +469,7 @@ export default function ViewPin({
           </div>
         </section>
 
-        {/* Report Popup */}
+        {/* REPORT POPUP */}
         {showReport && (
           <ReportPopup
             target={showReport}
