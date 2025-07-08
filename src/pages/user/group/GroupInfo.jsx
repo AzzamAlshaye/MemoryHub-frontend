@@ -20,60 +20,64 @@ import "react-toastify/dist/ReactToastify.css";
 export default function GroupInfo() {
   const { groupId } = useParams();
   const navigate = useNavigate();
+
   const [group, setGroup] = useState(null);
   const [members, setMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const baseInviteUrl =
-    window.location.origin + `/group/${groupId}/join?token=`;
+  const baseInviteUrl = `${window.location.origin}/group/${groupId}/join?token=`;
+
+  // fetch & build members+roles
+  const fetchGroupData = async () => {
+    try {
+      setLoading(true);
+      const g = await groupService.get(groupId);
+
+      // normalize admin IDs
+      const adminIds = (g.admins || []).map((a) => {
+        if (typeof a === "string") return a;
+        if (a.id) return a.id;
+        if (a._id) return a._id.toString();
+        return String(a);
+      });
+
+      // load posts & count per member
+      const posts = await pinService.list("group", "", groupId);
+      g.postCount = posts.length;
+      const postCounts = {};
+      posts.forEach((p) => {
+        const ownerId = p.owner?._id || p.owner?.id;
+        if (ownerId) {
+          postCounts[ownerId] = (postCounts[ownerId] || 0) + 1;
+        }
+      });
+
+      // build fullMembers
+      const fullMembers = (g.members || []).map((mDoc) => {
+        const id = mDoc.id ?? (mDoc._id && mDoc._id.toString());
+        return {
+          id,
+          name: mDoc.name,
+          email: mDoc.email,
+          avatar: mDoc.avatar,
+          joinedAt: mDoc.joinedAt || "-",
+          postCount: postCounts[id] || 0,
+          role: adminIds.includes(id) ? "Admin" : "Member",
+        };
+      });
+
+      setGroup(g);
+      setMembers(fullMembers);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load group info.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchGroupData() {
-      try {
-        setLoading(true);
-
-        // 1) load group info (members and admins populated by service)
-        const g = await groupService.get(groupId);
-        const adminIds = (g.admins || []).map((a) => (a._id ?? a).toString());
-
-        // 2) load group posts
-        const posts = await pinService.list("group", "", groupId);
-        g.postCount = posts.length;
-
-        // 3) count posts per member
-        const postCounts = {};
-        posts.forEach((p) => {
-          const ownerId = p.owner?._id || p.owner?.id;
-          if (ownerId) {
-            postCounts[ownerId] = (postCounts[ownerId] || 0) + 1;
-          }
-        });
-
-        // 4) build members array
-        const fullMembers = (g.members || []).map((mDoc) => {
-          const id = (mDoc._id ?? mDoc.id).toString();
-          return {
-            id,
-            name: mDoc.name,
-            email: mDoc.email,
-            avatar: mDoc.avatar,
-            joinedAt: mDoc.joinedAt || "-",
-            postCount: postCounts[id] || 0,
-            role: adminIds.includes(id) ? "Admin" : "Member",
-          };
-        });
-
-        setGroup(g);
-        setMembers(fullMembers);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to load group info.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchGroupData();
   }, [groupId]);
 
@@ -82,8 +86,7 @@ export default function GroupInfo() {
       const { inviteToken } = await groupService.invite(groupId);
       setGroup((g) => ({ ...g, inviteToken }));
       toast.success("Invite link updated.");
-    } catch (err) {
-      console.error(err);
+    } catch {
       toast.error("Could not generate invite link.");
     }
   };
@@ -97,13 +100,11 @@ export default function GroupInfo() {
       confirmButtonText: "Yes, leave",
     });
     if (!isConfirmed) return;
-
     try {
       await groupService.leaveGroup(groupId);
       Swal.fire("Left Group", "You have left the group.", "success");
       navigate("/GroupList");
-    } catch (err) {
-      console.error(err);
+    } catch {
       Swal.fire("Error", "Could not leave group.", "error");
     }
   };
@@ -111,21 +112,17 @@ export default function GroupInfo() {
   const handlePromote = async (memberId) => {
     const { isConfirmed } = await Swal.fire({
       title: "Promote member",
-      text: "Are you sure you want to promote this member to Admin?",
+      text: "Promote this member to Admin?",
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Yes, promote",
     });
     if (!isConfirmed) return;
-
     try {
       await groupService.promote(groupId, memberId);
-      setMembers((prev) =>
-        prev.map((m) => (m.id === memberId ? { ...m, role: "Admin" } : m))
-      );
+      await fetchGroupData();
       Swal.fire("Promoted!", "Member is now an admin.", "success");
-    } catch (err) {
-      console.error(err);
+    } catch {
       Swal.fire("Error", "Could not promote member.", "error");
     }
   };
@@ -133,19 +130,17 @@ export default function GroupInfo() {
   const handleKick = async (memberId) => {
     const { isConfirmed } = await Swal.fire({
       title: "Remove member",
-      text: "Are you sure you want to remove this member?",
+      text: "Remove this member?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, remove",
     });
     if (!isConfirmed) return;
-
     try {
       await groupService.kickMember(groupId, memberId);
-      setMembers((prev) => prev.filter((m) => m.id !== memberId));
+      await fetchGroupData();
       Swal.fire("Removed!", "Member has been removed.", "success");
-    } catch (err) {
-      console.error(err);
+    } catch {
       Swal.fire("Error", "Could not remove member.", "error");
     }
   };
@@ -154,12 +149,15 @@ export default function GroupInfo() {
     return <div className="p-6 text-center">Loading group info…</div>;
   }
 
+  // filter & sort so Admins appear first
   const term = searchTerm.toLowerCase();
-  const filteredMembers = members.filter(
-    (m) =>
-      m.name.toLowerCase().includes(term) ||
-      m.email.toLowerCase().includes(term)
-  );
+  const filtered = members
+    .filter(
+      (m) =>
+        m.name.toLowerCase().includes(term) ||
+        m.email.toLowerCase().includes(term)
+    )
+    .sort((a, b) => (a.role === "Admin" && b.role !== "Admin" ? -1 : 0));
 
   return (
     <div className="flex min-h-screen bg-[#FDF7F0]">
@@ -229,7 +227,6 @@ export default function GroupInfo() {
               </button>
             </div>
           </div>
-
           {/* Invite Link */}
           <div className="w-full lg:w-1/3 space-y-2">
             <h3 className="text-sm font-semibold text-gray-700">Invite Link</h3>
@@ -264,20 +261,19 @@ export default function GroupInfo() {
             placeholder="Search members..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="mb-4 w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+            className="mb-4 w-full px-3 py-2 rounded-md border border-gray-300 bg-white text-sm"
           />
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-gray-600 border-b border-gray-200">
                 <th className="py-2">Member</th>
                 <th>Role</th>
-                <th>Joined</th>
                 <th>Memories</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredMembers.map((m) => (
+              {filtered.map((m) => (
                 <tr
                   key={m.id}
                   className="border-b border-gray-100 hover:bg-amber-50 transition"
@@ -287,7 +283,7 @@ export default function GroupInfo() {
                       <img
                         src={m.avatar}
                         alt={m.name}
-                        className="w-10 h-10 rounded-full"
+                        className="w-10 h-10 rounded-full object-cover"
                       />
                       <div>
                         <p className="font-medium text-gray-800">{m.name}</p>
@@ -306,7 +302,6 @@ export default function GroupInfo() {
                       {m.role}
                     </span>
                   </td>
-                  <td className="text-gray-700">{m.joinedAt}</td>
                   <td className="text-gray-700">{m.postCount}</td>
                   <td className="space-x-2">
                     {m.role !== "Admin" && (
