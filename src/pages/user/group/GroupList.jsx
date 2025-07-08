@@ -163,7 +163,7 @@ export default function GroupList() {
                       {g.description}
                     </p>
                     <span className="inline-block px-4 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-medium">
-                      {g.membersCount ?? 0} members
+                      {g.members?.length ?? 0} members
                     </span>
                   </div>
                 </div>

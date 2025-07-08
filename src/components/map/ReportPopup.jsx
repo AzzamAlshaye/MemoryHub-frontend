@@ -58,10 +58,9 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
     });
     if (!isConfirmed) return;
 
-// test to store
- const key = `reportDesc_${target.type}_${target.id}`;
-  localStorage.setItem(key, description.trim());
-
+    // test to store
+    const key = `reportDesc_${target.type}_${target.id}`;
+    localStorage.setItem(key, description.trim());
 
     // success toast
     await fireAlert({
@@ -76,17 +75,19 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
 
   return (
     <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/60 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 space-y-4">
-        <h3 className="text-lg font-semibold">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4">
+        <h3 className="text-lg font-semibold text-red-600">
           Report {target.type === "pin" ? "Post" : "Comment"}
         </h3>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Reason</label>
+          <label className="block text-sm font-medium mb-1 text-gray-700">
+            Reason
+          </label>
           <select
             value={selectedReason}
             onChange={(e) => setSelectedReason(e.target.value)}
-            className="w-full border rounded px-3 py-2 focus:outline-none"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400"
           >
             {DEFAULT_REASONS.map((r) => (
               <option key={r} value={r}>
@@ -98,40 +99,40 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
 
         {selectedReason === "Other" && (
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1 text-gray-700">
               Other Reason
             </label>
             <textarea
               value={customReason}
               onChange={(e) => setCustomReason(e.target.value)}
               placeholder="Please describe the reason..."
-              className="w-full border rounded px-3 py-2 focus:outline-none h-20 resize-y"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 h-20 resize-y"
             />
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-sm font-medium mb-1 text-gray-700">
             Additional Details
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Provide any extra information..."
-            className="w-full border rounded px-3 py-2 focus:outline-none h-20 resize-y"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 h-20 resize-y"
           />
         </div>
 
         <div className="flex justify-end space-x-2">
           <button
             onClick={onCancel}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
           >
             Submit Report
           </button>
