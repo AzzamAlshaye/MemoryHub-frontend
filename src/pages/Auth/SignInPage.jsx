@@ -82,11 +82,11 @@ export default function SignInPage() {
                     htmlFor={id}
                     className="
                       absolute left-3
-                      -top-2
-                      px-1 bg-white-theme
+                      -top-2 bg-white
+                      px-1  rounded-2xl
                       text-sm text-gray-500 transition-all
                       peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:bg-transparent peer-placeholder-shown:px-0
-                      peer-focus:-top-2 peer-focus:text-sm peer-focus:bg-white-theme peer-focus:px-1
+                      peer-focus:-top-2 peer-focus:text-sm peer-focus:bg-white peer-focus:px-1
                     "
                   >
                     {label}
