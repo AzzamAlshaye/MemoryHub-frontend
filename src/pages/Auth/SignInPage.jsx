@@ -1,16 +1,21 @@
 // src/pages/user/SignInPage.jsx
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useNavigate, Link } from "react-router";
+import { useNavigate, useLocation, Link } from "react-router";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useTitle } from "../../hooks/useTitle";
-import { authService } from "../../service/authService";
-import { userService } from "../../service/userService";
+import { useAuth } from "../../context/AuthContext";
 
 export default function SignInPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isLoading } = useAuth();
   useTitle("Sign in | MemoryHub");
+
+  // If someone was kicked here by <RequireAuth>, get their original destination…
+  // otherwise default to mapPage for users or admin/crud for admins.
+  const from = location.state?.from?.pathname || "/mapPage";
 
   const initialValues = { email: "", password: "" };
   const validate = (values) => {
@@ -21,14 +26,12 @@ export default function SignInPage() {
   };
   const onSubmit = async (values, { setSubmitting }) => {
     try {
-      const { token } = await authService.signin({
+      await login({
         email: values.email.trim(),
         password: values.password,
       });
-      localStorage.setItem("token", token);
-      const me = await userService.getCurrentUser();
       toast.success("Signed in! Redirecting…", { autoClose: 1200 });
-      navigate(me.role === "admin" ? "/admin/crud" : "/mapPage");
+      navigate(from, { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || "Sign-in failed");
     } finally {
@@ -101,12 +104,12 @@ export default function SignInPage() {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isLoading}
                 className={`
                   w-full h-12 flex items-center justify-center
                   text-white font-semibold rounded-2xl transition
                   ${
-                    isSubmitting
+                    isSubmitting || isLoading
                       ? "bg-lighter-theme cursor-not-allowed"
                       : "bg-main-theme hover:bg-dark-theme"
                   }

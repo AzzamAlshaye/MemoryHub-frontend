@@ -7,7 +7,12 @@ import { authService } from "../service/authService";
 import { userService } from "../service/userService";
 
 const AuthContext = createContext({
-  /* … */
+  user: null,
+  login: async () => {},
+  register: async () => {},
+  logout: () => {},
+  isAuthenticated: false,
+  isLoading: true,
 });
 
 export function AuthProvider({ children }) {
@@ -33,8 +38,6 @@ export function AuthProvider({ children }) {
           const { exp } = jwtDecode(token);
           if (exp * 1000 <= Date.now()) throw new Error("expired");
           setAxiosToken(token);
-
-          // ← use userService here:
           const me = await userService.getCurrentUser();
           setUser(me);
         } catch {
@@ -51,11 +54,9 @@ export function AuthProvider({ children }) {
     try {
       const { token } = await authService.signin(creds);
       setAxiosToken(token);
-
-      // ← and here:
       const me = await userService.getCurrentUser();
       setUser(me);
-      navigate("/", { replace: true });
+      // ← removed navigate("/") here
     } finally {
       setLoading(false);
     }
@@ -68,7 +69,7 @@ export function AuthProvider({ children }) {
       setAxiosToken(token);
       const me = await userService.getCurrentUser();
       setUser(me);
-      navigate("/", { replace: true });
+      // ← removed navigate("/") here as well
     } finally {
       setLoading(false);
     }

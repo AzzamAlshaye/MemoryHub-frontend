@@ -1,16 +1,23 @@
 // src/pages/user/SignupPage.jsx
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useNavigate, Link } from "react-router";
+import { useNavigate, useLocation, Link } from "react-router";
 import { useTitle } from "../../hooks/useTitle";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { authService } from "../../service/authService";
-import { userService } from "../../service/userService";
+import { useAuth } from "../../context/AuthContext";
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { register, user, isLoading } = useAuth();
   useTitle("Sign up | Map Memory");
+
+  // If they came here via a protected route, send them right back;
+  // otherwise default to mapPage (or admin/crud if they're admin).
+  const from =
+    location.state?.from?.pathname ||
+    (user?.role === "admin" ? "/admin/crud" : "/mapPage");
 
   const initialValues = {
     name: "",
@@ -22,46 +29,39 @@ export default function SignupPage() {
   const validate = (values) => {
     const errors = {};
     const nameLetters = values.name.replace(/\s/g, "");
-    if (!nameLetters) {
-      errors.name = "Required";
-    } else if (nameLetters.length < 3) {
-      errors.name = "Must be at least 3 letters";
-    }
-    if (!values.email) {
-      errors.email = "Required";
-    } else if (/\s/.test(values.email)) {
+    if (!nameLetters) errors.name = "Required";
+    else if (nameLetters.length < 3) errors.name = "Must be at least 3 letters";
+
+    if (!values.email) errors.email = "Required";
+    else if (/\s/.test(values.email))
       errors.email = "Email cannot contain spaces";
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+    else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email))
       errors.email = "Invalid email address";
-    }
-    if (!values.password) {
-      errors.password = "Required";
-    } else if (/\s/.test(values.password)) {
+
+    if (!values.password) errors.password = "Required";
+    else if (/\s/.test(values.password))
       errors.password = "Password cannot contain spaces";
-    } else if (values.password.length < 8) {
+    else if (values.password.length < 8)
       errors.password = "Must be at least 8 characters";
-    }
-    if (!values.confirmPassword) {
-      errors.confirmPassword = "Required";
-    } else if (values.confirmPassword !== values.password) {
+
+    if (!values.confirmPassword) errors.confirmPassword = "Required";
+    else if (values.confirmPassword !== values.password)
       errors.confirmPassword = "Passwords must match";
-    }
+
     return errors;
   };
 
   const onSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      const { token } = await authService.signup({
+      await register({
         name: values.name.trim(),
         email: values.email.trim(),
         password: values.password,
         role: "user",
       });
-      localStorage.setItem("token", token);
-      const me = await userService.getCurrentUser();
       toast.success("Sign-up successful! Redirecting…");
       resetForm();
-      navigate(me.role === "admin" ? "/admin/crud" : "/mapPage");
+      navigate(from, { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
     } finally {
@@ -140,12 +140,12 @@ export default function SignupPage() {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isLoading}
                 className={`
                   w-full h-12 flex items-center justify-center
                   text-white font-semibold rounded-2xl transition
                   ${
-                    isSubmitting
+                    isSubmitting || isLoading
                       ? "bg-lighter-theme cursor-not-allowed"
                       : "bg-main-theme hover:bg-dark-theme"
                   }
