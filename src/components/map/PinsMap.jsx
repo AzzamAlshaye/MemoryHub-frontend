@@ -1,5 +1,4 @@
 // src/components/map/PinsMap.jsx
-
 import React, { useRef, useEffect } from "react";
 import Map, { Marker, NavigationControl } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -25,11 +24,17 @@ export default function PinsMap({
         localRef.current = el;
         if (mapRef) mapRef.current = el;
       }}
-      initialViewState={{ latitude: 24.7136, longitude: 46.6753, zoom: 5 }}
+      initialViewState={{
+        latitude: 24.7136,
+        longitude: 46.6753,
+        zoom: 5,
+        pitch: 45, // nice 3D tilt
+        bearing: -17.6, // slight rotation
+      }}
       style={{ width: "100%", height: "100%" }}
-      mapStyle="mapbox://styles/mapbox/streets-v11"
+      mapStyle="mapbox://styles/mapbox/streets-v12"
+      projection="globe"
       mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-      onLoad={(e) => e.target.resize()}
       onClick={(e) => onMapClick?.({ lat: e.lngLat.lat, lng: e.lngLat.lng })}
     >
       <NavigationControl position="top-left" />
