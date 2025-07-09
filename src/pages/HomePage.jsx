@@ -11,33 +11,20 @@ const fadeIn = {
 
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-<<<<<<< HEAD
   const navigate = useNavigate();
 
-=======
-  useTitle("Home | MemoryHub");
-  const navigate = useNavigate();
->>>>>>> 93e70cd5f8b21071b6878c211b247201b14e35df
   useEffect(() => {
     setIsLoggedIn(Boolean(localStorage.getItem("token")));
   }, []);
 
   const handleButtonClick = () => {
     if (isLoggedIn) {
-<<<<<<< HEAD
       navigate("mapPage");  // navigate to map page if logged in
     } else {
       navigate("/SignInPage");  // navigate to signin page if not logged in
     }
   };
 
-=======
-      navigate("/mapPage");
-    } else {
-      navigate("/SignInPage");
-    }
-  };
->>>>>>> 93e70cd5f8b21071b6878c211b247201b14e35df
   const features = [
     {
       icon: <FaMapMarkerAlt />,
