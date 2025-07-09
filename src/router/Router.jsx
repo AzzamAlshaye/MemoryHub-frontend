@@ -16,6 +16,7 @@ import Profile from "../pages/user/Profile.jsx";
 import MyTickets from "../pages/user/MyTickets.jsx";
 import AdminCrud from "../pages/admin/AdminCrud.jsx";
 import AdminTickets from "../pages/admin/AdminTickets.jsx";
+import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 import UnauthorizedPage from "../pages/unauthorized/UnauthorizedPage.jsx";
 import PageNotFound from "../pages/unauthorized/NotFound.jsx";
 import Footer from "../components/Footer.jsx";
@@ -88,6 +89,7 @@ const router = createBrowserRouter([
     children: [
       { path: "admin/crud", element: <AdminCrud /> },
       { path: "admin/tickets", element: <AdminTickets /> },
+      { path: "admin/tickets/:ticketId", element: <AdminDashboard /> },
     ],
   },
 
