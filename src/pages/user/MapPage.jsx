@@ -126,7 +126,7 @@ export default function MapPage() {
         </div>
 
         {/* Map & Sidebar */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Map */}
           <div className="lg:col-span-3 h-[70vh] rounded overflow-hidden shadow relative">
             <PinsMap
@@ -148,7 +148,7 @@ export default function MapPage() {
           </div>
 
           {/* Sidebar */}
-          <aside className="bg-white p-6 rounded-xl shadow-lg overflow-y-auto max-h-[70vh] min-w-full hide-scrollbar">
+          <aside className="bg-white p-6 rounded-xl shadow-lg overflow-y-auto max-h-[70vh] min-w-[18.5rem] hide-scrollbar">
             <div className="flex items-center mb-6">
               <FaRegBookmark className="text-lighter-theme text-2xl mr-3" />
               <h3 className="text-md font-bold text-gray-900 tracking-tight">
