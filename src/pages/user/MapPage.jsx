@@ -1,6 +1,6 @@
 // src/pages/user/MapPage.jsx
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FaRegBookmark, FaTimes } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { ToastContainer, toast } from "react-toastify";
@@ -14,6 +14,8 @@ import { useAuth } from "../../context/AuthContext";
 
 export default function MapPage() {
   const { user } = useAuth();
+  const mapRef = useRef(null);
+
   const [filter, setFilter] = useState("public");
   const [search, setSearch] = useState("");
   const [pins, setPins] = useState([]);
@@ -22,6 +24,7 @@ export default function MapPage() {
   const [selectedPin, setSelectedPin] = useState(null);
   const [newPinLocation, setNewPinLocation] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+
   useTitle("Map | MemoryHub");
 
   // 1) Get browser geolocation
@@ -127,6 +130,7 @@ export default function MapPage() {
           {/* Map */}
           <div className="lg:col-span-3 h-[70vh] rounded overflow-hidden shadow relative">
             <PinsMap
+              mapRef={mapRef}
               pins={pins}
               onPinClick={openPin}
               onMapClick={handleMapClick}
@@ -192,6 +196,12 @@ export default function MapPage() {
           <ViewPin
             pinId={selectedPinId}
             onClose={() => setSelectedPinId(null)}
+            onShowLocation={({ lat, lng }) => {
+              mapRef.current
+                ?.getMap()
+                .flyTo({ center: [lng, lat], zoom: 14, essential: true });
+              setSelectedPinId(null);
+            }}
           />
         )}
 
@@ -215,7 +225,6 @@ export default function MapPage() {
               <CreatePost
                 initialLocation={newPinLocation}
                 onSubmit={async (formData) => {
-                  // — Verify exactly what goes out —
                   console.group("MapPage: FormData to submit");
                   for (let [k, v] of formData.entries()) {
                     console.log(`${k}:`, v);
@@ -223,7 +232,6 @@ export default function MapPage() {
                   console.groupEnd();
 
                   try {
-                    // Make sure you have implemented createWithFormData()
                     await pinService.createWithFormData(formData);
                     toast.success("🎉 Pin created!");
                     setNewPinLocation(null);

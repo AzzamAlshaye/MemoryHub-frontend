@@ -102,9 +102,15 @@ export default function Dashboard() {
           {
             data: Object.values(privacyCounts),
             backgroundColor: [
+<<<<<<< HEAD
           "rgba(234, 179, 150, 0.8)",    
               "rgba(234, 179, 100, 0.6)",   
               "rgba(234, 179, 100, 0.3)",  
+=======
+              "rgba(234, 179, 150, 0.8)",
+              "rgba(234, 179, 100, 0.6)",
+              "rgba(234, 179, 100, 0.3)",
+>>>>>>> 93e70cd5f8b21071b6878c211b247201b14e35df
             ],
           },
         ],
@@ -135,8 +141,13 @@ export default function Dashboard() {
             data: Object.values(statusCounts),
             backgroundColor: [
               "rgba(234, 179, 150, 0.8)",
+<<<<<<< HEAD
               "rgba(234, 179, 150, 0.5)", 
               "rgba(234, 179, 150, 0.4)", 
+=======
+              "rgba(234, 179, 150, 0.5)",
+              "rgba(234, 179, 150, 0.4)",
+>>>>>>> 93e70cd5f8b21071b6878c211b247201b14e35df
             ],
           },
         ],
@@ -166,9 +177,14 @@ export default function Dashboard() {
           {
             data: Object.values(typeCounts),
             backgroundColor: [
+<<<<<<< HEAD
              "rgba(234, 179, 150, 0.8)",  
               "rgba(234, 179, 100, 0.4)", 
 
+=======
+              "rgba(234, 179, 150, 0.8)",
+              "rgba(234, 179, 100, 0.4)",
+>>>>>>> 93e70cd5f8b21071b6878c211b247201b14e35df
             ],
           },
         ],
@@ -196,7 +212,15 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-12">
               <StatCard title="Total Users" value={users.length} color="blue" />
               <StatCard title="Total Pins" value={pins.length} color="green" />
+<<<<<<< HEAD
               <StatCard title="Total Reports" value={reports.length} color="yellow" />
+=======
+              <StatCard
+                title="Total Reports"
+                value={reports.length}
+                color="yellow"
+              />
+>>>>>>> 93e70cd5f8b21071b6878c211b247201b14e35df
             </div>
 
             {/* Charts */}
@@ -239,8 +263,18 @@ function StatCard({ title, value, color }) {
 
 function ChartBox({ title, children }) {
   return (
+<<<<<<< HEAD
     <div className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-center items-center" style={{ height: "400px" }}>
       <h3 className="text-xl font-semibold mb-4 text-gray-800 text-center w-full">{title}</h3>
+=======
+    <div
+      className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-center items-center"
+      style={{ height: "400px" }}
+    >
+      <h3 className="text-xl font-semibold mb-4 text-gray-800 text-center w-full">
+        {title}
+      </h3>
+>>>>>>> 93e70cd5f8b21071b6878c211b247201b14e35df
       {children}
     </div>
   );

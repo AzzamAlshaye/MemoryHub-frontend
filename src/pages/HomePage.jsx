@@ -11,20 +11,33 @@ const fadeIn = {
 
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+<<<<<<< HEAD
   const navigate = useNavigate();
 
+=======
+  useTitle("Home | MemoryHub");
+  const navigate = useNavigate();
+>>>>>>> 93e70cd5f8b21071b6878c211b247201b14e35df
   useEffect(() => {
     setIsLoggedIn(Boolean(localStorage.getItem("token")));
   }, []);
 
   const handleButtonClick = () => {
     if (isLoggedIn) {
+<<<<<<< HEAD
       navigate("mapPage");  // navigate to map page if logged in
     } else {
       navigate("/SignInPage");  // navigate to signin page if not logged in
     }
   };
 
+=======
+      navigate("/mapPage");
+    } else {
+      navigate("/SignInPage");
+    }
+  };
+>>>>>>> 93e70cd5f8b21071b6878c211b247201b14e35df
   const features = [
     {
       icon: <FaMapMarkerAlt />,
@@ -86,7 +99,7 @@ export default function HomePage() {
       w-40
       mx-auto
     "
-            alt="Map Memory Illustration"
+            alt="MemoryHub icon"
           />
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-neutral-800">
             Save Your <span className="text-main-theme">Memories</span>
@@ -100,6 +113,7 @@ export default function HomePage() {
           <motion.button
             initial="hidden"
             whileInView="visible"
+            onClick={handleButtonClick}
             variants={fadeIn}
             transition={{ delay: 0.3 }}
             whileHover={{ scale: 1.05 }}
@@ -141,7 +155,7 @@ export default function HomePage() {
             className="text-3xl md:text-4xl font-semibold mb-12"
           >
             <p className="text-neutral-800 ">
-              How <span className="text-main-theme">Map Memory</span> Works
+              How <span className="text-main-theme">MemoryHub</span> Works
             </p>
           </motion.h2>
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
@@ -181,7 +195,7 @@ export default function HomePage() {
               world.”
             </p>
             <cite className="block text-right font-semibold mt-4 text-gray-900">
-              — The Map Memory Team
+              — The MemoryHub Team
             </cite>
           </motion.blockquote>
         </div>

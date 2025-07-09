@@ -16,6 +16,7 @@ export const userEndpoints = {
   uploadSelfAvatar: "/users/me/avatar",
   list: "/users", // GET    /api/users
   get: (id) => `/users/${id}`, // GET    /api/users/:id
+  getPublic: (id) => `/users/${id}/public`, // GET /api/users/:id/public
   update: (id) => `/users/${id}`, // PUT    /api/users/:id
   remove: (id) => `/users/${id}`, // DELETE /api/users/:id
   // for test
