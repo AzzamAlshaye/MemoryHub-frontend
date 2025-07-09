@@ -89,7 +89,8 @@ const router = createBrowserRouter([
     children: [
       { path: "admin/crud", element: <AdminCrud /> },
       { path: "admin/tickets", element: <AdminTickets /> },
-      { path: "admin/tickets/:ticketId", element: <AdminDashboard /> },
+      { path: "/admin", element: <AdminDashboard /> },
+      { path: "/admin/dashboard", element: <AdminDashboard /> },
     ],
   },
 

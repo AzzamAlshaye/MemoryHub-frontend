@@ -151,10 +151,10 @@ export default function MapPage() {
           <aside className="bg-white p-6 rounded-xl shadow-lg overflow-y-auto max-h-[70vh] min-w-full hide-scrollbar">
             <div className="flex items-center mb-6">
               <FaRegBookmark className="text-lighter-theme text-2xl mr-3" />
-              <h3 className="text-xl font-bold text-gray-900 tracking-tight">
+              <h3 className="text-md font-bold text-gray-900 tracking-tight">
                 {filter === "public" ? "Public Memories" : "Private Memories"}
               </h3>
-              <span className="ml-auto bg-white-theme text-main-theme text-sm font-medium px-2 py-1 rounded-full">
+              <span className=" ml-1 bg-white-theme text-main-theme text-sm font-medium px-2 py-1 rounded-full">
                 {pins.length}
               </span>
             </div>
