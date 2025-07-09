@@ -1,5 +1,4 @@
 // src/components/ViewPin.jsx
-
 import React, { useState, useEffect } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import {
@@ -58,7 +57,9 @@ export default function ViewPin({ pinId, onClose, onShowLocation }) {
   useEffect(() => {
     if (!pinId) return;
     let canceled = false;
+
     (async () => {
+      // 1) load pin and its reactions
       const data = await pinService.get(pinId);
       if (canceled) return;
       setPin(data);
@@ -74,7 +75,8 @@ export default function ViewPin({ pinId, onClose, onShowLocation }) {
       setLikes(l);
       setDislikes(d);
 
-      let raw = await commentService.listByPin(pinId);
+      // 2) load comments
+      const raw = await commentService.listByPin(pinId);
       if (canceled) return;
       const detailed = await Promise.all(
         raw.map(async (c) => {
@@ -83,35 +85,53 @@ export default function ViewPin({ pinId, onClose, onShowLocation }) {
             likeService.list("comment", cid),
             likeService.getMyReaction("comment", cid).catch(() => null),
           ]);
+
+          // figure out the author ID regardless of shape
           const authorId =
-            typeof c.author === "string" ? c.author : c.author?.id;
-          const profile = await userService
-            .getPublic(authorId)
-            .catch(() => null);
+            typeof c.author === "string"
+              ? c.author
+              : c.author?.id || c.author?._id;
+
+          // try to fetch public profile
+          let profile = null;
+          try {
+            profile = await userService.getPublic(authorId);
+          } catch {
+            // if this is your own comment, reuse currentUser
+            if (authorId === currentUser.id) {
+              profile = currentUser;
+            }
+          }
+
+          // fallback to any name/avatar the raw payload carried
+          const fallback = {
+            id: authorId,
+            name: c.author?.name || "",
+            avatar: c.author?.avatar || "/default-avatar.png",
+          };
+
           return {
             ...c,
             id: cid,
             likes: cl,
             dislikes: cd,
             myReaction: cr?.type || null,
-            author: profile || {
-              id: authorId,
-              name: "",
-              avatar: "/default-avatar.png",
-            },
+            author: profile || fallback,
           };
         })
       );
       if (canceled) return;
       setComments(detailed);
     })();
+
     return () => {
       canceled = true;
     };
-  }, [pinId]);
+  }, [pinId, currentUser.id]);
 
   if (!pin) return null;
 
+  // build media carousel
   const images = Array.isArray(pin.media?.images)
     ? pin.media.images.map((i) => (typeof i === "string" ? i : i.url))
     : [];
@@ -129,6 +149,7 @@ export default function ViewPin({ pinId, onClose, onShowLocation }) {
       day: "numeric",
     });
 
+  // pin reaction handlers
   const handlePinReact = (type) => {
     if (myReaction?.type === type) {
       likeService.remove(myReaction.id).then(() => {
@@ -151,6 +172,7 @@ export default function ViewPin({ pinId, onClose, onShowLocation }) {
     }
   };
 
+  // comment reaction handlers
   const handleCommentReact = (cid, type) => {
     const prev = commentReactions[cid];
     if (prev?.type === type) {
@@ -174,15 +196,21 @@ export default function ViewPin({ pinId, onClose, onShowLocation }) {
     }
   };
 
+  // add new comment
   const handleAddComment = (e) => {
     e.preventDefault();
     const txt = e.target.comment.value.trim();
     if (!txt) return;
     commentService.create({ pinId, text: txt }).then((nc) => {
-      setComments((cs) => [
-        { ...nc, likes: 0, dislikes: 0, author: currentUser },
-        ...cs,
-      ]);
+      const newComment = {
+        ...nc,
+        id: nc.id || nc._id,
+        likes: 0,
+        dislikes: 0,
+        myReaction: null,
+        author: currentUser,
+      };
+      setComments((cs) => [newComment, ...cs]);
       e.target.reset();
     });
   };
