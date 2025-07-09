@@ -5,16 +5,13 @@ import { userEndpoints } from "../api/endpoints";
 export const userService = {
   /**
    * GET /users/:id/public
-   * @param {string} id
-   * @returns {Promise<{id:string,name:string,avatar:string}>}
    */
   getPublic(id) {
     return primaryAPI.get(userEndpoints.getPublic(id)).then((r) => r.data);
   },
 
   /**
-   * GET /users/:id
-   * (admin only)
+   * GET /users/:id        (admin-only)
    */
   get(id) {
     return primaryAPI.get(userEndpoints.get(id)).then((r) => r.data);
@@ -28,11 +25,18 @@ export const userService = {
   },
 
   /**
-   * GET /users
-   * (admin only)
+   * GET /users           (admin-only)
    */
   list() {
     return primaryAPI.get(userEndpoints.list).then((r) => r.data);
+  },
+
+  /**
+   * POST /users          (admin-only) – create new user
+   * @param {{email,password,name,role?,avatar?}} data
+   */
+  create(data) {
+    return primaryAPI.post(userEndpoints.create, data).then((r) => r.data);
   },
 
   /**
@@ -63,24 +67,21 @@ export const userService = {
   },
 
   /**
-   * PUT /users/:id
-   * (admin only)
+   * PUT /users/:id       (admin-only)
    */
   update(id, data) {
     return primaryAPI.put(userEndpoints.update(id), data).then((r) => r.data);
   },
 
   /**
-   * DELETE /users/:id
-   * (admin only)
+   * DELETE /users/:id    (admin-only)
    */
   remove(id) {
     return primaryAPI.delete(userEndpoints.remove(id)).then((r) => r.data);
   },
 
   /**
-   * PATCH /users/:id/avatar
-   * (admin only)
+   * PATCH /users/:id/avatar  (admin-only)
    */
   uploadAvatar(id, file) {
     const form = new FormData();

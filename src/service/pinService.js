@@ -4,11 +4,7 @@ import { pinEndpoints, userEndpoints } from "../api/endpoints";
 
 export const pinService = {
   /**
-   * POST /pins with a FormData payload (fields + images + optional video).
-   * Axios/browser will set the multipart Content-Type boundary for you.
-   *
-   * @param {FormData} formData
-   * @returns {Promise<Object>}  – the created pin
+   * Create a new pin with a FormData payload.
    */
   createWithFormData(formData) {
     return primaryAPI
@@ -18,16 +14,9 @@ export const pinService = {
 
   /**
    * Create a new pin with up to 10 images and one video.
-   * Builds FormData under the hood.
-   * POST /pins
-   * @param {Object} fields       – { title, description, privacy, latitude, longitude, groupId? }
-   * @param {File[]} images       – up to 10 image files
-   * @param {File|null} video     – optional single video file
-   * @returns {Promise<Object>}   – the created pin
    */
   createWithMedia(fields, images = [], video = null) {
     const form = new FormData();
-    // only append text fields that are not null or undefined
     Object.entries(fields).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
         form.append(key, String(value));
@@ -40,8 +29,8 @@ export const pinService = {
   },
 
   /**
-   * Update an existing pin, optionally replacing or adding media.
-   * PUT /pins/:id
+   * Update an existing pin, optionally uploading new images/video.
+   * Always multipart.
    */
   updateWithMedia(id, fields, images = [], video = null) {
     const form = new FormData();
@@ -59,12 +48,14 @@ export const pinService = {
   },
 
   /**
+   * Get a single pin by ID.
+   */
+  get(id) {
+    return primaryAPI.get(pinEndpoints.get(id)).then((res) => res.data);
+  },
+
+  /**
    * List pins visible to the current user.
-   * Now supports an optional `groupId` query parameter.
-   *
-   * @param {string} filter   – "public" | "private" | "group"
-   * @param {string} search
-   * @param {string} groupId  – optional when filter="group"
    */
   list(filter = "public", search = "", groupId) {
     const params = { filter, search };
@@ -78,28 +69,16 @@ export const pinService = {
    * List only the pins created by the authenticated user.
    */
   async listMyPins() {
-    try {
-      const res = await primaryAPI.get(userEndpoints.listMine);
-      if (!Array.isArray(res.data)) {
-        console.error("Invalid response from /pins/me:", res.data);
-        throw new Error("Expected an array of pins");
-      }
-      console.log("listMyPins:", res.data); // Debug print
-      return res.data;
-    } catch (err) {
-      console.error("Error fetching my pins:", err);
-      throw err;
+    const res = await primaryAPI.get(userEndpoints.listMine);
+    if (!Array.isArray(res.data)) {
+      throw new Error("Expected an array of pins");
     }
+    return res.data;
   },
 
   /**
-   * Get single pin by ID.
+   * Remove (delete) a pin.
    */
-  get(id) {
-    return primaryAPI.get(pinEndpoints.get(id)).then((res) => res.data);
-  },
-
-  /** Remove (delete) a pin. */
   remove(id) {
     return primaryAPI.delete(pinEndpoints.remove(id)).then((res) => res.data);
   },

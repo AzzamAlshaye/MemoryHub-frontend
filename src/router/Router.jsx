@@ -16,11 +16,13 @@ import Profile from "../pages/user/Profile.jsx";
 import MyTickets from "../pages/user/MyTickets.jsx";
 import AdminCrud from "../pages/admin/AdminCrud.jsx";
 import AdminTickets from "../pages/admin/AdminTickets.jsx";
+import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 import UnauthorizedPage from "../pages/unauthorized/UnauthorizedPage.jsx";
 import PageNotFound from "../pages/unauthorized/NotFound.jsx";
 import Footer from "../components/Footer.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import MobileNav from "../components/MobileNav.jsx";
+import EditPost from "../components/map/EditPost.jsx";
 
 function LayoutWithNav() {
   return (
@@ -71,6 +73,7 @@ const router = createBrowserRouter([
       { path: "group/:groupId/join", element: <ConfirmJoinGroup /> },
       { path: "GroupList", element: <GroupList /> },
       { path: "group/:groupId/info", element: <GroupInfo /> },
+      { path: "pins/:pinId/edit", element: <EditPost /> },
       { path: "Profile", element: <Profile /> },
       { path: "MyTickets", element: <MyTickets /> },
     ],
@@ -88,6 +91,8 @@ const router = createBrowserRouter([
     children: [
       { path: "admin/crud", element: <AdminCrud /> },
       { path: "admin/tickets", element: <AdminTickets /> },
+      { path: "/admin", element: <AdminDashboard /> },
+      { path: "/admin/dashboard", element: <AdminDashboard /> },
     ],
   },
 

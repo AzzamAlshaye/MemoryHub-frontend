@@ -4,9 +4,9 @@ import AppRouter from "./router/Router";
 
 function App() {
   return (
-    <>
+    <div className="font-main">
       <AppRouter />
-    </>
+    </div>
   );
 }
 

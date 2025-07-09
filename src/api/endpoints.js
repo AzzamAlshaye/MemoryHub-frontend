@@ -16,10 +16,10 @@ export const userEndpoints = {
   uploadSelfAvatar: "/users/me/avatar",
   list: "/users", // GET    /api/users
   get: (id) => `/users/${id}`, // GET    /api/users/:id
+  create: "/users", // GET    /api/create
   getPublic: (id) => `/users/${id}/public`, // GET /api/users/:id/public
   update: (id) => `/users/${id}`, // PUT    /api/users/:id
   remove: (id) => `/users/${id}`, // DELETE /api/users/:id
-  // for test
   listMine: "/pins/me",
   // keep the admin version if you want:
   uploadAvatar: (id) => `/users/${id}/avatar`,
