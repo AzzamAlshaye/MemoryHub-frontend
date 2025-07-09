@@ -26,9 +26,10 @@
 3. بدء الاستخدام<br>
 4. طريقة الاستخدام<br>
 5. خارطة الطريق<br>
-6. المساهمة<br>
-7. الفريق<br>
-8. المتغيرات البيئية
+6. النشر<br>
+7. المساهمة<br>
+8. الفريق<br>
+9. المتغيرات البيئية
 </p>
 
 <hr>
@@ -37,7 +38,7 @@
 
 <ul align="right">
   <li><strong>خريطة تفاعلية</strong><br>تثبيت ذكرياتك في المواقع بدقة مع أدوات السحب والإفلات البسيطة.</li>
-  <li><strong>دعم وسائط غنية</strong><br>إضافة الصور، الفيديوهات القصيرة،.</li>
+  <li><strong>دعم وسائط غنية</strong><br>إضافة الصور، الفيديوهات القصيرة.</li>
   <li><strong>ضوابط الخصوصية</strong><br>
     - <strong>خاص</strong>: أنت فقط من يمكنه المشاهدة<br>
     - <strong>مشترك</strong>: لمجموعات محددة بالدعوة فقط<br>
@@ -68,7 +69,7 @@
 <ul align="right">
   <li>اللغة والإطار: React 19 (hooks), Vite</li>
   <li>التصميم وواجهة المستخدم: Tailwind CSS, Framer Motion, react-icons</li>
-  <li>الخرائط وتحديد المواقع: react-map-gl (Mapbox GL), leaflet</li>
+  <li>الخرائط وتحديد المواقع: react-map-gl (Mapbox GL)</li>
   <li>النماذج وإدارة الحالة: Formik, jwt-decode</li>
   <li>المخططات والتغذية الراجعة: chart.js, react-chartjs-2, react-toastify, sweetalert2</li>
 </ul>
@@ -124,39 +125,84 @@
 
 <hr>
 
-<h2 align="right">👥 الفريق</h2>
-<div align="right" style="width:100%; clear:both;">
-<table>
-  <tr>
-    <th align="right">الاسم</th>
-    <th align="right">البريد الإلكتروني</th>
-    <th align="right">GitHub</th>
-  </tr>
-  <tr>
-    <td align="right">أسماء القحطاني</td>
-    <td align="right">asmaalqhtani123@gmail.com</td>
-    <td align="right"><a href="https://github.com/AAbAlQahtani">AAbAlQahtani</a></td>
-  </tr>
-  <tr>
-    <td align="right">عزام الشايع</td>
-    <td align="right">azzamalshaye@gmail.com</td>
-    <td align="right"><a href="https://github.com/AzzamAlshaye">AzzamAlshaye</a></td>
-  </tr>
-  <tr>
-    <td align="right">خالد المطيري</td>
-    <td align="right">khaledalmutairi220@hotmail.com</td>
-    <td align="right"><a href="https://github.com/g39g1">g39g1</a></td>
-  </tr>
-  <tr>
-    <td align="right">رنا الدوسري</td>
-    <td align="right">ranaaldosari10@gmail.com</td>
-    <td align="right"><a href="https://github.com/RanaAldosari">RanaAldosari</a></td>
-  </tr>
-</table>
-</div>
+<h2 align="right">🔗 النشر</h2>
+<p align="right">
+• يمكنك تجربة الواجهة الحيّة من خلال زيارة:  
+<a href="https://memoryhub-frontend-6ah4.onrender.com/" target="_blank">https://memoryhub-frontend-6ah4.onrender.com/</a>
+</p>
 
 <hr>
 
+<h2 align="right">👥 الفريق</h2>
+<div align="right" style="width:100%; clear:both;">
+  <table>
+    <tr>
+      <th align="right">الاسم</th>
+      <th align="right">البريد الإلكتروني</th>
+      <th align="center">LinkedIn</th>
+      <th align="center">GitHub</th>
+    </tr>
+    <!-- عزام الشايع أولاً -->
+    <tr>
+      <td align="right">عزام الشايع</td>
+      <td align="right">azzamalshaye@gmail.com</td>
+      <td align="center">
+        <a href="https://www.linkedin.com/in/azzam-alshaye/">
+          <img src="https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white" alt="Azzam on LinkedIn" height="20"/>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/AzzamAlshaye">
+          <img src="https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github&logoColor=white" alt="Azzam on GitHub" height="20"/>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="right">أسماء القحطاني</td>
+      <td align="right">asmaalqhtani123@gmail.com</td>
+      <td align="center">
+        <a href="https://www.linkedin.com/in/asmaalqahtani/">
+          <img src="https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white" alt="Asmaa on LinkedIn" height="20"/>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/AAbAlQahtani">
+          <img src="https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github&logoColor=white" alt="Asmaa on GitHub" height="20"/>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="right">خالد المطيري</td>
+      <td align="right">khaledalmutairi220@hotmail.com</td>
+      <td align="center">
+        <a href="https://www.linkedin.com/in/khaled-almutairi-06450228a">
+          <img src="https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white" alt="Khaled on LinkedIn" height="20"/>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/g39g1">
+          <img src="https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github&logoColor=white" alt="Khaled on GitHub" height="20"/>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="right">رنا الدوسري</td>
+      <td align="right">ranaaldosari10@gmail.com</td>
+      <td align="center">
+        <a href="https://www.linkedin.com/in/rana-aldosari-08b84a2a7/">
+          <img src="https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white" alt="Rana on LinkedIn" height="20"/>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/RanaAldosari">
+          <img src="https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github&logoColor=white" alt="Rana on GitHub" height="20"/>
+        </a>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<hr>
 
 <h2 align="right">🔑 المتغيرات البيئية</h2>
 
@@ -176,4 +222,4 @@ CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 </pre>
 
-</div> 
+</div>
