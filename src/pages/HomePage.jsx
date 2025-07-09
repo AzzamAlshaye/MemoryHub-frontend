@@ -1,3 +1,4 @@
+// src/components/HomePage.jsx
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTitle } from "../hooks/useTitle";
@@ -11,20 +12,19 @@ const fadeIn = {
 
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useTitle("Home | MemoryHub");
   const navigate = useNavigate();
-
   useEffect(() => {
     setIsLoggedIn(Boolean(localStorage.getItem("token")));
   }, []);
 
   const handleButtonClick = () => {
     if (isLoggedIn) {
-      navigate("mapPage");  // navigate to map page if logged in
+      navigate("/mapPage");
     } else {
-      navigate("/SignInPage");  // navigate to signin page if not logged in
+      navigate("/SignInPage");
     }
   };
-
   const features = [
     {
       icon: <FaMapMarkerAlt />,
@@ -63,11 +63,11 @@ export default function HomePage() {
       {/* Hero */}
       <section
         className="
-          container mx-auto px-6
-          py-12 sm:py-16 lg:py-20
-          grid md:grid-cols-2 gap-12 items-center
-          h-auto lg:h-[100vh]
-        "
+    container mx-auto px-6
+    py-12 sm:py-16 lg:py-20
+    grid md:grid-cols-2 gap-12 items-center
+    h-screen
+  "
       >
         <motion.div
           initial="hidden"
@@ -104,14 +104,12 @@ export default function HomePage() {
             variants={fadeIn}
             transition={{ delay: 0.3 }}
             whileHover={{ scale: 1.05 }}
-            onClick={handleButtonClick}
             className="
-              bg-amber-500 text-white
-              px-6 py-3 rounded-full shadow-md hover:shadow-lg
-              delay-300 duration-500 block md:inline-block
-              w-full md:w-auto
-              hover:cursor-pointer hover:bg-amber-600
-            "
+        bg-main-theme text-white
+        px-6 py-3 rounded-full shadow-md hover:shadow-lg
+        transition block md:inline-block
+        w-full md:w-auto
+      "
           >
             {isLoggedIn ? "Create Your Memory" : "Start Your First Memory"}
           </motion.button>
@@ -124,10 +122,10 @@ export default function HomePage() {
           variants={fadeIn}
           transition={{ delay: 0.5 }}
           className="
-            hidden sm:block
-            w-full max-w-xs sm:max-w-md md:max-w-lg lg:w-[32rem]
-            mx-auto
-          "
+      hidden md:block
+      w-full max-w-xs sm:max-w-md md:max-w-lg lg:w-[32rem]
+      mx-auto
+    "
           alt="Map Memory Illustration"
         />
       </section>
