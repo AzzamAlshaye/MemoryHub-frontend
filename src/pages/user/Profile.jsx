@@ -369,7 +369,7 @@ export default function Profile() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50"
           >
             <motion.div
               variants={container}
@@ -411,16 +411,16 @@ export default function Profile() {
               </div>
               <div className="mt-6 flex flex-col sm:flex-row justify-end gap-4">
                 <button
-                  onClick={() => setEditingPin(null)}
-                  className="w-full sm:w-auto px-4 py-2 bg-gray-200 rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
                   onClick={saveEdit}
                   className="w-full sm:w-auto px-4 py-2 bg-amber-500 text-white rounded-lg"
                 >
                   Save
+                </button>
+                <button
+                  onClick={() => setEditingPin(null)}
+                  className="w-full sm:w-auto px-4 py-2 bg-gray-200 rounded-lg"
+                >
+                  Cancel
                 </button>
               </div>
             </motion.div>
