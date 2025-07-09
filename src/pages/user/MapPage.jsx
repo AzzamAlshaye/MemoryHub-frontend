@@ -1,11 +1,11 @@
 // src/pages/user/MapPage.jsx
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FaRegBookmark, FaTimes } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { useTitle } from "../../hooks/useTitle";
 import PinsMap from "../../components/map/PinsMap";
 import ViewPin from "../../components/map/ViewPin";
 import CreatePost from "../../components/map/CreatePost";
@@ -14,15 +14,18 @@ import { useAuth } from "../../context/AuthContext";
 
 export default function MapPage() {
   const { user } = useAuth();
+  const mapRef = useRef(null);
+
   const [filter, setFilter] = useState("public");
   const [search, setSearch] = useState("");
   const [pins, setPins] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [selectedPinId, setSelectedPinId] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
   const [newPinLocation, setNewPinLocation] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+
+  useTitle("Map | MemoryHub");
 
   // 1) Get browser geolocation
   useEffect(() => {
@@ -110,12 +113,12 @@ export default function MapPage() {
             placeholder="Search…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-amber-300 focus:border-amber-300 transition"
+            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring- focus:border-lighter-theme transition"
           />
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-amber-300 focus:border-amber-300 transition"
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-lighter-theme focus:border-lighter-theme transition"
           >
             <option value="public">Public</option>
             <option value="private">Private</option>
@@ -127,6 +130,7 @@ export default function MapPage() {
           {/* Map */}
           <div className="lg:col-span-3 h-[70vh] rounded overflow-hidden shadow relative">
             <PinsMap
+              mapRef={mapRef}
               pins={pins}
               onPinClick={openPin}
               onMapClick={handleMapClick}
@@ -146,18 +150,18 @@ export default function MapPage() {
           {/* Sidebar */}
           <aside className="bg-white p-6 rounded-xl shadow-lg overflow-y-auto max-h-[70vh] min-w-[20rem] hide-scrollbar">
             <div className="flex items-center mb-6">
-              <FaRegBookmark className="text-amber-400 text-2xl mr-3" />
+              <FaRegBookmark className="text-lighter-theme text-2xl mr-3" />
               <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
                 {filter === "public" ? "Public Memories" : "Private Memories"}
               </h3>
-              <span className="ml-auto bg-amber-100 text-amber-800 text-sm font-medium px-2 py-1 rounded-full">
+              <span className="ml-auto bg-white-theme text-main-theme text-sm font-medium px-2 py-1 rounded-full">
                 {pins.length}
               </span>
             </div>
 
             {loading ? (
               <div className="flex justify-center py-8">
-                <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                <div className="w-8 h-8 border-4 border-lighter-theme border-t-transparent rounded-full animate-spin" />
               </div>
             ) : (
               <ul className="space-y-4">
@@ -170,7 +174,7 @@ export default function MapPage() {
                     <img
                       src={pin.owner?.avatar || "/default-avatar.png"}
                       alt={pin.owner?.name || "User"}
-                      className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-300"
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-lighter-theme"
                     />
                     <div className="flex-1 min-w-0">
                       <h4 className="font-semibold text-gray-800">
@@ -192,6 +196,12 @@ export default function MapPage() {
           <ViewPin
             pinId={selectedPinId}
             onClose={() => setSelectedPinId(null)}
+            onShowLocation={({ lat, lng }) => {
+              mapRef.current
+                ?.getMap()
+                .flyTo({ center: [lng, lat], zoom: 14, essential: true });
+              setSelectedPinId(null);
+            }}
           />
         )}
 
@@ -215,7 +225,6 @@ export default function MapPage() {
               <CreatePost
                 initialLocation={newPinLocation}
                 onSubmit={async (formData) => {
-                  // — Verify exactly what goes out —
                   console.group("MapPage: FormData to submit");
                   for (let [k, v] of formData.entries()) {
                     console.log(`${k}:`, v);
@@ -223,7 +232,6 @@ export default function MapPage() {
                   console.groupEnd();
 
                   try {
-                    // Make sure you have implemented createWithFormData()
                     await pinService.createWithFormData(formData);
                     toast.success("🎉 Pin created!");
                     setNewPinLocation(null);

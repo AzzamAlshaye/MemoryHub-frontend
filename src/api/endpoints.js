@@ -13,8 +13,10 @@ export const userEndpoints = {
   me: "/users/me", // GET    /api/users/me
   updateSelf: "/users/me", // PUT    /api/users/me
   deleteSelf: "/users/me", // DELETE /api/users/me
+  uploadSelfAvatar: "/users/me/avatar",
   list: "/users", // GET    /api/users
   get: (id) => `/users/${id}`, // GET    /api/users/:id
+  getPublic: (id) => `/users/${id}/public`, // GET /api/users/:id/public
   update: (id) => `/users/${id}`, // PUT    /api/users/:id
   remove: (id) => `/users/${id}`, // DELETE /api/users/:id
   // for test
@@ -57,7 +59,9 @@ export const groupEndpoints = {
   remove: (id) => `/groups/${id}`, // DELETE /api/groups/:id
   invite: (id) => `/groups/${id}/invite`, // POST   /api/groups/:id/invite
   join: (id) => `/groups/${id}/join`, // POST   /api/groups/:id/join
+  uploadAvatar: (id) => `/groups/${id}/avatar`, // PATCH  /api/groups/:id/avatar
   kickMember: (id, m) => `/groups/${id}/kick/${m}`, // POST /api/groups/:id/kick/:memberId
+  leave: (id) => `/groups/${id}/leave`, // POST /groups/${id}/leave
   promote: (id, m) => `/groups/${id}/promote/${m}`, // POST /api/groups/:id/promote/:memberId
 };
 

@@ -1,9 +1,12 @@
+// src/pages/user/group/GroupList.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import { createRoot } from "react-dom/client";
 import withReactContent from "sweetalert2-react-content";
 import CreateGroup from "../../../components/group/CreateGroup";
 import JoinGroup from "../../../components/group/JoinGroup";
+import { useTitle } from "../../../hooks/useTitle";
 import { FaSearch, FaPlus, FaSignInAlt, FaUsers } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { groupService } from "../../../service/groupService";
@@ -32,17 +35,19 @@ export default function GroupList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  useTitle("Group List | MemoryHub");
 
   useEffect(() => {
     setLoading(true);
     groupService
       .list()
       .then((data) => {
-        if (typeof data === "string" && data.trim().startsWith("<")) {
-          throw new Error("Invalid server response");
-        }
         const list = Array.isArray(data) ? data : data.groups ?? [];
-        setGroups(list);
+        const withCounts = list.map((g) => ({
+          ...g,
+          membersCount: g.members?.length ?? 0,
+        }));
+        setGroups(withCounts);
       })
       .catch((err) => setError(err.message || "Failed to load groups"))
       .finally(() => setLoading(false));
@@ -59,30 +64,53 @@ export default function GroupList() {
     [groups, search]
   );
 
+  const handleGroupCreated = (newGroup) => {
+    setGroups((prev) => [newGroup, ...prev]);
+    MySwal.close();
+    navigate(`/group/${newGroup.id}`);
+  };
+
+  const handleGroupJoined = (joinedGroup) => {
+    setGroups((prev) => [joinedGroup, ...prev]);
+    MySwal.close();
+    navigate(`/group/${joinedGroup.id}`);
+  };
+
   const openCreate = () =>
     MySwal.fire({
-      html: <CreateGroup />,
+      didRender: () => {
+        const popup = Swal.getPopup();
+        const mountPoint = document.createElement("div");
+        popup.appendChild(mountPoint);
+        createRoot(mountPoint).render(
+          <CreateGroup onCreated={handleGroupCreated} />
+        );
+      },
       showConfirmButton: false,
-      background: "transparent",
       customClass: {
-        popup: "rounded-3xl backdrop-blur-lg bg-white/30 p-0 shadow-2xl",
+        popup: "rounded-3xl bg-white p-8 shadow-2xl border border-gray-100",
       },
     });
 
   const openJoin = () =>
     MySwal.fire({
-      html: <JoinGroup />,
+      didRender: () => {
+        const popup = Swal.getPopup();
+        const mountPoint = document.createElement("div");
+        popup.appendChild(mountPoint);
+        createRoot(mountPoint).render(
+          <JoinGroup onJoined={handleGroupJoined} />
+        );
+      },
       showConfirmButton: false,
-      background: "transparent",
       customClass: {
-        popup: "rounded-3xl backdrop-blur-lg bg-white/30 p-0 shadow-2xl",
+        popup: "rounded-3xl bg-white p-8 shadow-2xl border border-gray-100",
       },
     });
 
   return (
     <div className="min-h-screen bg-[#FEFCFB] text-gray-800">
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Header */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
           <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-amber-400">
             <FaUsers className="inline-block mr-2" />
@@ -114,7 +142,6 @@ export default function GroupList() {
           </div>
         </div>
 
-        {/* Content */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -163,7 +190,7 @@ export default function GroupList() {
                       {g.description}
                     </p>
                     <span className="inline-block px-4 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-medium">
-                      {g.members?.length ?? 0} members
+                      {g.membersCount} members
                     </span>
                   </div>
                 </div>

@@ -1,4 +1,5 @@
 // src/components/ViewPin.jsx
+
 import React, { useState, useEffect } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import {
@@ -16,177 +17,181 @@ import { pinService } from "../../service/pinService";
 import { commentService } from "../../service/commentService";
 import { likeService } from "../../service/likeService";
 import { reportService } from "../../service/reportService";
+import { userService } from "../../service/userService";
 
-export default function ViewPin({
-  pinId,
-  onClose,
-  currentUser = { name: "You", avatar: "https://via.placeholder.com/40" },
-  icons = {},
-}) {
+export default function ViewPin({ pinId, onClose, onShowLocation }) {
   const [pin, setPin] = useState(null);
-  const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
-  const [myReaction, setMyReaction] = useState(null); // "like" or "dislike" or null
-  const [commentReactions, setCommentReactions] = useState({}); // { [commentId]: "like"|"dislike"|null }
+  const [myReaction, setMyReaction] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [commentReactions, setCommentReactions] = useState({});
   const [currentIdx, setCurrentIdx] = useState(0);
   const [showReport, setShowReport] = useState(null);
 
+  const [currentUser, setCurrentUser] = useState({
+    id: "",
+    name: "You",
+    avatar: "/default-avatar.png",
+  });
   useEffect(() => {
-    if (!pinId) return;
+    userService
+      .getCurrentUser()
+      .then(setCurrentUser)
+      .catch(() => {});
+  }, []);
 
-    // 1) Load pin details
-    pinService.get(pinId).then((data) => {
-      setPin(data);
-      setLikes(data.likes || 0);
-      setDislikes(data.dislikes || 0);
-      setCurrentIdx(0);
+  // Refresh counts
+  const refreshPinCounts = () =>
+    likeService.list("pin", pinId).then(({ likes: l, dislikes: d }) => {
+      setLikes(l);
+      setDislikes(d);
+    });
+  const refreshCommentCounts = (cid) =>
+    likeService.list("comment", cid).then(({ likes: l, dislikes: d }) => {
+      setComments((cs) =>
+        cs.map((c) => (c.id === cid ? { ...c, likes: l, dislikes: d } : c))
+      );
     });
 
-    // 2) Load aggregate counts
-    likeService
-      .list("pin", pinId)
-      .then(({ likes: l, dislikes: d }) => {
-        setLikes(l);
-        setDislikes(d);
-      })
-      .catch(console.error);
+  // Load pin + comments
+  useEffect(() => {
+    if (!pinId) return;
+    let canceled = false;
+    (async () => {
+      const data = await pinService.get(pinId);
+      if (canceled) return;
+      setPin(data);
 
-    // 3) Load my reaction on pin
-    likeService
-      .getMyReaction("pin", pinId)
-      .then((r) => setMyReaction(r?.type || null))
-      .catch(() => setMyReaction(null));
+      const me = await likeService
+        .getMyReaction("pin", pinId)
+        .catch(() => null);
+      if (canceled) return;
+      setMyReaction(me);
 
-    // 4) Load comments and then load my reactions on each comment
-    commentService
-      .listByPin(pinId)
-      .then((cs) =>
-        cs.map((c) => ({
-          ...c,
-          likes: c.likes || 0,
-          dislikes: c.dislikes || 0,
-        }))
-      )
-      .then((loadedComments) => {
-        setComments(loadedComments);
-        // for each comment, fetch my reaction
-        loadedComments.forEach((c) => {
-          likeService
-            .getMyReaction("comment", c.id)
-            .then((r) =>
-              setCommentReactions((cr) => ({
-                ...cr,
-                [c.id]: r?.type || null,
-              }))
-            )
-            .catch(() => {});
-        });
-      })
-      .catch(console.error);
+      const { likes: l, dislikes: d } = await likeService.list("pin", pinId);
+      if (canceled) return;
+      setLikes(l);
+      setDislikes(d);
+
+      let raw = await commentService.listByPin(pinId);
+      if (canceled) return;
+      const detailed = await Promise.all(
+        raw.map(async (c) => {
+          const cid = c.id || c._id;
+          const [{ likes: cl, dislikes: cd }, cr] = await Promise.all([
+            likeService.list("comment", cid),
+            likeService.getMyReaction("comment", cid).catch(() => null),
+          ]);
+          const authorId =
+            typeof c.author === "string" ? c.author : c.author?.id;
+          const profile = await userService
+            .getPublic(authorId)
+            .catch(() => null);
+          return {
+            ...c,
+            id: cid,
+            likes: cl,
+            dislikes: cd,
+            myReaction: cr?.type || null,
+            author: profile || {
+              id: authorId,
+              name: "",
+              avatar: "/default-avatar.png",
+            },
+          };
+        })
+      );
+      if (canceled) return;
+      setComments(detailed);
+    })();
+    return () => {
+      canceled = true;
+    };
   }, [pinId]);
 
   if (!pin) return null;
 
-  // Build media carousel items
   const images = Array.isArray(pin.media?.images)
     ? pin.media.images.map((i) => (typeof i === "string" ? i : i.url))
     : [];
   const rawV = pin.media?.video;
-  const vUrl = rawV && (typeof rawV === "string" ? rawV : rawV.url);
+  const videoUrl = rawV && (typeof rawV === "string" ? rawV : rawV.url);
   const mediaItems = [
-    ...(vUrl ? [{ type: "video", url: vUrl }] : []),
+    ...(videoUrl ? [{ type: "video", url: videoUrl }] : []),
     ...images.map((url) => ({ type: "image", url })),
   ];
 
-  const fmtDate = (iso) =>
+  const fmt = (iso) =>
     new Date(iso).toLocaleDateString(undefined, {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
 
-  // Helper to refresh aggregate counts
-  const refreshPin = () =>
-    likeService
-      .list("pin", pinId)
-      .then(({ likes: l, dislikes: d }) => {
-        setLikes(l);
-        setDislikes(d);
-      })
-      .catch(console.error);
-
-  // Handle pin like/dislike toggle
   const handlePinReact = (type) => {
-    const newType = myReaction === type ? null : type;
-    likeService
-      .create({ targetType: "pin", targetId: pinId, type: newType || type })
-      .then(() => {
-        setMyReaction(newType);
-        refreshPin();
-      })
-      .catch(console.error);
+    if (myReaction?.type === type) {
+      likeService.remove(myReaction.id).then(() => {
+        setMyReaction(null);
+        refreshPinCounts();
+      });
+      return;
+    }
+    const doCreate = () =>
+      likeService
+        .create({ targetType: "pin", targetId: pinId, type })
+        .then((nr) => {
+          setMyReaction(nr);
+          refreshPinCounts();
+        });
+    if (myReaction) {
+      likeService.remove(myReaction.id).then(doCreate);
+    } else {
+      doCreate();
+    }
   };
 
-  // Handle comment like/dislike toggle
   const handleCommentReact = (cid, type) => {
     const prev = commentReactions[cid];
-    const newType = prev === type ? null : type;
-    likeService
-      .create({
-        targetType: "comment",
-        targetId: cid,
-        type: newType || type,
-      })
-      .then(() =>
-        likeService.list("comment", cid).then(({ likes, dislikes }) => {
-          setComments((cs) =>
-            cs.map((c) => (c.id === cid ? { ...c, likes, dislikes } : c))
-          );
-          setCommentReactions((cr) => ({
-            ...cr,
-            [cid]: newType,
-          }));
-        })
-      )
-      .catch(console.error);
+    if (prev?.type === type) {
+      likeService.remove(prev.id).then(() => {
+        setCommentReactions((cr) => ({ ...cr, [cid]: null }));
+        refreshCommentCounts(cid);
+      });
+      return;
+    }
+    const doCreate = () =>
+      likeService
+        .create({ targetType: "comment", targetId: cid, type })
+        .then((nr) => {
+          setCommentReactions((cr) => ({ ...cr, [cid]: nr }));
+          refreshCommentCounts(cid);
+        });
+    if (prev) {
+      likeService.remove(prev.id).then(doCreate);
+    } else {
+      doCreate();
+    }
   };
 
-  // Add a new comment
   const handleAddComment = (e) => {
     e.preventDefault();
-    const text = e.target.elements.comment.value.trim();
-    if (!text) return;
-    commentService
-      .create({ pinId, text })
-      .then((nc) => {
-        setComments((cs) => [{ ...nc, likes: 0, dislikes: 0 }, ...cs]);
-        e.target.reset();
-      })
-      .catch(console.error);
+    const txt = e.target.comment.value.trim();
+    if (!txt) return;
+    commentService.create({ pinId, text: txt }).then((nc) => {
+      setComments((cs) => [
+        { ...nc, likes: 0, dislikes: 0, author: currentUser },
+        ...cs,
+      ]);
+      e.target.reset();
+    });
   };
 
-  // Submit report
-  const handleReport = ({ reason, description }) => {
-    if (!showReport || !reason.trim()) return;
-    const { type: tType, id: tId } = showReport;
-    reportService
-      .create({
-        targetType: tType,
-        targetId: tId,
-        reason: reason.trim(),
-        ...(description?.trim() && { description: description.trim() }),
-      })
-      .then(() => setShowReport(null))
-      .catch(console.error);
-  };
-
-  // Carousel navigation
-  const navigate = (step) =>
+  const navigateCarousel = (step) =>
     setCurrentIdx((i) => (i + step + mediaItems.length) % mediaItems.length);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-30 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 hide-scrollbar">
       <div className="relative bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
@@ -196,22 +201,21 @@ export default function ViewPin({
         </button>
 
         {/* Header */}
-        <header className="p-6">
-          <div className="flex items-center gap-4">
+        <header className="p-6 border-b border-gray-100">
+          <h2 className="text-2xl font-bold">{pin.title}</h2>
+          <div className="mt-4 flex items-center gap-3">
             <img
               src={pin.owner?.avatar || currentUser.avatar}
               alt={pin.owner?.name || currentUser.name}
               className="w-10 h-10 rounded-full object-cover"
             />
-            <div className="flex-1">
-              <h2 className="text-lg font-semibold text-gray-800">
-                {pin.title}
-              </h2>
-              <p className="text-xs text-gray-500">
-                {pin.owner?.name || currentUser.name} · {fmtDate(pin.createdAt)}
+            <div className="text-sm text-gray-500">
+              <p className="font-medium">
+                {pin.owner?.name || currentUser.name}
               </p>
+              <time dateTime={pin.createdAt}>{fmt(pin.createdAt)}</time>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="ml-auto flex flex-wrap gap-2">
               <span className="px-3 py-1 text-xs bg-indigo-100 text-indigo-800 rounded-full">
                 {pin.privacy}
               </span>
@@ -245,20 +249,15 @@ export default function ViewPin({
                 />
               )}
             </div>
-            {pin.location?.name && (
-              <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                📍 {pin.location.name}
-              </div>
-            )}
             <button
-              onClick={() => navigate(-1)}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white text-xl hover:scale-110 transition"
+              onClick={() => navigateCarousel(-1)}
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full"
             >
               <FaChevronLeft />
             </button>
             <button
-              onClick={() => navigate(1)}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white text-xl hover:scale-110 transition"
+              onClick={() => navigateCarousel(1)}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full"
             >
               <FaChevronRight />
             </button>
@@ -269,28 +268,46 @@ export default function ViewPin({
         <section className="p-6 space-y-6">
           <p className="text-gray-700">{pin.description}</p>
 
+          {/* CLICKABLE LOCATION CARD */}
+          <div
+            onClick={() =>
+              onShowLocation({
+                lat: pin.location.lat,
+                lng: pin.location.lng,
+              })
+            }
+            className="flex items-start gap-4 p-4 bg-white border border-gray-100 rounded-lg cursor-pointer hover:bg-gray-50 transition"
+          >
+            <FaLocationDot className="text-red-500 text-2xl" />
+            <div>
+              <p className="font-medium">{pin.location.name}</p>
+              <p className="text-sm text-gray-500">{pin.location.address}</p>
+              <p className="mt-1 text-xs text-gray-400 italic">
+                Click here to jump to this pin on the map
+              </p>
+            </div>
+          </div>
+
           {/* Pin reactions */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <button
                 onClick={() => handlePinReact("like")}
-                className={
-                  "flex items-center gap-1 " +
-                  (myReaction === "like"
+                className={`flex items-center gap-1 ${
+                  myReaction?.type === "like"
                     ? "text-blue-600"
-                    : "text-gray-500 hover:text-blue-600")
-                }
+                    : "text-gray-500 hover:text-blue-600"
+                }`}
               >
                 <FaThumbsUp /> {likes}
               </button>
               <button
                 onClick={() => handlePinReact("dislike")}
-                className={
-                  "flex items-center gap-1 " +
-                  (myReaction === "dislike"
+                className={`flex items-center gap-1 ${
+                  myReaction?.type === "dislike"
                     ? "text-red-600"
-                    : "text-gray-500 hover:text-red-600")
-                }
+                    : "text-gray-500 hover:text-red-600"
+                }`}
               >
                 <FaThumbsDown /> {dislikes}
               </button>
@@ -309,54 +326,55 @@ export default function ViewPin({
               Comments ({comments.length})
             </h3>
             <div className="max-h-64 overflow-y-auto space-y-4">
-              {comments.map((c, idx) => (
-                <div key={c.id} className="space-y-1">
-                  <div className="flex items-start gap-3">
-                    <img
-                      src={c.author.avatar}
-                      alt={c.author.name}
-                      className="w-8 h-8 rounded-full mt-1"
-                    />
-                    <div className="flex-1 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm">
-                      <div className="flex justify-between text-xs text-gray-600">
-                        <span>{c.author.name}</span>
-                        <span>{fmtDate(c.createdAt)}</span>
-                      </div>
-                      <p className="mt-1 text-gray-700 text-sm">{c.content}</p>
+              {comments.map((c) => (
+                <div key={c.id} className="flex items-start gap-3">
+                  <img
+                    src={c.author.avatar}
+                    alt={c.author.name}
+                    className="w-8 h-8 rounded-full object-cover mt-1"
+                  />
+                  <div className="flex-1 bg-white border border-white-theme px-4 py-2 rounded-xl shadow-sm relative">
+                    <div className="flex justify-between text-xs text-gray-600">
+                      <span>{c.author.name}</span>
+                      <span>{fmt(c.createdAt)}</span>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-6 text-gray-500 text-sm pl-11">
-                    <button
-                      onClick={() => handleCommentReact(c.id, "like")}
-                      className="flex items-center gap-1 hover:text-blue-600"
-                    >
-                      <FaThumbsUp size={16} /> {c.likes}
-                    </button>
-                    <button
-                      onClick={() => handleCommentReact(c.id, "dislike")}
-                      className="flex items-center gap-1 hover:text-red-600"
-                    >
-                      <FaThumbsDown size={16} /> {c.dislikes}
-                    </button>
-                    <FaFlag
-                      onClick={() => setShowReport({ type: "comment", id: c.id })}
-                      className="cursor-pointer hover:text-red-500"
-                      size={14}
-                    />
+                    <p className="mt-1 text-gray-700 text-sm">{c.content}</p>
+                    <div className="absolute bottom-2 right-4 flex items-center gap-4 text-sm text-gray-500">
+                      <button
+                        onClick={() => handleCommentReact(c.id, "like")}
+                        className="flex items-center gap-1 hover:text-blue-600"
+                      >
+                        <FaThumbsUp size={16} /> {c.likes}
+                      </button>
+                      <button
+                        onClick={() => handleCommentReact(c.id, "dislike")}
+                        className="flex items-center gap-1 hover:text-red-600"
+                      >
+                        <FaThumbsDown size={16} /> {c.dislikes}
+                      </button>
+                      <button
+                        onClick={() =>
+                          setShowReport({ type: "comment", id: c.id })
+                        }
+                        className="hover:text-red-500"
+                      >
+                        <FaFlag size={14} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Add comment */}
+            {/* Add Comment */}
             <form
               onSubmit={handleAddComment}
-              className="flex items-start gap-3 mt-4"
+              className="mt-6 flex gap-3 items-start"
             >
               <img
                 src={currentUser.avatar}
                 alt={currentUser.name}
-                className="w-8 h-8 rounded-full mt-1"
+                className="w-8 h-8 rounded-full object-cover mt-1"
               />
               <div className="flex flex-1 items-center border border-gray-300 rounded-xl px-4 py-2 bg-white shadow-sm">
                 <input
@@ -364,23 +382,30 @@ export default function ViewPin({
                   placeholder="Add a comment…"
                   className="flex-1 text-sm focus:outline-none bg-transparent"
                 />
-                <button
-                  type="submit"
-                  className="ms-2 text-blue-600 hover:text-blue-800"
-                >
-                  <FiSend size={18} />
+                <button type="submit" className="ms-2">
+                  <FiSend
+                    size={18}
+                    className="text-blue-600 hover:text-blue-800"
+                  />
                 </button>
               </div>
             </form>
           </div>
         </section>
 
-        {/* Report Popup */}
         {showReport && (
           <ReportPopup
             target={showReport}
             onCancel={() => setShowReport(null)}
-            onSubmit={handleReport}
+            onSubmit={(data) => {
+              reportService
+                .create({
+                  targetType: showReport.type,
+                  targetId: showReport.id,
+                  ...data,
+                })
+                .then(() => setShowReport(null));
+            }}
           />
         )}
       </div>

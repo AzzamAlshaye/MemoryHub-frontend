@@ -1,4 +1,5 @@
-// src/components/ReportPopup.jsx
+// src/components/map/ReportPopup.jsx
+
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 
@@ -15,23 +16,22 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
   const [customReason, setCustomReason] = useState("");
   const [description, setDescription] = useState("");
 
+  // push SweetAlert above our React overlay (which is at z-50)
   const baseSwalOpts = {
     target: "body",
     customClass: {
-      container: "z-[1250]", // SweetAlert container
-      backdrop: "z-[1200]", // SweetAlert backdrop
-      popup: "z-[1300]", // SweetAlert dialog
+      container: "!z-[1300]", // swal2-container
+      backdrop: "!z-[1200]", // swal2-backdrop
+      popup: "!z-[1400]", // swal2-modal
     },
   };
 
   const fireAlert = (opts) => Swal.fire({ ...baseSwalOpts, ...opts });
 
   const handleSubmit = async () => {
-    // derive the final reason text
     const reason =
       selectedReason === "Other" ? customReason.trim() : selectedReason;
 
-    // validate
     if (!reason) {
       return fireAlert({
         icon: "warning",
@@ -47,7 +47,6 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
       });
     }
 
-    // confirm
     const { isConfirmed } = await fireAlert({
       icon: "question",
       title: "Submit Report?",
@@ -58,25 +57,24 @@ export default function ReportPopup({ target, onCancel, onSubmit }) {
     });
     if (!isConfirmed) return;
 
-    // test to store
+    // test to store locally
     const key = `reportDesc_${target.type}_${target.id}`;
     localStorage.setItem(key, description.trim());
 
-    // success toast
     await fireAlert({
       icon: "success",
       title: "Report Submitted",
       text: "Thank you. Your report has been submitted.",
     });
 
-    // now call onSubmit with only the data our backend expects
     onSubmit({ reason, description });
   };
 
   return (
-    <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/60 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-red-600">
+
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 space-y-4">
+        <h3 className="text-lg font-semibold">
           Report {target.type === "pin" ? "Post" : "Comment"}
         </h3>
 
