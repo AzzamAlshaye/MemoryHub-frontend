@@ -56,6 +56,7 @@ export function AuthProvider({ children }) {
       setAxiosToken(token);
       const me = await userService.getCurrentUser();
       setUser(me);
+      return me; // ← return the up-to-date user object
     } finally {
       setLoading(false);
     }
@@ -68,6 +69,7 @@ export function AuthProvider({ children }) {
       setAxiosToken(token);
       const me = await userService.getCurrentUser();
       setUser(me);
+      return me;
     } finally {
       setLoading(false);
     }

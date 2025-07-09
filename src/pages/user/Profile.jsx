@@ -52,7 +52,6 @@ export default function Profile() {
         setName(u.name || "");
         setEmail(u.email || "");
         currentUserId = u.id || u._id;
-        localStorage.setItem("currentUserName", u.name || "");
         return pinService.listMyPins();
       })
       .then((pins) => {
@@ -276,84 +275,92 @@ export default function Profile() {
             {memories.length === 0 && (
               <p className="text-gray-500">No memories to display.</p>
             )}
-         {memories.map((m, i) => {
-  const images = m.media?.images || [];
-  const firstImage = images.length > 0 ? images[0] : null;
-  const video = m.media?.video;
+            {memories.map((m, i) => {
+              const images = m.media?.images || [];
+              const firstImage = images[0] || null;
+              const video = m.media?.video;
+              const videoSrc =
+                video?.trim() ||
+                (firstImage?.includes(".mp4") ? firstImage : null);
+              const isVideo = !!videoSrc;
 
-  const videoSrc = video && video.trim() !== "" ? video : (firstImage && firstImage.includes(".mp4") ? firstImage : null);
-  const isVideo = !!videoSrc;
+              return (
+                <motion.div
+                  key={m._id || m.id || i}
+                  variants={item}
+                  whileHover={{ scale: 1.03 }}
+                  className="relative bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer"
+                >
+                  {isVideo ? (
+                    <video
+                      src={videoSrc}
+                      controls
+                      className="w-full h-48 object-cover"
+                    />
+                  ) : firstImage ? (
+                    <img
+                      src={firstImage}
+                      alt={m.title}
+                      className="w-full h-48 object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={user?.avatar || "/default-avatar.png"}
+                      alt={m.title || "your memory"}
+                      className="w-full h-48 object-cover"
+                    />
+                  )}
 
-  return (
-    <motion.div
-      key={m._id || m.id || i}
-      variants={item}
-      whileHover={{ scale: 1.03 }}
-      className="bg-white rounded-2xl shadow-lg overflow-hidden group relative cursor-pointer"
-    >
-      {isVideo ? (
-        <video
-          src={videoSrc}
-          controls
-          className="w-full h-48 object-cover"
-        />
-      ) : firstImage ? (
-        <img
-          src={firstImage}
-          alt={m.title}
-          className="w-full h-48 object-cover"
-        />
-      ) : (
-        <img
-          src="/default-image.png"
-          alt="default"
-          className="w-full h-48 object-cover"
-        />
-      )}
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-bold text-gray-900">{m.title}</h4>
+                    <p className="text-gray-600 text-sm line-clamp-2">
+                      {m.description}
+                    </p>
+                    <p className="text-gray-400 text-xs">
+                      {new Date(m.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
 
-      <div className="p-4 space-y-2">
-        <h4 className="font-bold text-gray-900">{m.title}</h4>
-        <p className="text-gray-600 text-sm line-clamp-2">
-          {m.description}
-        </p>
-        <p className="text-gray-400 text-xs">
-          {new Date(m.createdAt).toLocaleDateString()}
-        </p>
-      </div>
-
-      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition flex gap-2">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            openEdit(m);
-          }}
-          className="p-2 bg-white rounded-full shadow"
-        >
-          <FaEdit className="text-gray-700" />
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDeletePin(m._id || m.id);
-          }}
-          className="p-2 bg-white rounded-full shadow"
-        >
-          <FaTrash className="text-red-500" />
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedPinId(m._id || m.id);
-          }}
-          className="p-2 bg-white rounded-full shadow"
-        >
-          <FaEye className="text-blue-500" />
-        </button>
-      </div>
-    </motion.div>
-  );
-})}
-
+                  <div
+                    className="
+                      absolute top-4 right-4 flex gap-2
+                      opacity-100
+                      lg:opacity-0
+                      lg:group-hover:opacity-100
+                      transition
+                    "
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEdit(m);
+                      }}
+                      className="p-2 bg-white rounded-full shadow"
+                    >
+                      <FaEdit className="text-gray-700" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeletePin(m._id || m.id);
+                      }}
+                      className="p-2 bg-white rounded-full shadow"
+                    >
+                      <FaTrash className="text-red-500" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedPinId(m._id || m.id);
+                      }}
+                      className="p-2 bg-white rounded-full shadow"
+                    >
+                      <FaEye className="text-blue-500" />
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.section>
 

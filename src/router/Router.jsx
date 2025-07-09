@@ -40,8 +40,7 @@ const LayoutWithNav = () => (
         <Outlet />
       </div>
     </div>
-
-    <Footer />
+<Footer />
   </div>
 );
 
