@@ -1,5 +1,5 @@
 // src/components/Sidebar.jsx
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import {
   FaHome,
@@ -10,47 +10,48 @@ import {
   FaSignOutAlt,
   FaUserEdit,
 } from "react-icons/fa";
+import { IoIosStats } from "react-icons/io";
+
 import { motion } from "framer-motion";
-import { userService } from "../service/userService";
+import { useAuth } from "../context/AuthContext";
 
 function Sidebar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const [user, setUser] = useState({
-    name: "Guest",
-    avatar: "/default-avatar.jpg",
-    isLoggedIn: false,
-  });
+  const { user, logout } = useAuth();
+  const isLoggedIn = Boolean(user);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    userService
-      .getCurrentUser()
-      .then((data) => {
-        setUser({
-          name: data.name,
-          avatar: data.avatar,
-          isLoggedIn: true,
-        });
-      })
-      .catch(() => {
-        localStorage.removeItem("token");
-      });
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/SignInPage");
-    setUser((u) => ({ ...u, isLoggedIn: false }));
-  };
-
-  const menuItems = [
+  const baseMenu = [
     { to: "/", icon: <FaHome size={20} />, label: "Home" },
     { to: "/mapPage", icon: <FaMapMarkedAlt size={20} />, label: "Map" },
     { to: "/GroupList", icon: <FaUsers size={20} />, label: "Group List" },
     { to: "/Mytickets", icon: <FaTicketAlt size={20} />, label: "My Tickets" },
   ];
+
+  const adminMenu = [
+    {
+      to: "/admin/dashboard",
+      icon: <IoIosStats size={20} />,
+      label: "Admin Dashboard",
+    },
+    { to: "/admin/crud", icon: <FaUsers size={20} />, label: "Manage Users" },
+    {
+      to: "/admin/tickets",
+      icon: <FaTicketAlt size={20} />,
+      label: "All Tickets",
+    },
+  ];
+
+  const menuItems =
+    isLoggedIn && user.role === "admin"
+      ? [
+          // for admins only Home & Map from base, then admin links
+          ...baseMenu.filter(
+            (item) => item.to === "/" || item.to === "/mapPage"
+          ),
+          ...adminMenu,
+        ]
+      : baseMenu;
 
   return (
     <motion.aside
@@ -96,13 +97,15 @@ function Sidebar() {
       <div className="px-3 py-6 border-t border-gray-200">
         <div className="flex items-center gap-4">
           <img
-            src={user.avatar}
+            src={user?.avatar || "/default-avatar.jpg"}
             alt="User avatar"
             className="w-10 h-10 rounded-full object-cover"
           />
           <div className="flex-1">
-            <p className="font-semibold text-gray-800 text-sm">{user.name}</p>
-            {user.isLoggedIn ? (
+            <p className="font-semibold text-gray-800 text-sm">
+              {user?.name || "Guest"}
+            </p>
+            {isLoggedIn ? (
               <div className="flex items-center justify-between mt-2">
                 <Link
                   to="/Profile"
@@ -112,7 +115,10 @@ function Sidebar() {
                   View Profile
                 </Link>
                 <button
-                  onClick={handleLogout}
+                  onClick={() => {
+                    logout();
+                    navigate("/SignInPage", { replace: true });
+                  }}
                   className="p-1 rounded-full hover:bg-red-100 text-main-theme hover:text-red-600 transition"
                   title="Logout"
                 >

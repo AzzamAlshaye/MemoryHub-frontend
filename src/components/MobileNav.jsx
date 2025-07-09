@@ -1,5 +1,5 @@
 // src/components/MobileNav.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import {
   FaBars,
@@ -13,46 +13,48 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { userService } from "../service/userService";
-
-const menuItemsMobile = [
-  { to: "/", icon: <FaHome size={20} />, label: "Home" },
-  { to: "/mapPage", icon: <FaMapMarkedAlt size={20} />, label: "Map" },
-  { to: "/GroupList", icon: <FaUsers size={20} />, label: "Communities" },
-  { to: "/MyTickets", icon: <FaTicketAlt size={20} />, label: "My Tickets" },
-];
+import { useAuth } from "../context/AuthContext";
 
 export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState({
-    name: "Guest",
-    avatar: "/default-avatar.jpg",
-    isLoggedIn: false,
-  });
+  const { user, logout } = useAuth();
+  const isLoggedIn = Boolean(user);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+  const baseMobile = [
+    { to: "/", icon: <FaHome size={20} />, label: "Home" },
+    { to: "/mapPage", icon: <FaMapMarkedAlt size={20} />, label: "Map" },
+    { to: "/GroupList", icon: <FaUsers size={20} />, label: "Communities" },
+    { to: "/MyTickets", icon: <FaTicketAlt size={20} />, label: "My Tickets" },
+  ];
 
-    userService
-      .getCurrentUser()
-      .then((data) => {
-        setUser({
-          name: data.name,
-          avatar: data.avatar,
-          isLoggedIn: true,
-        });
-      })
-      .catch(() => {
-        localStorage.removeItem("token");
-      });
-  }, []);
+  const adminMobile = [
+    {
+      to: "/admin/dashboard",
+      icon: <FaUsers size={20} />,
+      label: "Admin Dashboard",
+    },
+    { to: "/admin/crud", icon: <FaUsers size={20} />, label: "Manage Users" },
+    {
+      to: "/admin/tickets",
+      icon: <FaTicketAlt size={20} />,
+      label: "All Tickets",
+    },
+  ];
+
+  const menuItemsMobile =
+    isLoggedIn && user.role === "admin"
+      ? [
+          ...baseMobile.filter(
+            (item) => item.to === "/" || item.to === "/mapPage"
+          ),
+          ...adminMobile,
+        ]
+      : baseMobile;
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser({ name: "Guest", avatar: user.avatar, isLoggedIn: false });
-    navigate("/SignInPage");
+    logout();
+    navigate("/SignInPage", { replace: true });
     setIsOpen(false);
   };
 
@@ -91,8 +93,8 @@ export default function MobileNav() {
               <div className="flex items-center justify-between mb-8">
                 <Link
                   to="/"
-                  className="flex items-center gap-2"
                   onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2"
                 >
                   <img src="/m-logo.webp" alt="Logo" className="w-8 h-8" />
                   <span className="font-bold text-black">MemoryHub</span>
@@ -123,13 +125,15 @@ export default function MobileNav() {
               <div className="mt-auto pt-6 border-t border-gray-200">
                 <div className="flex items-center gap-3 mb-4">
                   <img
-                    src={user.avatar}
+                    src={user?.avatar || "/default-avatar.jpg"}
                     alt="User avatar"
                     className="w-10 h-10 rounded-full object-cover"
                   />
                   <div className="flex-1">
-                    <p className="text-gray-800 font-semibold">{user.name}</p>
-                    {user.isLoggedIn ? (
+                    <p className="text-gray-800 font-semibold">
+                      {user?.name || "Guest"}
+                    </p>
+                    {isLoggedIn ? (
                       <Link
                         to="/Profile"
                         onClick={() => setIsOpen(false)}
@@ -147,7 +151,7 @@ export default function MobileNav() {
                       </Link>
                     )}
                   </div>
-                  {user.isLoggedIn && (
+                  {isLoggedIn && (
                     <button
                       onClick={handleLogout}
                       className="p-1 rounded-full hover:bg-red-100 text-main-theme hover:text-red-600 transition"

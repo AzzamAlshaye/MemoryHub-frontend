@@ -10,12 +10,11 @@ import { useAuth } from "../../context/AuthContext";
 export default function SignInPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, isLoading } = useAuth();
+  const { login, isLoading } = useAuth(); // no longer reading `user` here
   useTitle("Sign in | MemoryHub");
 
-  // If someone was kicked here by <RequireAuth>, get their original destination…
-  // otherwise default to mapPage for users or admin/crud for admins.
-  const from = location.state?.from?.pathname || "/mapPage";
+  // if redirected by <RequireAuth>, use its `from`; otherwise undefined
+  const originalFrom = location.state?.from?.pathname;
 
   const initialValues = { email: "", password: "" };
   const validate = (values) => {
@@ -24,14 +23,27 @@ export default function SignInPage() {
     if (!values.password) errors.password = "Required";
     return errors;
   };
+
   const onSubmit = async (values, { setSubmitting }) => {
     try {
-      await login({
+      // login() now returns the fresh user object
+      const me = await login({
         email: values.email.trim(),
         password: values.password,
       });
+
       toast.success("Signed in! Redirecting…", { autoClose: 1200 });
-      navigate(from, { replace: true });
+
+      let destination;
+      if (originalFrom) {
+        destination = originalFrom;
+      } else if (me.role === "admin") {
+        destination = "/admin/dashboard";
+      } else {
+        destination = "/mapPage";
+      }
+
+      navigate(destination, { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || "Sign-in failed");
     } finally {
@@ -118,7 +130,6 @@ export default function SignInPage() {
                 {isSubmitting ? "Signing In..." : "Sign In"}
               </button>
 
-              {/* Home button */}
               <div className="text-center">
                 <button
                   onClick={() => navigate("/")}

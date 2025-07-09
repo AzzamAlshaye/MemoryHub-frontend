@@ -305,8 +305,8 @@ export default function Profile() {
                     />
                   ) : (
                     <img
-                      src="/default-image.png"
-                      alt="default"
+                      src={user?.avatar || "/default-avatar.png"}
+                      alt={m.title || "your memory"}
                       className="w-full h-48 object-cover"
                     />
                   )}
