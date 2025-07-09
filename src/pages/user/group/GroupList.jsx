@@ -178,7 +178,7 @@ export default function GroupList() {
                     <img
                       src={g.avatar || "/placeholder.png"}
                       alt={g.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-fill"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <h3 className="absolute bottom-4 left-4 text-white text-2xl font-bold drop-shadow-xl">
