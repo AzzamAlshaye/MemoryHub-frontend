@@ -110,14 +110,12 @@ export default function Profile() {
     const file = e.target.files[0];
     if (!file) return;
 
-    // immediate preview
     const reader = new FileReader();
     reader.onload = () => {
       setUser((prev) => ({ ...prev, avatar: reader.result }));
     };
     reader.readAsDataURL(file);
 
-    // upload to self-avatar endpoint
     try {
       const updatedUser = await userService.uploadSelfAvatar(file);
       setUser(updatedUser);
@@ -147,7 +145,7 @@ export default function Profile() {
           )
         );
         setEditingPin(null);
-        toast.success("Memory updated");
+        toast.success("Memory updated successfully");
       })
       .catch((err) => {
         console.error(err);
@@ -155,18 +153,52 @@ export default function Profile() {
       });
   };
 
+  // Toastify-based delete confirmation
   const handleDeletePin = (id) => {
-    if (!window.confirm("Delete this memory?")) return;
-    pinService
-      .remove(id)
-      .then(() => {
-        setMemories((prev) => prev.filter((p) => p._id !== id && p.id !== id));
-        toast.success("Memory deleted");
-      })
-      .catch((err) => {
-        console.error(err);
-        toast.error("Error deleting memory");
-      });
+    toast(
+      ({ closeToast }) => (
+        <div className="p-4">
+          <p className="mb-3 text-gray-800">
+            Are you sure you want to delete this memory?
+          </p>
+          <div className="flex justify-end gap-2">
+            <button
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+              onClick={() => {
+                pinService
+                  .remove(id)
+                  .then(() => {
+                    setMemories((prev) =>
+                      prev.filter((p) => p._id !== id && p.id !== id)
+                    );
+                    toast.success("Memory deleted successfully");
+                  })
+                  .catch(() => {
+                    toast.error("Error deleting memory");
+                  })
+                  .finally(() => {
+                    closeToast();
+                  });
+              }}
+            >
+              Yes
+            </button>
+            <button
+              className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+              onClick={closeToast}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        position: "top-center",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+      }
+    );
   };
 
   return (
@@ -246,11 +278,11 @@ export default function Profile() {
               className="space-y-1 relative md:col-span-2"
             >
               <label className="block text-sm font-medium text-gray-700">
-                Password
+                New Password
               </label>
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="New password"
+                placeholder="••••••••"
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-300 pr-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -369,7 +401,7 @@ export default function Profile() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50"
           >
             <motion.div
               variants={container}
@@ -411,16 +443,16 @@ export default function Profile() {
               </div>
               <div className="mt-6 flex flex-col sm:flex-row justify-end gap-4">
                 <button
-                  onClick={() => setEditingPin(null)}
-                  className="w-full sm:w-auto px-4 py-2 bg-gray-200 rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
                   onClick={saveEdit}
                   className="w-full sm:w-auto px-4 py-2 bg-amber-500 text-white rounded-lg"
                 >
                   Save
+                </button>
+                <button
+                  onClick={() => setEditingPin(null)}
+                  className="w-full sm:w-auto px-4 py-2 bg-gray-200 rounded-lg"
+                >
+                  Cancel
                 </button>
               </div>
             </motion.div>

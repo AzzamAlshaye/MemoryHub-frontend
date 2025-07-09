@@ -22,6 +22,7 @@ import PageNotFound from "../pages/unauthorized/NotFound.jsx";
 import Footer from "../components/Footer.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import MobileNav from "../components/MobileNav.jsx";
+import EditPost from "../components/map/EditPost.jsx";
 
 function LayoutWithNav() {
   return (
@@ -72,6 +73,7 @@ const router = createBrowserRouter([
       { path: "group/:groupId/join", element: <ConfirmJoinGroup /> },
       { path: "GroupList", element: <GroupList /> },
       { path: "group/:groupId/info", element: <GroupInfo /> },
+      { path: "pins/:pinId/edit", element: <EditPost /> },
       { path: "Profile", element: <Profile /> },
       { path: "MyTickets", element: <MyTickets /> },
     ],
